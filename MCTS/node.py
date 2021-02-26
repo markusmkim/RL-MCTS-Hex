@@ -15,6 +15,3 @@ class Node:
             child = Node(self, next_state)
             self.children.append(child)
 
-
-    def rollout(self, actor):
-        reward = actor.rollout()
