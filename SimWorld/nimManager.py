@@ -23,6 +23,10 @@ class NimManager:
         return self.stones == 0
 
 
+    def get_winner(self):
+        return int(self.player == 0)
+
+
     def get_state(self):
         possible_actions = np.arange(1, min(self.max_stones, self.stones) + 1)
         if len(possible_actions) == 0:

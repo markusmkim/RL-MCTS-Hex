@@ -1,6 +1,3 @@
-from SimWorld.nimManager import get_next_state
-from SimWorld.nimManager import NimManager
-from Agent.actor import Actor
 from math import sqrt, log
 
 
@@ -16,26 +13,25 @@ class Node:
         self.children = None
 
 
-    def expand(self):
-        if self.state[3] is None:
-            self.children = []
+    def expand(self, get_next_state):
+        self.children = []
+        if not self.state[1]:  # true if length > 0
             return None
-        for action in self.state[3]:
+        for action in self.state[1]:
             next_state = get_next_state(self.state.copy(), action)
             child = Node(self, next_state)
             self.children.append(child)
         return self.children
 
 
-    def rollout(self):
-        simulationManager = NimManager(self.state[0], self.state[1], self.state[2])
-        simulationActor = Actor(0.1)
+    def rollout(self, actor, game_manager):
+        simulation_manager = game_manager(self.state)
+        simulation_actor = actor(0.1)
+        while not simulation_manager.is_game_over():
+            simulation_action = simulation_actor.find_best_action(simulation_manager.get_state())
+            simulation_manager.execute_action(simulation_action)
 
-        while not simulationManager.is_game_over():
-            simulationAction = simulationActor.find_best_action(simulationManager.get_state())
-            simulationManager.execute_action(simulationAction)
-
-        self.value = 1 if simulationManager.player_won == 1 else -1
+        self.value = 1 if simulation_manager.get_winner() == 0 else -1
         self.number_of_visits += 1
         return self.value
 
@@ -73,3 +69,22 @@ class Node:
     def evaluate_edge(self, c, child):
         # returns Q(s, a) + u(s, a)
         return child.value + c * sqrt(log(self.number_of_visits) / (1 + child.number_of_visits))
+
+
+    def children_visits(self):
+        visits_dict = {}
+        total_visits = 0
+        best_child_index = 0
+        best_child = self.children[0]
+        for index, child in enumerate(self.children):
+            child_visits = child.number_of_visits
+            visits_dict[self.state[1][index]] = child_visits
+            total_visits += child_visits
+            if child.number_of_visits > best_child.number_of_visits:
+                best_child = child
+                best_child_index = index
+
+        return visits_dict, total_visits, best_child, self.state[1][best_child_index]
+
+
+

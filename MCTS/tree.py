@@ -1,5 +1,4 @@
 from MCTS.node import Node
-# from Agent.actor import Actor
 
 
 class Tree:
@@ -7,38 +6,26 @@ class Tree:
         self.root = Node(None, root_state)
 
 
-    def mcts(self, number_of_simulations):
+    def mcts(self, number_of_simulations, actor, game_manager, get_next_state):
         if self.root.children is None:
-            self.root.expand()
+            self.root.expand(get_next_state)
         node = self.root
         for i in range(number_of_simulations):
             while node.children and len(node.children) > 0:
-                node = self.root.best_child(1)
+                node = node.best_child(1)
             if node.number_of_visits == 1:
-                node.expand()
+                node.expand(get_next_state)
                 if len(node.children) > 0:
                     node = node.children[0]
-            value = node.rollout()
+            value = node.rollout(actor, game_manager)
             while node.parent is not None:
                 node = node.parent
                 node.value += value
                 node.number_of_visits += 1
 
-        best_child = self.root.best_child(0)
-        child_index = self.root.children.index(best_child)
-        action = self.root.state[3][child_index]
+        visits_dict, total_visits, best_child, best_action = self.root.children_visits()
+
         self.root = best_child
+        self.root.number_of_visits = 1
 
-        return action
-
-
-
-
-
-    """
-    def run_search(self):
-        # use tree policy to traverse down to a leaf node
-        leaf_node = 'some_node'
-        # get_leaf_node state and do rollout
-        self.rollout(leaf_node.state)
-    """
+        return visits_dict, total_visits, best_action
