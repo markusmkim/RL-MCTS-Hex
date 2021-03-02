@@ -1,20 +1,24 @@
 from SimWorld.nimManager import get_next_state
 from SimWorld.nimManager import NimManager
 from Agent.actor import Actor
+from math import sqrt, log
 
 
 class Node:
     def __init__(self, parent, state):
         self.parent = parent
+
+        # state[0] = stones, state[1] = max_stones, state[2] = player, state[3] = possible_actions
         self.state = state
+
         self.value = 0
         self.number_of_visits = 0
-        self.children = []
+        self.children = None
 
 
     def expand(self):
         if self.state[3] is None:
-            self.children = None
+            self.children = []
             return None
         for action in self.state[3]:
             next_state = get_next_state(self.state.copy(), action)
@@ -26,28 +30,46 @@ class Node:
     def rollout(self):
         simulationManager = NimManager(self.state[0], self.state[1], self.state[2])
         simulationActor = Actor(0.1)
-        node = self
+
         while not simulationManager.is_game_over():
             simulationAction = simulationActor.find_best_action(simulationManager.get_state())
             simulationManager.execute_action(simulationAction)
 
-            # Vi skal vel ikke bygge treet når vi kjører rollout?
-            # child = Node(self, simulationManager.get_state())
-            # node.children.append(child)
-            # node = child
-
-        self.value = 1 if simulationManager.get_state()[2] == 1 else -1
+        self.value = 1 if simulationManager.player_won == 1 else -1
         self.number_of_visits += 1
         return self.value
 
-    # Må huske på at vi annenhver gang ønsker å maksimere og minimere score avhengig av spiller
-    def best_child(self):
+
+    def best_child(self, c):
         if len(self.children) > 0:
-            best_child = self.children[0]
-            best_score = some_function(best_child)
-            for child in self.children[1:]:
-                if some_function(child) > best_score:
-                    best_child = child
-            return best_child
+            if self.state[2] == 0:
+                return self.argmax(c)
+            return self.argmin(c)
         return None
 
+
+    def argmax(self, c):
+        best_child = self.children[0]
+        best_score = self.evaluate_edge(c, best_child)
+        for child in self.children[1:]:
+            score = self.evaluate_edge(c, child)
+            if score > best_score:
+                best_child = child
+                best_score = score
+        return best_child
+
+
+    def argmin(self, c):
+        best_child = self.children[0]
+        best_score = self.evaluate_edge(c, best_child)
+        for child in self.children[1:]:
+            score = self.evaluate_edge(c, child)
+            if score < best_score:
+                best_child = child
+                best_score = score
+        return best_child
+
+
+    def evaluate_edge(self, c, child):
+        # returns Q(s, a) + u(s, a)
+        return child.value + c * sqrt(log(self.number_of_visits) / (1 + child.number_of_visits))
