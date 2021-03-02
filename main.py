@@ -3,7 +3,7 @@ from Agent.actor import Actor
 from MCTS.tree import Tree
 
 game = NimManager(12, 3, 0)
-actor = Actor(0.6)
+actor = Actor(0.2)
 
 player = 0
 
