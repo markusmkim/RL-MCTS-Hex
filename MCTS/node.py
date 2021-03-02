@@ -8,6 +8,7 @@ class Node:
         self.parent = parent
         self.state = state
         self.value = 0
+        self.number_of_visits = 0
         self.children = []
 
 
@@ -29,8 +30,24 @@ class Node:
         while not simulationManager.is_game_over():
             simulationAction = simulationActor.find_best_action(simulationManager.get_state())
             simulationManager.execute_action(simulationAction)
-            child = Node(self, simulationManager.get_state())
-            node.children.append(child)
-            node = child
+
+            # Vi skal vel ikke bygge treet når vi kjører rollout?
+            # child = Node(self, simulationManager.get_state())
+            # node.children.append(child)
+            # node = child
+
         self.value = 1 if simulationManager.get_state()[2] == 1 else -1
+        self.number_of_visits += 1
         return self.value
+
+    # Må huske på at vi annenhver gang ønsker å maksimere og minimere score avhengig av spiller
+    def best_child(self):
+        if len(self.children) > 0:
+            best_child = self.children[0]
+            best_score = some_function(best_child)
+            for child in self.children[1:]:
+                if some_function(child) > best_score:
+                    best_child = child
+            return best_child
+        return None
+
