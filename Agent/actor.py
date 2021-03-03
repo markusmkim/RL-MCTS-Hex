@@ -8,15 +8,12 @@ class Actor:
 
 
     def find_best_action(self, state):
-        if state[0] == 0:
+
+        if len(state[2]) == 0:
             return None
 
         # returns random action
         if random() < self.epsilon:
-            return state[3][randint(0, len(state[3]) - 1)]
+            return state[2][randint(0, len(state[2]) - 1)]
 
-        # this game is possible to win in one move
-        if state[0] in state[3]:
-            return state[0]
-
-        return state[3][randint(0, len(state[3]) - 1)]
+        return state[2][randint(0, len(state[2]) - 1)]

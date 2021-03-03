@@ -6,7 +6,7 @@ class Tree:
         self.root = Node(None, root_state)
 
 
-    def mcts(self, number_of_simulations, actor, game_manager, get_next_state):
+    def mcts(self, number_of_simulations, get_next_state):
         if self.root.children is None:
             self.root.expand(get_next_state)
         node = self.root
@@ -17,7 +17,7 @@ class Tree:
                 node.expand(get_next_state)
                 if len(node.children) > 0:
                     node = node.children[0]
-            value = node.rollout(actor, game_manager)
+            value = node.rollout()
             while node.parent is not None:
                 node = node.parent
                 node.value += value
