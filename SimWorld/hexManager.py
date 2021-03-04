@@ -43,7 +43,7 @@ def visualize_board(grid):
                 G.add_edge((i - 1, j - 1), (i, j))
 
             # Add positions
-            positions[(i, j)] = (((i + j) * 0.8), i - j)  # Works like a coordinate system
+            positions[(i, j)] = (((i + j) * 0.8), j - i)  # Works like a coordinate system
 
     # Add dummy nodes for visual scaling
     dummy_nodes = ['dummy_node_1', 'dummy_node_2']
@@ -117,37 +117,23 @@ class HexManager:
 
         possible_chains = []
         for i in range(size):
-            possible_chains.append(i)
+            if board[0][i] == 0:
+                possible_chains.append(i)
 
         for i in range(1, size):
+            next_possible_chains = []
             for cell in possible_chains:
-                if board[cell + size] == 0:
-                    possible_chains.append(cell + size)
-                if cell % 4 != 3:
-                    if board[cell + size + 1] == 0:
-                        possible_chains.append(cell + size + 1)
-                possible_chains.remove(cell)
+                if board[i][cell] == 0:
+                    next_possible_chains.append(cell)
+                if cell < size - 1:
+                    if board[i][cell + 1] == 0:
+                        next_possible_chains.append(cell + 1)
+            possible_chains = next_possible_chains
 
         if len(possible_chains) > 0:
             winner = 0
 
         return winner
-
-
-    # 0 -> 4 , 5
-    # 1 -> 5 , 6
-    # 2 -> 6 , 7
-    # 3 -> 7
-
-    # 4 -> 8 , 9
-    # 5 -> 9 , 10
-    # 6 -> 10 , 11
-    # 7 -> 11
-
-    # 8 -> 12 , 13
-    # 9 -> 13 , 14
-    # 10 -> 14 , 15
-    # 11 -> 15
 
 
     def get_state(self):
@@ -180,3 +166,58 @@ class HexManager:
     def visualize_game(self):
         board = self.generate_board()
         visualize_board(board)
+
+
+
+
+
+
+
+
+
+    # Debug / hjelpe  -funksjoner under
+
+    def visualize_board(self, board):
+        visualize_board(board)
+
+
+    def print_winner(self, board):
+        winner = 1
+        size = int(sqrt(len(self.grid) / 2))
+
+        possible_chains = []
+        for i in range(size):
+            if board[0][i] == 0:
+                possible_chains.append(i)
+
+        for i in range(1, size):
+            next_possible_chains = []
+            for cell in possible_chains:
+                if board[i][cell] == 0:
+                    next_possible_chains.append(cell)
+                if cell < size - 1:
+                    if board[i][cell + 1] == 0:
+                        next_possible_chains.append(cell + 1)
+            possible_chains = next_possible_chains
+
+        if len(possible_chains) > 0:
+            winner = 0
+
+        print(winner)
+
+        # Notes for get_winner()
+        # below are the possible next indexes for each index (for a black chain)
+        # 0 -> 4 , 5
+        # 1 -> 5 , 6
+        # 2 -> 6 , 7
+        # 3 -> 7
+
+        # 4 -> 8 , 9
+        # 5 -> 9 , 10
+        # 6 -> 10 , 11
+        # 7 -> 11
+
+        # 8 -> 12 , 13
+        # 9 -> 13 , 14
+        # 10 -> 14 , 15
+        # 11 -> 15
