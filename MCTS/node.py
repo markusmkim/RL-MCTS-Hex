@@ -1,6 +1,6 @@
 from math import sqrt, log
 from SimWorld.hexManager import HexManager
-from Agent.actor import Actor
+from Agent.old_actor import Actor
 import copy
 
 
