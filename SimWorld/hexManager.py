@@ -14,8 +14,14 @@ def visualize_board(grid):
     # player 1
     red_nodes = []
 
+    # empty nodes on north west or south east side (excluding corner nodes)
+    black_sides_empty_nodes = []
+
+    # empty nodes on north east or south west side (excluding corner nodes)
+    red_sides_empty_nodes = []
+
     # empty cell
-    blue_nodes = []
+    empty_nodes = []
 
     positions = {}
 
@@ -32,15 +38,21 @@ def visualize_board(grid):
             elif grid[i][j] == 1:
                 red_nodes.append((i, j))
             else:
-                blue_nodes.append((i, j))
+                empty_nodes.append((i, j))
 
             # Add edges
             if i > 0:
-                G.add_edge((i - 1, j), (i, j))
+                if j == 0 or j == len(grid) - 1:
+                    G.add_edge((i - 1, j), (i, j), color='red', weight=2)
+                else:
+                    G.add_edge((i - 1, j), (i, j), color='black', weight=1)
             if j > 0:
-                G.add_edge((i, j - 1), (i, j))
+                if i == 0 or i == len(grid) - 1:
+                    G.add_edge((i, j - 1), (i, j), color='black', weight=2)
+                else:
+                    G.add_edge((i, j - 1), (i, j), color='black', weight=1)
             if i > 0 and j > 0:
-                G.add_edge((i - 1, j - 1), (i, j))
+                G.add_edge((i - 1, j - 1), (i, j), color='black', weight=1)
 
             # Add positions
             positions[(i, j)] = (((i + j) * 0.8), j - i)  # Works like a coordinate system
@@ -52,11 +64,15 @@ def visualize_board(grid):
     positions['dummy_node_2'] = ((len(grid) * 2) - 1, 0)
     nx.draw_networkx_nodes(G, positions, nodelist=dummy_nodes, node_color='w')  # Dummy nodes are white/invisible
 
+    # Get edge colors and weights
+    edge_colors = nx.get_edge_attributes(G, 'color').values()
+    edge_weights = nx.get_edge_attributes(G, 'weight').values()
+
     # Draw network
-    nx.draw_networkx_nodes(G, positions, nodelist=black_nodes, node_color='black')
-    nx.draw_networkx_nodes(G, positions, nodelist=red_nodes, node_color='red')
-    nx.draw_networkx_nodes(G, positions, nodelist=blue_nodes, node_color='blue')
-    nx.draw_networkx_edges(G, positions)
+    nx.draw_networkx_nodes(G, positions, nodelist=black_nodes, node_color='#2e3330', edgecolors="black")
+    nx.draw_networkx_nodes(G, positions, nodelist=red_nodes, node_color='red', edgecolors="black")
+    nx.draw_networkx_nodes(G, positions, nodelist=empty_nodes, node_color='w', edgecolors="black")
+    nx.draw_networkx_edges(G, positions, edge_color=edge_colors, width=list(edge_weights))
     plt.show()
 
 
@@ -68,6 +84,7 @@ def get_next_state(state, action):
 
 class HexManager:
     def __init__(self, *args):
+        self.history = []
 
         # args = [player, size]
         if len(args) > 1:
@@ -91,6 +108,9 @@ class HexManager:
             self.grid[2 * action + 1] = 1
         self.possible_actions = np.delete(self.possible_actions, np.where(self.possible_actions == action))
         self.player = int(self.player == 0)
+
+        # save grid for displaying whole game later
+        self.history.append(self.generate_board())
 
 
     def is_game_over(self):
@@ -164,6 +184,11 @@ class HexManager:
 
 
     def visualize_game(self):
+        for board in self.history:
+            visualize_board(board)
+
+
+    def visualize_game_state(self):
         board = self.generate_board()
         visualize_board(board)
 
