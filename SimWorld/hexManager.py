@@ -43,12 +43,12 @@ def visualize_board(grid):
             # Add edges
             if i > 0:
                 if j == 0 or j == len(grid) - 1:
-                    G.add_edge((i - 1, j), (i, j), color='red', weight=2)
+                    G.add_edge((i - 1, j), (i, j), color='#c21a0e', weight=3)
                 else:
                     G.add_edge((i - 1, j), (i, j), color='black', weight=1)
             if j > 0:
                 if i == 0 or i == len(grid) - 1:
-                    G.add_edge((i, j - 1), (i, j), color='black', weight=2)
+                    G.add_edge((i, j - 1), (i, j), color='black', weight=3)
                 else:
                     G.add_edge((i, j - 1), (i, j), color='black', weight=1)
             if i > 0 and j > 0:
@@ -70,7 +70,7 @@ def visualize_board(grid):
 
     # Draw network
     nx.draw_networkx_nodes(G, positions, nodelist=black_nodes, node_color='#2e3330', edgecolors="black")
-    nx.draw_networkx_nodes(G, positions, nodelist=red_nodes, node_color='red', edgecolors="black")
+    nx.draw_networkx_nodes(G, positions, nodelist=red_nodes, node_color='#e03428', edgecolors="black")
     nx.draw_networkx_nodes(G, positions, nodelist=empty_nodes, node_color='w', edgecolors="black")
     nx.draw_networkx_edges(G, positions, edge_color=edge_colors, width=list(edge_weights))
     plt.show()
