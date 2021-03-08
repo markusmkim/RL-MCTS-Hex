@@ -1,11 +1,9 @@
-from random import randint, random
 import tensorflow as tf
 from tensorflow import keras
 import numpy as np
 
 
 class Actor:
-
     def __init__(self, input_dim, hidden_layers, learning_rate, epsilon, epsilon_decay_rate):
         self.input_dim = input_dim
         self.hidden_layers = hidden_layers
@@ -18,7 +16,8 @@ class Actor:
     def build_model(self):
         model = keras.Sequential()
         if len(self.hidden_layers) == 0:
-            output_layer = 16  # number must correspond to number of cells on board (number of "categories")
+            """ if no hidden layer, the output layer is the only layer """
+            output_layer = self.input_dim - 1  # must correspond to number of cells on board (number of "categories")
             # add output layer with softmax
             model.add(keras.layers.Dense(output_layer, activation='softmax', input_shape=(self.input_dim,)))
 
@@ -32,18 +31,30 @@ class Actor:
                 model.add(keras.layers.Dense(layer, activation='relu'))
 
             # add output layer, with softmax activation
-            output_layer = 16  # number must correspond to number of cells on board (number of "categories")
+            output_layer = self.input_dim - 1  # must correspond to number of cells on board (number of "categories")
             model.add(keras.layers.Dense(output_layer, activation='softmax'))
 
         loss = keras.losses.CategoricalCrossentropy()                           # use crossentropy loss function
         optimizer = keras.optimizers.Adam(learning_rate=self.learning_rate)     # use Adam optimizer
         model.compile(optimizer=optimizer, loss=loss)
-        print(model.summary())
+        # print(model.summary())
         return model
 
 
-    def train_model(self, x_train, y_train):
-        self.model.fit(x_train, y_train, verbose=0)  # verbose = 0 to run silent (no prints to console while training)
+    def train_model(self, x_train, y_train, epochs=1):
+        checkpoint_path = "saved_networks/cp-{epoch:04d}.ckpt"
+
+        # Create a callback that saves the model's weights
+        cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath=checkpoint_path,
+                                                         save_weights_only=True,
+                                                         verbose=1,
+                                                         save_freq=50)
+
+        self.model.fit(x_train, y_train, callbacks=[cp_callback], epochs=epochs, verbose=0)  # verbose = 0 to run silent
+
+
+    def load_weights(self, path):
+        self.model.load_weights(path).expect_partial()
 
 
     def find_best_action(self, state):
@@ -54,6 +65,37 @@ class Actor:
         self.epsilon = self.epsilon * self.epsilon_decay_rate
 
 
-a = Actor(17, [50, 10], 0.01, 0.5, 0.999)
-input_data_test = np.array([[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]])
-print(a.find_best_action(input_data_test))
+""" Testing """
+
+
+input_data_test = np.array([
+    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+    [1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 1, 1, 1, 0, 0, 0, 0],
+    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+    [1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 1, 1, 1, 0, 0, 0, 0]
+])
+
+targets_data_test = np.array([
+    [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+    [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+])
+
+a = Actor(17, [50, 10], 0.001, 0.5, 0.999)
+a.train_model(input_data_test, targets_data_test, epochs=200)
+outputs_a = a.find_best_action(input_data_test)
+print('\nEvaluate-----------------------------------------------------------------------------------------------------')
+print('\nPredictions trained model', np.argmax(outputs_a, axis=1) + 1)
+a.model.evaluate(input_data_test, targets_data_test, verbose=2)
+
+""" Load saved models """
+model = 1
+for i in range(50, 201, 50):
+    print(f'\n Saved model {model}')
+    b = Actor(17, [50, 10], 0.001, 0.5, 0.999)
+    b.load_weights(f"saved_networks/cp-{i:04d}.ckpt")
+    outputs_b = b.find_best_action(input_data_test)
+    print('Predictions', np.argmax(outputs_b, axis=1) + 1)
+    b.model.evaluate(input_data_test, targets_data_test, verbose=2)
+    model += 1
