@@ -2,8 +2,9 @@ from MCTS.node import Node
 
 
 class Tree:
-    def __init__(self, root_state):
+    def __init__(self, root_state, actor):
         self.root = Node(None, root_state)
+        self.actor = actor
 
 
     def mcts(self, number_of_simulations, get_next_state):
@@ -17,7 +18,7 @@ class Tree:
                 node.expand(get_next_state)
                 if len(node.children) > 0:
                     node = node.children[0]
-            value = node.rollout()
+            value = node.rollout(self.actor)
             while node.parent is not None:
                 node = node.parent
                 node.value += value

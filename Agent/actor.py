@@ -1,6 +1,7 @@
 import tensorflow as tf
 from tensorflow import keras
 import numpy as np
+import random
 
 
 class Actor:
@@ -31,7 +32,7 @@ class Actor:
                 model.add(keras.layers.Dense(layer, activation='relu'))
 
             # add output layer, with softmax activation
-            output_layer = self.input_dim - 1  # must correspond to number of cells on board (number of "categories")
+            output_layer = (self.input_dim // 2) - 1  # must correspond to number of cells on board (number of "categories")
             model.add(keras.layers.Dense(output_layer, activation='softmax'))
 
         loss = keras.losses.CategoricalCrossentropy()                           # use crossentropy loss function
@@ -58,14 +59,33 @@ class Actor:
 
 
     def find_best_action(self, state):
-        return self.model(state)
+        if len(state[2]) == 0:
+            return None
+
+        possible_actions = state[2]
+        if random.random() < self.epsilon:
+            return possible_actions[random.randint(0, len(possible_actions) - 1)]
+
+        training_input = [int(state[0] == 0), int(state[0] == 1)]
+        training_input = np.concatenate((training_input, state[1]))
+
+        output = np.array(self.model(training_input.reshape(1, len(training_input))))
+        # print(output)
+        best_action = np.argmax(output, axis=1)[0]
+        while best_action not in possible_actions:
+            output[0][best_action] = 0
+            best_action = np.argmax(output, axis=1)[0]
+
+        return best_action
 
 
     def decrease_epsilon(self):
         self.epsilon = self.epsilon * self.epsilon_decay_rate
 
 
-""" Testing """
+
+
+""" Testing 
 
 
 input_data_test = np.array([
@@ -89,7 +109,7 @@ print('\nEvaluate---------------------------------------------------------------
 print('\nPredictions trained model', np.argmax(outputs_a, axis=1) + 1)
 a.model.evaluate(input_data_test, targets_data_test, verbose=2)
 
-""" Load saved models """
+# load saved models
 model = 1
 for i in range(50, 201, 50):
     print(f'\n Saved model {model}')
@@ -99,3 +119,4 @@ for i in range(50, 201, 50):
     print('Predictions', np.argmax(outputs_b, axis=1) + 1)
     b.model.evaluate(input_data_test, targets_data_test, verbose=2)
     model += 1
+"""

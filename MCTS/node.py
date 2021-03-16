@@ -1,7 +1,7 @@
 from math import sqrt, log
 from SimWorld.hexManager import HexManager
-from Agent.old_actor import Actor
 import copy
+import numpy as np
 
 
 class Node:
@@ -27,10 +27,9 @@ class Node:
         return self.children
 
 
-    def rollout(self):
+    def rollout(self, simulation_actor):
         # print("Rollout starts. Number of possible moves:", len(self.state[2]))
-        simulation_manager = copy.deepcopy(HexManager(self.state))
-        simulation_actor = Actor(0.1)
+        simulation_manager = HexManager(copy.deepcopy(self.state))
         while not simulation_manager.is_game_over():
             simulation_action = simulation_actor.find_best_action(simulation_manager.get_state())
             simulation_manager.execute_action(simulation_action)

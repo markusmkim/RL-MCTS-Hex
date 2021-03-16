@@ -5,77 +5,6 @@ import matplotlib.pyplot as plt
 import copy
 
 
-def visualize_board(grid):
-    G = nx.Graph()
-
-    # player 0
-    black_nodes = []
-
-    # player 1
-    red_nodes = []
-
-    # empty nodes on north west or south east side (excluding corner nodes)
-    black_sides_empty_nodes = []
-
-    # empty nodes on north east or south west side (excluding corner nodes)
-    red_sides_empty_nodes = []
-
-    # empty cell
-    empty_nodes = []
-
-    positions = {}
-
-    # Add nodes
-    for i in range(len(grid)):
-        for j in range(len(grid)):
-
-            # Add node
-            G.add_node((i, j))
-
-            # Split filled/unfilled nodes into different lists to apply different colors
-            if grid[i][j] == 0:
-                black_nodes.append((i, j))
-            elif grid[i][j] == 1:
-                red_nodes.append((i, j))
-            else:
-                empty_nodes.append((i, j))
-
-            # Add edges
-            if i > 0:
-                if j == 0 or j == len(grid) - 1:
-                    G.add_edge((i - 1, j), (i, j), color='#c21a0e', weight=3)
-                else:
-                    G.add_edge((i - 1, j), (i, j), color='black', weight=1)
-            if j > 0:
-                if i == 0 or i == len(grid) - 1:
-                    G.add_edge((i, j - 1), (i, j), color='black', weight=3)
-                else:
-                    G.add_edge((i, j - 1), (i, j), color='black', weight=1)
-            if i > 0 and j > 0:
-                G.add_edge((i - 1, j - 1), (i, j), color='black', weight=1)
-
-            # Add positions
-            positions[(i, j)] = (((i + j) * 0.8), j - i)  # Works like a coordinate system
-
-    # Add dummy nodes for visual scaling
-    dummy_nodes = ['dummy_node_1', 'dummy_node_2']
-    G.add_nodes_from(dummy_nodes)
-    positions['dummy_node_1'] = (-1, 0)
-    positions['dummy_node_2'] = ((len(grid) * 2) - 1, 0)
-    nx.draw_networkx_nodes(G, positions, nodelist=dummy_nodes, node_color='w')  # Dummy nodes are white/invisible
-
-    # Get edge colors and weights
-    edge_colors = nx.get_edge_attributes(G, 'color').values()
-    edge_weights = nx.get_edge_attributes(G, 'weight').values()
-
-    # Draw network
-    nx.draw_networkx_nodes(G, positions, nodelist=black_nodes, node_color='#2e3330', edgecolors="black")
-    nx.draw_networkx_nodes(G, positions, nodelist=red_nodes, node_color='#e03428', edgecolors="black")
-    nx.draw_networkx_nodes(G, positions, nodelist=empty_nodes, node_color='w', edgecolors="black")
-    nx.draw_networkx_edges(G, positions, edge_color=edge_colors, width=list(edge_weights))
-    plt.show()
-
-
 def get_next_state(state, action):
     copyManager = HexManager(copy.deepcopy(state))
     copyManager.execute_action(action)
@@ -92,7 +21,7 @@ class HexManager:
             self.grid = np.zeros(2 * (args[1]**2))
             self.possible_actions = np.arange(args[1]**2)
 
-        # args = 'state' = [grid + player, possible_actions]
+        # args = 'state' = [player, grid, possible_actions]
         else:
             self.player = args[0][0]
             self.grid = args[0][1]
@@ -192,16 +121,7 @@ class HexManager:
         board = self.generate_board()
         visualize_board(board)
 
-
-
-
-
-
-
-
-
-    # Debug / hjelpe  -funksjoner under
-
+    # ---- Debug / hjelpe  -funksjoner under --- #
     def visualize_board(self, board):
         visualize_board(board)
 
@@ -246,3 +166,68 @@ class HexManager:
         # 9 -> 13 , 14
         # 10 -> 14 , 15
         # 11 -> 15
+
+
+def visualize_board(grid):
+    G = nx.Graph()
+
+    # player 0
+    black_nodes = []
+
+    # player 1
+    red_nodes = []
+
+    # empty cell
+    empty_nodes = []
+
+    positions = {}
+
+    # Add nodes
+    for i in range(len(grid)):
+        for j in range(len(grid)):
+
+            # Add node
+            G.add_node((i, j))
+
+            # Split filled/unfilled nodes into different lists to apply different colors
+            if grid[i][j] == 0:
+                black_nodes.append((i, j))
+            elif grid[i][j] == 1:
+                red_nodes.append((i, j))
+            else:
+                empty_nodes.append((i, j))
+
+            # Add edges
+            if i > 0:
+                if j == 0 or j == len(grid) - 1:
+                    G.add_edge((i - 1, j), (i, j), color='#c21a0e', weight=3)
+                else:
+                    G.add_edge((i - 1, j), (i, j), color='black', weight=1)
+            if j > 0:
+                if i == 0 or i == len(grid) - 1:
+                    G.add_edge((i, j - 1), (i, j), color='black', weight=3)
+                else:
+                    G.add_edge((i, j - 1), (i, j), color='black', weight=1)
+            if i > 0 and j > 0:
+                G.add_edge((i - 1, j - 1), (i, j), color='black', weight=1)
+
+            # Add positions
+            positions[(i, j)] = (((i + j) * 0.8), j - i)  # Works like a coordinate system
+
+    # Add dummy nodes for visual scaling
+    dummy_nodes = ['dummy_node_1', 'dummy_node_2']
+    G.add_nodes_from(dummy_nodes)
+    positions['dummy_node_1'] = (-1, 0)
+    positions['dummy_node_2'] = ((len(grid) * 2) - 1, 0)
+    nx.draw_networkx_nodes(G, positions, nodelist=dummy_nodes, node_color='w')  # Dummy nodes are white/invisible
+
+    # Get edge colors and weights
+    edge_colors = nx.get_edge_attributes(G, 'color').values()
+    edge_weights = nx.get_edge_attributes(G, 'weight').values()
+
+    # Draw network
+    nx.draw_networkx_nodes(G, positions, nodelist=black_nodes, node_color='#2e3330', edgecolors="black")
+    nx.draw_networkx_nodes(G, positions, nodelist=red_nodes, node_color='#e03428', edgecolors="black")
+    nx.draw_networkx_nodes(G, positions, nodelist=empty_nodes, node_color='w', edgecolors="black")
+    nx.draw_networkx_edges(G, positions, edge_color=edge_colors, width=list(edge_weights))
+    plt.show()
