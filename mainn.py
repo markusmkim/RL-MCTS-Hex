@@ -2,9 +2,7 @@ from SimWorld.hexManager import HexManager
 from SimWorld.hexManager import get_next_state
 from MCTS.tree import Tree
 from Agent.actor import Actor
-# from time import sleep  # |  sleep(0.5) --> 0.5 sec
-from math import sqrt
-import numpy as np
+from config import config
 
 
 def generate_training_target(visits_dict, total_visits, size):
@@ -17,24 +15,20 @@ def generate_training_target(visits_dict, total_visits, size):
     return training_target
 
 
-def generate_training_input(game_state):
-    training_input = [int(game_state[0] == 0), int(game_state[0] == 1)]
-    return np.concatenate((training_input, game_state[1]))
+actor = Actor(2 * (config["size"]**2 + 1), config["hidden_layers"], config["learning_rate"], config["epsilon"], config["epsilon_decay_rate"])
 
-
-actor = Actor(34, [50, 10], 0.001, 0.5, 0.999)
-
-print("")
+print("Test")
 print("Welcome to a game of Hex!")
-print("")
+print("Test")
 
-episodes = 1
-wins_for_player_0 = 0
+game_history = []
 
-for i in range(episodes):
+for i in range(config["episodes"]):
     print("Episode:", i)
 
-    game_manager = HexManager(0, 4)
+    game_manager = HexManager([1, 0], 4)
+    game_history.append(game_manager.get_state()[1])
+
     tree = Tree(game_manager.get_state(), actor)
     tree.root.number_of_visits = 1
 
@@ -42,30 +36,16 @@ for i in range(episodes):
     buffer_targets = []
 
     while not game_manager.is_game_over():
-        # print("States:")
-        # print("Root state:", tree.root.state)
-        # print("Game state:", game_manager.get_state())
-        visits_dict, total_visits, action = tree.mcts(1000, get_next_state)
-        print("noob")
+        visits_dict, total_visits, action = tree.mcts(config["mcts_simulations"], get_next_state)
 
-        buffer_inputs.append(generate_training_input(game_manager.get_state()[:-1]))
-        buffer_targets.append(generate_training_target(visits_dict, total_visits, len(game_manager.grid) // 2))
+        buffer_inputs.append(game_manager.get_state()[0])
+        buffer_targets.append(generate_training_target(visits_dict, total_visits, config["size"]**2))
 
-        # print("Action:", action)
         game_manager.execute_action(action)
 
+        game_history.append(game_manager.get_state()[1])
+
     print("Winner:", game_manager.get_winner())
-
-    if game_manager.get_winner() == 0:
-        wins_for_player_0 += 1
-
-    # if last episode
-    if i == episodes - 1:
-        game_manager.visualize_game()
-
-
-print("Win rate for player 0:", wins_for_player_0 / episodes)
-
 
 
 
@@ -93,3 +73,4 @@ game_manager.print_winner(red_1)
 game_manager.print_winner(red_2)
 game_manager.print_winner(red_3)
 """
+

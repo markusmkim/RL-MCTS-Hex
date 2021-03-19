@@ -1,8 +1,80 @@
 import numpy as np
-from math import sqrt
 import networkx as nx
 import matplotlib.pyplot as plt
 import copy
+
+
+class HexManager:
+    def __init__(self, *args):
+
+        # args = [player, size]
+        if len(args) > 1:
+            self.player = args[0]
+            self.grid = np.zeros(2 * (args[1]**2))
+            self.board = np.zeros((args[1], args[1]))  # empty = 0, first/black player = 1, second/red player = 2
+            self.possible_actions = np.arange(args[1]**2)
+
+        # args = 'state' = [input, board, possible_actions]
+        else:
+            self.player = args[0][0][:2]
+            self.grid = args[0][0][2:]
+            self.board = args[0][1]
+            self.possible_actions = args[0][2]
+
+
+    def execute_action(self, action):
+        row = action // len(self.board)
+        col = action % len(self.board)
+        if self.player[0] == 1:
+            self.grid[2 * action] = 1
+            self.board[row][col] = 1
+        else:
+            self.grid[2 * action + 1] = 1
+            self.board[row][col] = 2
+        self.possible_actions = np.delete(self.possible_actions, np.where(self.possible_actions == action))
+        self.player = [int(self.player[0] == 0), int(self.player[1] == 0)]
+
+   # state = [input, board, possible_moves] --> input = flat list of player + grid
+    def get_state(self):
+        return copy.deepcopy([np.concatenate((self.player, self.grid)), self.board, self.possible_actions])
+
+
+    def is_game_over(self):
+        return len(self.possible_actions) == 0
+
+    # player 1 = (1, 0) = black --> has the north-west and south-east sides
+    # player 2 = (0, 1) = red   --> has the north-east and south-west sides
+    def get_winner(self):
+
+        if not self.is_game_over():
+            return None
+
+        winner = 2
+
+        # try to find a winning chain for black (player 1)
+        possible_chains = []
+        for i in range(len(self.board)):
+            if self.board[0][i] == 1:
+                possible_chains.append(i)
+
+        for i in range(1, len(self.board)):
+            next_possible_chains = []
+            for cell in possible_chains:
+                if self.board[i][cell] == 1:
+                    next_possible_chains.append(cell)
+                if cell < len(self.board) - 1:
+                    if self.board[i][cell + 1] == 1:
+                        next_possible_chains.append(cell + 1)
+            possible_chains = next_possible_chains
+
+        if len(possible_chains) > 0:
+           winner = 1
+
+        return winner
+
+
+    def visualize_game_state(self):
+       visualize_board(self.board)
 
 
 def get_next_state(state, action):
@@ -11,164 +83,12 @@ def get_next_state(state, action):
     return copyManager.get_state()
 
 
-class HexManager:
-    def __init__(self, *args):
-        self.history = []
-
-        # args = [player, size]
-        if len(args) > 1:
-            self.player = args[0]
-            self.grid = np.zeros(2 * (args[1]**2))
-            self.possible_actions = np.arange(args[1]**2)
-
-        # args = 'state' = [player, grid, possible_actions]
-        else:
-            self.player = args[0][0]
-            self.grid = args[0][1]
-            self.possible_actions = args[0][2]
-
-
-    def execute_action(self, action):
-        if self.player == 0:
-            self.grid[2 * action] = 1
-            # self.grid[2 * action + 1] = 0
-        else:
-            # self.grid[2 * action] = 0
-            self.grid[2 * action + 1] = 1
-        self.possible_actions = np.delete(self.possible_actions, np.where(self.possible_actions == action))
-        self.player = int(self.player == 0)
-
-        # save grid for displaying whole game later
-        self.history.append(self.generate_board())
-
-
-    def is_game_over(self):
-        return len(self.possible_actions) == 0
-
-
-    def get_winner(self):
-
-        if not self.is_game_over():
-            return None
-
-        # player 0 is black and has the north-west and south-east sides
-        # player 1 is red and has the north-east and south-west sides
-        board = self.generate_board()
-
-        # from the assignment we know that ties are not possible,
-        # which means that if player 0 has not won, then player 1 has won
-        winner = 1
-
-        # try to find a winning chain for black (player 0)
-        # there are size possible starting cells for a black chain, if one exists
-        # these starting cells are the size first in the board (north west)
-        size = int(sqrt(len(self.grid) / 2))
-
-        possible_chains = []
-        for i in range(size):
-            if board[0][i] == 0:
-                possible_chains.append(i)
-
-        for i in range(1, size):
-            next_possible_chains = []
-            for cell in possible_chains:
-                if board[i][cell] == 0:
-                    next_possible_chains.append(cell)
-                if cell < size - 1:
-                    if board[i][cell + 1] == 0:
-                        next_possible_chains.append(cell + 1)
-            possible_chains = next_possible_chains
-
-        if len(possible_chains) > 0:
-            winner = 0
-
-        return winner
-
-
-    def get_state(self):
-        return copy.deepcopy([self.player, self.grid, self.possible_actions])
-
-    # returns 2d array representing the board
-    def generate_board(self):
-        size = int(sqrt(len(self.grid) / 2))
-        flat_board = np.zeros(size**2)
-        for i in range(len(self.grid)):
-            if i % 2 == 0:
-                if self.grid[i] == 0:
-                    flat_board[i // 2] = -1
-            else:
-                if self.grid[i] == 1:
-                    flat_board[i // 2] = 1
-
-        board = []
-        index = 0
-        for i in range(size):
-            row = []
-            for j in range(size):
-                row.append(flat_board[index])
-                index += 1
-            board.append(row)
-
-        return board
-
-
-    def visualize_game(self):
-        for board in self.history:
-            visualize_board(board)
-
-
-    def visualize_game_state(self):
-        board = self.generate_board()
-        visualize_board(board)
-
-    # ---- Debug / hjelpe  -funksjoner under --- #
-    def visualize_board(self, board):
+def visualize_game(history):
+    for board in history:
         visualize_board(board)
 
 
-    def print_winner(self, board):
-        winner = 1
-        size = int(sqrt(len(self.grid) / 2))
-
-        possible_chains = []
-        for i in range(size):
-            if board[0][i] == 0:
-                possible_chains.append(i)
-
-        for i in range(1, size):
-            next_possible_chains = []
-            for cell in possible_chains:
-                if board[i][cell] == 0:
-                    next_possible_chains.append(cell)
-                if cell < size - 1:
-                    if board[i][cell + 1] == 0:
-                        next_possible_chains.append(cell + 1)
-            possible_chains = next_possible_chains
-
-        if len(possible_chains) > 0:
-            winner = 0
-
-        print(winner)
-
-        # Notes for get_winner()
-        # below are the possible next indexes for each index (for a black chain)
-        # 0 -> 4 , 5
-        # 1 -> 5 , 6
-        # 2 -> 6 , 7
-        # 3 -> 7
-
-        # 4 -> 8 , 9
-        # 5 -> 9 , 10
-        # 6 -> 10 , 11
-        # 7 -> 11
-
-        # 8 -> 12 , 13
-        # 9 -> 13 , 14
-        # 10 -> 14 , 15
-        # 11 -> 15
-
-
-def visualize_board(grid):
+def visualize_board(board):
     G = nx.Graph()
 
     # player 0
@@ -183,28 +103,28 @@ def visualize_board(grid):
     positions = {}
 
     # Add nodes
-    for i in range(len(grid)):
-        for j in range(len(grid)):
+    for i in range(len(board)):
+        for j in range(len(board)):
 
             # Add node
             G.add_node((i, j))
 
             # Split filled/unfilled nodes into different lists to apply different colors
-            if grid[i][j] == 0:
+            if board[i][j] == 1:
                 black_nodes.append((i, j))
-            elif grid[i][j] == 1:
+            elif board[i][j] == 2:
                 red_nodes.append((i, j))
             else:
                 empty_nodes.append((i, j))
 
             # Add edges
             if i > 0:
-                if j == 0 or j == len(grid) - 1:
+                if j == 0 or j == len(board) - 1:
                     G.add_edge((i - 1, j), (i, j), color='#c21a0e', weight=3)
                 else:
                     G.add_edge((i - 1, j), (i, j), color='black', weight=1)
             if j > 0:
-                if i == 0 or i == len(grid) - 1:
+                if i == 0 or i == len(board) - 1:
                     G.add_edge((i, j - 1), (i, j), color='black', weight=3)
                 else:
                     G.add_edge((i, j - 1), (i, j), color='black', weight=1)
@@ -218,7 +138,7 @@ def visualize_board(grid):
     dummy_nodes = ['dummy_node_1', 'dummy_node_2']
     G.add_nodes_from(dummy_nodes)
     positions['dummy_node_1'] = (-1, 0)
-    positions['dummy_node_2'] = ((len(grid) * 2) - 1, 0)
+    positions['dummy_node_2'] = ((len(board) * 2) - 1, 0)
     nx.draw_networkx_nodes(G, positions, nodelist=dummy_nodes, node_color='w')  # Dummy nodes are white/invisible
 
     # Get edge colors and weights
@@ -231,3 +151,29 @@ def visualize_board(grid):
     nx.draw_networkx_nodes(G, positions, nodelist=empty_nodes, node_color='w', edgecolors="black")
     nx.draw_networkx_edges(G, positions, edge_color=edge_colors, width=list(edge_weights))
     plt.show()
+
+
+"""
+# returns 2d array from 1d grid representing the board
+def generate_board(self):
+   size = int(sqrt(len(self.grid) / 2))
+   flat_board = np.zeros(size**2)
+   for i in range(len(self.grid)):
+       if i % 2 == 0:
+           if self.grid[i] == 0:
+               flat_board[i // 2] = -1
+       else:
+           if self.grid[i] == 1:
+               flat_board[i // 2] = 1
+
+   board = []
+   index = 0
+   for i in range(size):
+       row = []
+       for j in range(size):
+           row.append(flat_board[index])
+           index += 1
+       board.append(row)
+
+   return board
+"""

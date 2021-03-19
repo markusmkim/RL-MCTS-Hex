@@ -7,10 +7,7 @@ import numpy as np
 class Node:
     def __init__(self, parent, state):
         self.parent = parent
-
-        # state[0] = player, state[1] = grid, state[2] = possible_actions
-        self.state = state
-
+        self.state = state  # state = [input, board, possible_moves]
         self.value = 0
         self.number_of_visits = 0
         self.children = None
@@ -43,7 +40,7 @@ class Node:
 
     def best_child(self, c):
         if len(self.children) > 0:
-            if self.state[0] == 0:
+            if self.state[0][0] == 1:  # player 1 (=[1, 0])
                 return self.argmax(c)
             return self.argmin(c)
         return None

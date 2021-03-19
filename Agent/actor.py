@@ -18,7 +18,7 @@ class Actor:
         model = keras.Sequential()
         if len(self.hidden_layers) == 0:
             """ if no hidden layer, the output layer is the only layer """
-            output_layer = self.input_dim - 1  # must correspond to number of cells on board (number of "categories")
+            output_layer = (self.input_dim // 2) - 1  # must correspond to number of cells on board (number of "categories")
             # add output layer with softmax
             model.add(keras.layers.Dense(output_layer, activation='softmax', input_shape=(self.input_dim,)))
 
@@ -59,17 +59,14 @@ class Actor:
 
 
     def find_best_action(self, state):
-        if len(state[2]) == 0:
+        possible_actions = state[2]
+        if len(possible_actions) == 0:
             return None
 
-        possible_actions = state[2]
         if random.random() < self.epsilon:
             return possible_actions[random.randint(0, len(possible_actions) - 1)]
 
-        training_input = [int(state[0] == 0), int(state[0] == 1)]
-        training_input = np.concatenate((training_input, state[1]))
-
-        output = np.array(self.model(training_input.reshape(1, len(training_input))))
+        output = np.array(self.model(state[0].reshape(1, len(state[0]))))
         # print(output)
         best_action = np.argmax(output, axis=1)[0]
         while best_action not in possible_actions:
