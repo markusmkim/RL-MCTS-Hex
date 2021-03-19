@@ -68,7 +68,7 @@ class HexManager:
             possible_chains = next_possible_chains
 
         if len(possible_chains) > 0:
-           winner = 1
+            winner = 1
 
         return winner
 

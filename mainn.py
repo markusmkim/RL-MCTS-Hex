@@ -20,15 +20,12 @@ actor = Actor(2 * (config["size"]**2 + 1), config["hidden_layers"], config["lear
 
 saved_actor_count = 0
 
-print("Test")
+
 print("Welcome to a game of Hex!")
-print("Test")
 
 
 for i in range(config["episodes"] + 1):
     game_history = []
-
-    print("Episode:", i)
 
     game_manager = HexManager([1, 0], 4)
     game_history.append(game_manager.get_state()[1])
@@ -56,7 +53,8 @@ for i in range(config["episodes"] + 1):
     else:
         actor.train_model(buffer_inputs, buffer_targets)
 
-    print("Winner:", game_manager.get_winner())
+    print("Episode:", i, " |  Winner:", game_manager.get_winner(), " |  Epsilon: ", actor.epsilon)
+    actor.decrease_epsilon()
 
 
 tournament = Tournament(config)
