@@ -3,6 +3,7 @@ from SimWorld.hexManager import get_next_state
 from MCTS.tree import Tree
 from Agent.actor import Actor
 from config import config
+from tournament import Tournament
 
 
 def generate_training_target(visits_dict, total_visits, size):
@@ -17,13 +18,16 @@ def generate_training_target(visits_dict, total_visits, size):
 
 actor = Actor(2 * (config["size"]**2 + 1), config["hidden_layers"], config["learning_rate"], config["epsilon"], config["epsilon_decay_rate"])
 
+saved_actor_count = 0
+
 print("Test")
 print("Welcome to a game of Hex!")
 print("Test")
 
-game_history = []
 
-for i in range(config["episodes"]):
+for i in range(config["episodes"] + 1):
+    game_history = []
+
     print("Episode:", i)
 
     game_manager = HexManager([1, 0], 4)
@@ -45,7 +49,20 @@ for i in range(config["episodes"]):
 
         game_history.append(game_manager.get_state()[1])
 
+    if i % config["save_frequency"] == 0:
+        print('hei')
+        actor.train_model(buffer_inputs, buffer_targets, count=saved_actor_count)
+        saved_actor_count += 1
+    else:
+        actor.train_model(buffer_inputs, buffer_targets)
+
     print("Winner:", game_manager.get_winner())
+
+
+tournament = Tournament(config)
+tournament.run_tournament()
+
+
 
 
 
