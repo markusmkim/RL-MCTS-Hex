@@ -16,8 +16,8 @@ def generate_training_target(visits_dict, total_visits, size):
     return training_target
 
 
-# actor = Actor(2 * (config["size"]**2 + 1), config["hidden_layers"], config["learning_rate"], config["epsilon"], config["epsilon_decay_rate"])
-actor = Actor(2 * (config["size"]**2 + 1), config["hidden_layers"], config["learning_rate"], 1, 1)
+actor = Actor(2 * (config["size"]**2 + 1), config["hidden_layers"], config["learning_rate"], config["epsilon"], config["epsilon_decay_rate"])
+# actor = Actor(2 * (config["size"]**2 + 1), config["hidden_layers"], config["learning_rate"], 1, 1)
 
 saved_actor_count = 0
 
@@ -30,7 +30,7 @@ for i in range(config["episodes"] + 1):
 
     starting_player = [1, 0] if i % 2 == 0 else [0, 1]
 
-    game_manager = HexManager(starting_player, 4)
+    game_manager = HexManager(starting_player, config["size"])
     game_history.append(game_manager.get_state()[1])
 
     tree = Tree(game_manager.get_state(), actor)

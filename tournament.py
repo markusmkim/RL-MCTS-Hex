@@ -2,13 +2,14 @@ from Agent.actor import Actor
 from SimWorld.hexManager import HexManager
 import numpy as np
 
+
 class Tournament:
     def __init__(self, config):
         self.config = config
 
 
     def run_tournament(self):
-        number_of_actors = int(self.config["episodes"] / self.config["save_frequency"])
+        number_of_actors = int(self.config["episodes"] / self.config["save_frequency"]) + 1
         print("Running tournament")
         players = []
         number_of_games = []

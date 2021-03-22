@@ -59,9 +59,9 @@ class Node:
 
     def argmin(self, c):
         best_child = self.children[0]
-        best_score = self.evaluate_edge(c, best_child)
+        best_score = self.evaluate_edge(-c, best_child)
         for child in self.children[1:]:
-            score = self.evaluate_edge(c, child)
+            score = self.evaluate_edge(-c, child)
             if score < best_score:
                 best_child = child
                 best_score = score
