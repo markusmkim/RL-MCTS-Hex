@@ -1,5 +1,5 @@
 from SimWorld.hexManager import HexManager
-from SimWorld.hexManager import get_next_state
+from SimWorld.hexManager import get_next_state, print_winner, visualize_board, visualize_game
 from MCTS.tree import Tree
 from Agent.actor import Actor
 from config import config
@@ -16,7 +16,8 @@ def generate_training_target(visits_dict, total_visits, size):
     return training_target
 
 
-actor = Actor(2 * (config["size"]**2 + 1), config["hidden_layers"], config["learning_rate"], config["epsilon"], config["epsilon_decay_rate"])
+# actor = Actor(2 * (config["size"]**2 + 1), config["hidden_layers"], config["learning_rate"], config["epsilon"], config["epsilon_decay_rate"])
+actor = Actor(2 * (config["size"]**2 + 1), config["hidden_layers"], config["learning_rate"], 1, 1)
 
 saved_actor_count = 0
 
@@ -27,7 +28,9 @@ print("Welcome to a game of Hex!")
 for i in range(config["episodes"] + 1):
     game_history = []
 
-    game_manager = HexManager([1, 0], 4)
+    starting_player = [1, 0] if i % 2 == 0 else [0, 1]
+
+    game_manager = HexManager(starting_player, 4)
     game_history.append(game_manager.get_state()[1])
 
     tree = Tree(game_manager.get_state(), actor)
@@ -54,6 +57,7 @@ for i in range(config["episodes"] + 1):
         actor.train_model(buffer_inputs, buffer_targets)
 
     print("Episode:", i, " |  Winner:", game_manager.get_winner(), " |  Epsilon: ", actor.epsilon)
+    # visualize_game(game_history)
     actor.decrease_epsilon()
 
 
@@ -61,31 +65,28 @@ tournament = Tournament(config)
 tournament.run_tournament()
 
 
-
-
-
 """
-game_manager = HexManager(0, 3)
-tree = Tree(game_manager.get_state())
-tree.root.number_of_visits = 1
+black_1 = [[2, 1, 2], [2, 1, 1], [2, 1, 2]]
+black_2 = [[1, 2, 1], [1, 1, 2], [2, 1, 2]]
+black_3 = [[2, 2, 2], [2, 2, 2], [2, 2, 2]]
 
-black_1 = [[0, 1, 0], [0, 1, 1], [0, 1, 0]]
-black_2 = [[1, 0, 1], [1, 1, 0], [0, 1, 0]]
-black_3 = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
-
-red_1 = [[0, 0, 1], [0, 0, 0], [1, 1, 1]]
-red_2 = [[1, 1, 0], [0, 0, 1], [0, 1, 0]]
+red_1 = [[2, 2, 1], [2, 2, 2], [1, 1, 1]]
+red_2 = [[1, 1, 2], [2, 2, 1], [2, 1, 2]]
 red_3 = [[1, 1, 1], [1, 1, 1], [1, 1, 1]]
 
-bingo = [[1, 1, 1], [0, 0, 1], [1, 1, 1]]
+bingo = [[2, 1, 1, 2], [1, 2, 1, 2], [1, 1, 1, 1], [2, 1, 1, 1]]
 
-game_manager.visualize_board(black_1)
-game_manager.print_winner(black_1)
-game_manager.print_winner(black_2)
-game_manager.print_winner(black_3)
+visualize_board(bingo)
+print_winner(bingo)
+#print_winner(black_2)
+#print_winner(black_3)
 
-game_manager.print_winner(red_1)
-game_manager.print_winner(red_2)
-game_manager.print_winner(red_3)
+#print_winner(red_1)
+#print_winner(red_2)
+#print_winner(red_3)
 """
+
+
+
+
 

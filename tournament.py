@@ -1,6 +1,6 @@
 from Agent.actor import Actor
 from SimWorld.hexManager import HexManager
-
+import numpy as np
 
 class Tournament:
     def __init__(self, config):
@@ -8,11 +8,13 @@ class Tournament:
 
 
     def run_tournament(self):
+        number_of_actors = int(self.config["episodes"] / self.config["save_frequency"])
         print("Running tournament")
         players = []
         number_of_games = []
         number_of_wins = []
-        for i in range(int(self.config["episodes"] / self.config["save_frequency"])):
+        detailed_stats = np.zeros((number_of_actors, number_of_actors))
+        for i in range(number_of_actors):
             player = Actor(2 * (self.config["size"]**2 + 1), self.config["hidden_layers"], 0, 0, 0)
             player.load_weights(f"Agent/saved_networks/cp-{i}.ckpt")
             players.append(player)
@@ -38,11 +40,16 @@ class Tournament:
                         game_manager.execute_action(action)
 
                     winner = game_manager.get_winner()
+                    print("Tournament winner: ", winner)
                     if winner == 1:
                         number_of_wins[i] += 1
+                        detailed_stats[i][j] += 1
                     else:
                         number_of_wins[j] += 1
+                        detailed_stats[j][i] += 1
 
         print("Tournament over")
         print("Stats: ", number_of_wins)
         print("number of games", number_of_games)
+        print("Detailed")
+        print(detailed_stats)

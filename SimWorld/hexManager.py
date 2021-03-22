@@ -72,9 +72,35 @@ class HexManager:
 
         return winner
 
-
     def visualize_game_state(self):
-       visualize_board(self.board)
+        visualize_board(self.board)
+
+
+def print_winner(board):
+
+    winner = 2
+
+    # try to find a winning chain for black (player 1)
+    possible_chains = []
+    for i in range(len(board)):
+        if board[0][i] == 1:
+            possible_chains.append(i)
+
+    for i in range(1, len(board)):
+        next_possible_chains = []
+        for cell in possible_chains:
+            if board[i][cell] == 1:
+                next_possible_chains.append(cell)
+            if cell < len(board) - 1:
+                if board[i][cell + 1] == 1:
+                    next_possible_chains.append(cell + 1)
+        possible_chains = next_possible_chains
+
+    if len(possible_chains) > 0:
+        winner = 1
+
+    print("Winner:", winner)
+
 
 
 def get_next_state(state, action):

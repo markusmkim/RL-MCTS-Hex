@@ -36,7 +36,8 @@ class Actor:
             model.add(keras.layers.Dense(output_layer, activation='softmax'))
 
         loss = keras.losses.CategoricalCrossentropy()                           # use crossentropy loss function
-        optimizer = keras.optimizers.Adam(learning_rate=self.learning_rate)     # use Adam optimizer
+        # optimizer = keras.optimizers.Adam(learning_rate=self.learning_rate)     # use Adam optimizer
+        optimizer = keras.optimizers.SGD(learning_rate=self.learning_rate) # SGD
         model.compile(optimizer=optimizer, loss=loss)
         # print(model.summary())
         return model

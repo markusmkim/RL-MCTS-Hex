@@ -32,7 +32,7 @@ class Node:
             simulation_manager.execute_action(simulation_action)
             # print("Rollout! Game over:", simulation_manager.is_game_over())
 
-        self.value = 1 if simulation_manager.get_winner() == 0 else -1
+        self.value = 1 if simulation_manager.get_winner() == 1 else -1  # 1
         self.number_of_visits += 1
         # print("Rollout done!")
         return self.value
@@ -40,7 +40,7 @@ class Node:
 
     def best_child(self, c):
         if len(self.children) > 0:
-            if self.state[0][0] == 1:  # player 1 (=[1, 0])
+            if self.state[0][0] == 1:  # 1,  player 1 (=[1, 0])
                 return self.argmax(c)
             return self.argmin(c)
         return None
