@@ -5,10 +5,11 @@ import random
 
 
 class Actor:
-    def __init__(self, input_dim, hidden_layers, learning_rate, epsilon, epsilon_decay_rate):
+    def __init__(self, input_dim, hidden_layers, optimizer, learning_rate, epsilon, epsilon_decay_rate):
         self.input_dim = input_dim
         self.hidden_layers = hidden_layers
         self.learning_rate = learning_rate
+        self.optimizer = optimizer
         self.epsilon = epsilon
         self.epsilon_decay_rate = epsilon_decay_rate
         self.model = self.build_model()
@@ -35,11 +36,10 @@ class Actor:
             output_layer = (self.input_dim // 2) - 1  # must correspond to number of cells on board (number of "categories")
             model.add(keras.layers.Dense(output_layer, activation='softmax'))
 
-        loss = keras.losses.CategoricalCrossentropy()                           # use crossentropy loss function
-        # optimizer = keras.optimizers.Adam(learning_rate=self.learning_rate)     # use Adam optimizer
-        optimizer = keras.optimizers.SGD(learning_rate=self.learning_rate) # SGD
+        loss = keras.losses.CategoricalCrossentropy()              # use cross-entropy loss function
+        optimizer = get_optimizer(self.optimizer, self.learning_rate)
         model.compile(optimizer=optimizer, loss=loss)
-        # print(model.summary())
+        print(optimizer)
         return model
 
 
@@ -87,6 +87,20 @@ class Actor:
         self.epsilon = self.epsilon * self.epsilon_decay_rate
 
 
+def get_optimizer(name, learning_rate):
+    """
+    Returns optimizer with given name.
+    If name is invalid, function will return SGD as default.
+    Valid options: adagrad | rmsprop | adam | sgd
+    """
+    if name == 'adagrad':
+        return keras.optimizers.Adagrad(learning_rate=learning_rate)
+    if name == 'rmsprop':
+        return keras.optimizers.RMSprop(learning_rate=learning_rate)
+    if name == 'adam':
+        return keras.optimizers.Adam(learning_rate=learning_rate)
+
+    return keras.optimizers.SGD(learning_rate=learning_rate)
 
 
 """ Testing 

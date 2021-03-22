@@ -16,7 +16,7 @@ class Tournament:
         number_of_wins = []
         detailed_stats = np.zeros((number_of_actors, number_of_actors))
         for i in range(number_of_actors):
-            player = Actor(2 * (self.config["size"]**2 + 1), self.config["hidden_layers"], 0, 0, 0)
+            player = Actor(2 * (self.config["size"]**2 + 1), self.config["hidden_layers"], None, 0, 0, 0)
             player.load_weights(f"Agent/saved_networks/cp-{i}.ckpt")
             players.append(player)
             number_of_wins.append(0)

@@ -4,6 +4,7 @@ config = {
     "episodes": 40,
     "mcts_simulations": 160,
     "hidden_layers": [50, 20],
+    "optimizer": 'sgd',
     "learning_rate": 0.001,
     "epsilon": 0.5,
     "epsilon_decay_rate": 0.94,

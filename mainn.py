@@ -16,11 +16,14 @@ def generate_training_target(visits_dict, total_visits, size):
     return training_target
 
 
-actor = Actor(2 * (config["size"]**2 + 1), config["hidden_layers"], config["learning_rate"], config["epsilon"], config["epsilon_decay_rate"])
-# actor = Actor(2 * (config["size"]**2 + 1), config["hidden_layers"], config["learning_rate"], 1, 1)
+actor = Actor(2 * (config["size"]**2 + 1),
+              config["hidden_layers"],
+              config["optimizer"],
+              config["learning_rate"],
+              config["epsilon"],
+              config["epsilon_decay_rate"])
 
 saved_actor_count = 0
-
 
 print("Welcome to a game of Hex!")
 
