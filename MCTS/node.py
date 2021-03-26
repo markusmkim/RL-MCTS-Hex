@@ -43,6 +43,7 @@ class Node:
             if self.state[0][0] == 1:  # 1,  player 1 (=[1, 0])
                 return self.argmax(c)
             return self.argmin(c)
+
         return None
 
 

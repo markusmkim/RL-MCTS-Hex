@@ -1,8 +1,8 @@
 config = {
-    "size": 4,
+    "size": 6,
     "starting_player": "alternate",
     "episodes": 200,
-    "mcts_simulations": 100,
+    "mcts_simulations": 100,  # 100
     "hidden_layers": [128, 64],
     "optimizer": 'adam',
     "activation_function": 'tanh',
