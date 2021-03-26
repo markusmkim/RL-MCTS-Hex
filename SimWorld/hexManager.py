@@ -34,22 +34,19 @@ class HexManager:
         self.possible_actions = np.delete(self.possible_actions, np.where(self.possible_actions == action))
         self.player = [int(self.player[0] == 0), int(self.player[1] == 0)]
 
-   # state = [input, board, possible_moves] --> input = flat list of player + grid
+    # state = [input, board, possible_moves] --> input = flat list of player + grid
     def get_state(self):
         return copy.deepcopy([np.concatenate((self.player, self.grid)), self.board, self.possible_actions])
 
 
     def is_game_over(self):
-        return len(self.possible_actions) == 0
+        if len(self.possible_actions) == 0:
+            return True
+        return not self.get_winner() == 0
 
     # player 1 = (1, 0) = black --> has the north-west and south-east sides
     # player 2 = (0, 1) = red   --> has the north-east and south-west sides
     def get_winner(self):
-
-        if not self.is_game_over():
-            return None
-
-        winner = 2
 
         # try to find a winning chain for black (player 1)
         possible_chains = []
@@ -68,19 +65,34 @@ class HexManager:
             possible_chains = next_possible_chains
 
         if len(possible_chains) > 0:
-            winner = 1
+            return 1
 
-        return winner
+        # try to find a winning chain for red (player 2)
+        possible_chains = []
+        for i in range(len(self.board)):
+            if self.board[i][0] == 2:
+                possible_chains.append(i)
+
+        for i in range(1, len(self.board)):
+            next_possible_chains = []
+            for cell in possible_chains:
+                if self.board[cell][i] == 2:
+                    next_possible_chains.append(cell)
+                if cell < len(self.board) - 1:
+                    if self.board[cell + 1][i] == 2:
+                        next_possible_chains.append(cell + 1)
+            possible_chains = next_possible_chains
+
+        if len(possible_chains) > 0:
+            return 2
+
+        return 0
 
     def visualize_game_state(self):
         visualize_board(self.board)
 
 
 def print_winner(board):
-
-    winner = 2
-
-    # try to find a winning chain for black (player 1)
     possible_chains = []
     for i in range(len(board)):
         if board[0][i] == 1:
@@ -97,10 +109,28 @@ def print_winner(board):
         possible_chains = next_possible_chains
 
     if len(possible_chains) > 0:
-        winner = 1
+        return 1
 
-    print("Winner:", winner)
+    # try to find a winning chain for red (player 2)
+    possible_chains = []
+    for i in range(len(board)):
+        if board[i][0] == 2:
+            possible_chains.append(i)
 
+    for i in range(1, len(board)):
+        next_possible_chains = []
+        for cell in possible_chains:
+            if board[cell][i] == 2:
+                next_possible_chains.append(cell)
+            if cell < len(board) - 1:
+                if board[cell + 1][i] == 2:
+                    next_possible_chains.append(cell + 1)
+        possible_chains = next_possible_chains
+
+    if len(possible_chains) > 0:
+        return 2
+
+    return 0
 
 
 def get_next_state(state, action):

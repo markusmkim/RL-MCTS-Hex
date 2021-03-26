@@ -4,6 +4,8 @@ from MCTS.tree import Tree
 from Agent.actor import Actor
 from config import config
 from tournament import Tournament
+from random import random
+from oneVsAll import OneVsAll
 
 
 def generate_training_target(visits_dict, total_visits, size):
@@ -19,6 +21,7 @@ def generate_training_target(visits_dict, total_visits, size):
 actor = Actor(2 * (config["size"]**2 + 1),
               config["hidden_layers"],
               config["optimizer"],
+              config["activation_function"],
               config["learning_rate"],
               config["epsilon"],
               config["epsilon_decay_rate"])
@@ -27,11 +30,16 @@ saved_actor_count = 0
 
 print("Welcome to a game of Hex!")
 
+buffer_inputs = []
+buffer_targets = []
 
 for i in range(config["episodes"] + 1):
     game_history = []
 
-    starting_player = [1, 0] if i % 2 == 0 else [0, 1]
+    if config["starting_player"] == "alternate":
+        starting_player = [1, 0] if i % 2 == 0 else [0, 1]
+    else:
+        starting_player = config["starting_player"]
 
     game_manager = HexManager(starting_player, config["size"])
     game_history.append(game_manager.get_state()[1])
@@ -39,34 +47,38 @@ for i in range(config["episodes"] + 1):
     tree = Tree(game_manager.get_state(), actor)
     tree.root.number_of_visits = 1
 
-    buffer_inputs = []
-    buffer_targets = []
-
     while not game_manager.is_game_over():
-        visits_dict, total_visits, action = tree.mcts(config["mcts_simulations"], get_next_state)
+        visits_dict, total_visits, action = tree.mcts(config["mcts_simulations"], get_next_state, config["c"])
 
-        buffer_inputs.append(game_manager.get_state()[0])
-        buffer_targets.append(generate_training_target(visits_dict, total_visits, config["size"]**2))
+        if random() < config["training_probability"]:
+            buffer_inputs.append(game_manager.get_state()[0])
+            buffer_targets.append(generate_training_target(visits_dict, total_visits, config["size"]**2))
 
         game_manager.execute_action(action)
 
         game_history.append(game_manager.get_state()[1])
 
-    if i % config["save_frequency"] == 0:
-        print('hei')
-        actor.train_model(buffer_inputs, buffer_targets, count=saved_actor_count)
-        saved_actor_count += 1
-    else:
-        actor.train_model(buffer_inputs, buffer_targets)
+    if i % config["training_frequency"] == 0 and len(buffer_inputs) > 0:
+        print("Buffer size:", len(buffer_inputs), len(buffer_targets))
+        if i % config["save_frequency"] == 0:
+            actor.train_model(buffer_inputs, buffer_targets, count=saved_actor_count)
+            saved_actor_count += 1
+        else:
+            actor.train_model(buffer_inputs, buffer_targets)
+        buffer_inputs = []
+        buffer_targets = []
 
     print("Episode:", i, " |  Winner:", game_manager.get_winner(), " |  Epsilon: ", actor.epsilon)
     # visualize_game(game_history)
     actor.decrease_epsilon()
 
-
 tournament = Tournament(config)
 tournament.run_tournament()
 
+print("")
+
+tournament = OneVsAll(config)
+tournament.run_one_vs_all(actor)
 
 """
 black_1 = [[2, 1, 2], [2, 1, 1], [2, 1, 2]]
@@ -80,13 +92,6 @@ red_3 = [[1, 1, 1], [1, 1, 1], [1, 1, 1]]
 bingo = [[2, 1, 1, 2], [1, 2, 1, 2], [1, 1, 1, 1], [2, 1, 1, 1]]
 
 visualize_board(bingo)
-print_winner(bingo)
-#print_winner(black_2)
-#print_winner(black_3)
-
-#print_winner(red_1)
-#print_winner(red_2)
-#print_winner(red_3)
 """
 
 

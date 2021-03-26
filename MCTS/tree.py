@@ -7,13 +7,13 @@ class Tree:
         self.actor = actor
 
 
-    def mcts(self, number_of_simulations, get_next_state):
+    def mcts(self, number_of_simulations, get_next_state, c):
         if self.root.children is None:
             self.root.expand(get_next_state)
         node = self.root
         for i in range(number_of_simulations):
             while node.children and len(node.children) > 0:
-                node = node.best_child(1)
+                node = node.best_child(c)
             if node.number_of_visits == 1:
                 node.expand(get_next_state)
                 if len(node.children) > 0:
@@ -27,6 +27,7 @@ class Tree:
         visits_dict, total_visits, best_child, best_action = self.root.children_visits()
 
         self.root = best_child
-        self.root.number_of_visits = 1
+        self.root.parent = None
+        # self.root.number_of_visits = 1
 
         return visits_dict, total_visits, best_action

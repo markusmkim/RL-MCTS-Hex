@@ -5,11 +5,12 @@ import random
 
 
 class Actor:
-    def __init__(self, input_dim, hidden_layers, optimizer, learning_rate, epsilon, epsilon_decay_rate):
+    def __init__(self, input_dim, hidden_layers, optimizer, activation_function, learning_rate, epsilon, epsilon_decay_rate):
         self.input_dim = input_dim
         self.hidden_layers = hidden_layers
         self.learning_rate = learning_rate
         self.optimizer = optimizer
+        self.activation_function = activation_function
         self.epsilon = epsilon
         self.epsilon_decay_rate = epsilon_decay_rate
         self.model = self.build_model()
@@ -26,11 +27,11 @@ class Actor:
         else:
             # add first hidden layer
             first_hidden_layer = self.hidden_layers[0]
-            model.add(keras.layers.Dense(first_hidden_layer, activation='relu', input_shape=(self.input_dim,)))
+            model.add(keras.layers.Dense(first_hidden_layer, activation=self.activation_function, input_shape=(self.input_dim,)))
 
             # add the rest of the hidden layers
             for layer in self.hidden_layers[1:]:
-                model.add(keras.layers.Dense(layer, activation='relu'))
+                model.add(keras.layers.Dense(layer, activation=self.activation_function))
 
             # add output layer, with softmax activation
             output_layer = (self.input_dim // 2) - 1  # must correspond to number of cells on board (number of "categories")
@@ -39,7 +40,6 @@ class Actor:
         loss = keras.losses.CategoricalCrossentropy()              # use cross-entropy loss function
         optimizer = get_optimizer(self.optimizer, self.learning_rate)
         model.compile(optimizer=optimizer, loss=loss)
-        print(optimizer)
         return model
 
 
