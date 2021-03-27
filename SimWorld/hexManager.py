@@ -26,7 +26,7 @@ class HexManager:
             self.player_2_chain_top = []
             self.player_2_chain_bottom = []
 
-            # self.winner = 0     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            self.winner = 0
 
         # args = 'state' = [input, board, possible_actions, chains]
         else:
@@ -39,7 +39,7 @@ class HexManager:
             self.player_2_chain_top = args[0][3][1][0]
             self.player_2_chain_bottom = args[0][3][1][1]
 
-            # self.winner = 0 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+            self.winner = 0
 
 
     def get_winner(self):

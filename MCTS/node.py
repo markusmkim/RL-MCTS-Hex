@@ -25,16 +25,16 @@ class Node:
         return self.children
 
 
-    def rollout(self, simulation_actor):
-        # print("Rollout starts. Number of possible moves:", len(self.state[2]))
-        simulation_manager = HexManager(copy.deepcopy(self.state))
+    def rollout(self, actor):
+        game_manager = HexManager(copy.deepcopy(self.state))
         winner = 0
         while winner == 0:
-            simulation_action = simulation_actor.find_best_action(simulation_manager.get_state())
+            simulation_action = actor.find_best_action(game_manager.get_state())
             if simulation_action is None:
-                winner = simulation_manager.get_winner()
+                print("HEI")
+                winner = game_manager.get_winner()
             else:
-                winner = simulation_manager.execute_action(simulation_action)
+                winner = game_manager.execute_action(simulation_action)
             # print("Rollout! Game over:", simulation_manager.is_game_over())
         self.value = 1 if winner == 1 else -1  # 1
         self.number_of_visits += 1
