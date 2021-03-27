@@ -20,11 +20,11 @@ class Tournament:
             if i >= number_of_actors - randoms:
                 player = Actor(2 * (self.config["size"] ** 2 + 1),
                                self.config["hidden_layers"],
-                               None, self.config["activation_function"], 0, 1, 1)
+                               None, self.config["activation_function"], 0, None, 1, 1)
             else:
                 player = Actor(2 * (self.config["size"]**2 + 1),
                                self.config["hidden_layers"],
-                               None, self.config["activation_function"], 0, 0, 0)
+                               None, self.config["activation_function"], 0, None, 0, 0)
                 player.load_weights(f"Agent/saved_networks/cp-{i}.ckpt")
             players.append(player)
             number_of_wins.append(0)

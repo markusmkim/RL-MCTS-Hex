@@ -1,20 +1,26 @@
 config = {
-    "size": 4,
+    "size": 3,
     "starting_player": "alternate",
-    "episodes": 200,
-    "mcts_simulations": 300,  # 100
-    "hidden_layers": [128, 64],
+    "episodes": 100,
+    "mcts_simulations": 400,  # 100
+    "hidden_layers": [64, 32],
     "optimizer": 'adam',
-    "activation_function": 'tanh',
-    "learning_rate": 0.001,
+    "activation_function": 'relu',
+    "learning_rate": 0.0001,
+    "loss": "cross_entropy",
     "training_frequency": 5,
     "training_probability": 0.5,
     "epsilon": 1,
-    "epsilon_decay_rate": 0.98,
+    "epsilon_decay_rate": 0.97,
     "save_frequency": 20,
     "TOPP-G": 40,
-    "c": 1,
+    "c": 50,
 }
+
+""" 
+Possible optimizers:        adam | sgd | rmsprop | adagrad 
+Possible loss functions:    cross_entropy | mse | mae | kld
+"""
 
 """
 config = {

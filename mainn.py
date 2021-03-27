@@ -23,6 +23,7 @@ actor = Actor(2 * (config["size"]**2 + 1),
               config["optimizer"],
               config["activation_function"],
               config["learning_rate"],
+              config["loss"],
               config["epsilon"],
               config["epsilon_decay_rate"])
 
@@ -32,6 +33,7 @@ print("Welcome to a game of Hex!")
 
 buffer_inputs = []
 buffer_targets = []
+game_history = []
 
 for i in range(config["episodes"] + 1):
     game_history = []
@@ -50,6 +52,7 @@ for i in range(config["episodes"] + 1):
     counter = 0
     while not game_manager.is_game_over():
         visits_dict, total_visits, action = tree.mcts(config["mcts_simulations"], get_next_state, config["c"])
+        print(visits_dict)
 
         if random() < config["training_probability"]:
             buffer_inputs.append(game_manager.get_state()[0])
@@ -72,9 +75,11 @@ for i in range(config["episodes"] + 1):
 
     # game_manager.visualize_game_state()
 
-    print("Episode:", i, " |  Winner:", game_manager.get_winner(), " |  Epsilon: ", actor.epsilon, " | Number of moves: ", counter)
-    visualize_game(game_history)
+    print("Episode:", i, " |  Starting player:  ", starting_player, "|  Winner:", game_manager.get_winner(), " |  Epsilon: ", actor.epsilon, " | Number of moves: ", counter)
+
     actor.decrease_epsilon()
+
+visualize_game(game_history)  # visualize last game played, hopefully a good one
 
 tournament = Tournament(config)
 tournament.run_tournament()

@@ -17,7 +17,7 @@ class OneVsAll:
         for i in range(randoms):
             player = Actor(2 * (self.config["size"] ** 2 + 1),
                            self.config["hidden_layers"],
-                           None, self.config["activation_function"], 0, 1, 1)
+                           None, self.config["activation_function"], 0, None, 1, 1)
             players.append(player)
             number_of_wins.append(0)
             number_of_games.append(0)

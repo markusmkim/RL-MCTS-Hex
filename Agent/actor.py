@@ -5,10 +5,11 @@ import random
 
 
 class Actor:
-    def __init__(self, input_dim, hidden_layers, optimizer, activation_function, learning_rate, epsilon, epsilon_decay_rate):
+    def __init__(self, input_dim, hidden_layers, optimizer, activation_function, learning_rate, loss, epsilon, epsilon_decay_rate):
         self.input_dim = input_dim
         self.hidden_layers = hidden_layers
         self.learning_rate = learning_rate
+        self.loss = loss
         self.optimizer = optimizer
         self.activation_function = activation_function
         self.epsilon = epsilon
@@ -37,7 +38,8 @@ class Actor:
             output_layer = (self.input_dim // 2) - 1  # must correspond to number of cells on board (number of "categories")
             model.add(keras.layers.Dense(output_layer, activation='softmax'))
 
-        loss = keras.losses.CategoricalCrossentropy()              # use cross-entropy loss function
+        loss = get_loss(self.loss)
+        print(loss)
         optimizer = get_optimizer(self.optimizer, self.learning_rate)
         model.compile(optimizer=optimizer, loss=loss)
         return model
@@ -85,6 +87,21 @@ class Actor:
 
     def decrease_epsilon(self):
         self.epsilon = self.epsilon * self.epsilon_decay_rate
+
+
+def get_loss(name):
+    """
+    Returns loss with given name.
+    If name is invalid, function will return MSE as default.
+    Valid options: cross_entropy | mse | mae | kld
+    """
+    if name == "cross_entropy":
+        return keras.losses.CategoricalCrossentropy()
+    if name == "kld":
+        return keras.losses.KLDivergence()
+    if name == "mae":
+        return keras.losses.MeanAbsoluteError()
+    return keras.losses.MeanSquaredError()
 
 
 def get_optimizer(name, learning_rate):
