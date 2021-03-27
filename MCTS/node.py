@@ -7,7 +7,7 @@ import numpy as np
 class Node:
     def __init__(self, parent, state):
         self.parent = parent
-        self.state = state  # state = [input, board, possible_moves]
+        self.state = state  # state = [input, board, possible_moves, chains, winner]
         self.value = 0
         self.number_of_visits = 0
         self.children = None
@@ -15,7 +15,7 @@ class Node:
 
     def expand(self, get_next_state):
         self.children = []
-        if len(self.state[2]) == 0:  # no legal moves
+        if self.state[4] is not None:  # We have a winner -> no legal moves
             return None
         for action in self.state[2]:
             next_state = get_next_state(self.state, action)
@@ -25,16 +25,13 @@ class Node:
 
 
     def rollout(self, simulation_actor):
-        # print("Rollout starts. Number of possible moves:", len(self.state[2]))
         simulation_manager = HexManager(copy.deepcopy(self.state))
         while not simulation_manager.is_game_over():
             simulation_action = simulation_actor.find_best_action(simulation_manager.get_state())
             simulation_manager.execute_action(simulation_action)
-            # print("Rollout! Game over:", simulation_manager.is_game_over())
 
         self.value = 1 if simulation_manager.get_winner() == 1 else -1  # 1
         self.number_of_visits += 1
-        # print("Rollout done!")
         return self.value
 
 

@@ -28,7 +28,7 @@ class OneVsAll:
 
         for i in range(len(players) - 1):
             for j in range(i + 1, len(players)):
-                print("Games...")
+                # print("Games...")
                 for n in range(self.config["TOPP-G"]):
                     number_of_games[i] += 1
                     number_of_games[j] += 1
@@ -53,7 +53,7 @@ class OneVsAll:
                         number_of_wins[j] += 1
                         # detailed_stats[j][i] += 1
 
-        print("One vs all tournament over")
+        print("One vs all tournament over (last actor is trained)")
         print("Stats: ", number_of_wins)
         print("number of games", number_of_games)
         print("Detailed")

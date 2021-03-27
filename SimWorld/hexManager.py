@@ -26,12 +26,19 @@ class HexManager:
             self.player_2_chain_top = []
             self.player_2_chain_bottom = []
 
-        # args = 'state' = [input, board, possible_actions]
+            self.winner = None
+
+        # args = 'state' = [input, board, possible_actions, chains, winner]
         else:
             self.player = args[0][0][:2]
             self.grid = args[0][0][2:]
             self.board = args[0][1]
             self.possible_actions = args[0][2]
+            self.player_1_chain_top = args[0][3][0]
+            self.player_1_chain_bottom = args[0][3][1]
+            self.player_2_chain_top = args[0][3][2]
+            self.player_2_chain_bottom = args[0][3][3]
+            self.winner = args[0][4]
 
 
     def handleChains(self, row, col, player):
@@ -139,26 +146,41 @@ class HexManager:
         if self.player[0] == 0:
             self.grid[2 * action] = 1
             self.board[row][col] = 1
-            return self.handleChains(row, col, 1)
+            winner = self.handleChains(row, col, 1)
 
-        self.grid[2 * action + 1] = 1
-        self.board[row][col] = 2
-        return self.handleChains(row, col, 2)
+        else:
+            self.grid[2 * action + 1] = 1
+            self.board[row][col] = 2
+            winner = self.handleChains(row, col, 2)
+
+        if winner != 0:
+            self.winner = winner
 
     # state = [input, board, possible_moves] --> input = flat list of player + grid
     def get_state(self):
-        return copy.deepcopy([np.concatenate((self.player, self.grid)), self.board, self.possible_actions])
+        chains = [
+            self.player_1_chain_top,
+            self.player_1_chain_bottom,
+            self.player_2_chain_top,
+            self.player_2_chain_bottom
+        ]
+        return copy.deepcopy([np.concatenate((self.player, self.grid)),
+                              self.board,
+                              self.possible_actions,
+                              chains,
+                              self.winner])
 
 
     def is_game_over(self):
-        if len(self.possible_actions) == 0:
-            return True
-        return self.get_winner() != 0
+        return self.get_winner() is not None
 
+
+    def get_winner(self):
+        return self.winner
 
     # player 1 = (1, 0) = black --> has the north-west and south-east sides
     # player 2 = (0, 1) = red   --> has the north-east and south-west sides
-    def get_winner(self):
+    def get_winner_old(self):
 
         # try to find a winning chain for black (player 1)
         possible_chains = []

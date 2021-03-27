@@ -32,7 +32,7 @@ class Tournament:
 
         for i in range(len(players) - 1):
             for j in range(i + 1, len(players)):
-                print("Games...")
+                # print("Games...")
                 for n in range(self.config["TOPP-G"]):
                     number_of_games[i] += 1
                     number_of_games[j] += 1
@@ -57,7 +57,7 @@ class Tournament:
                         number_of_wins[j] += 1
                         detailed_stats[j][i] += 1
 
-        print("Tournament over")
+        print("Tournament over (last 4 actors are random)")
         print("Stats: ", number_of_wins)
         print("number of games", number_of_games)
         print("Detailed")

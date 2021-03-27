@@ -9,23 +9,25 @@ from time import sleep
 import copy
 
 game_manager = HexManager([1, 0], 6)
+old_board = []
 
-for i in range(50):
+while not game_manager.is_game_over():
     possible_actions = game_manager.get_state()[2]
     if len(possible_actions) == 0:
         break
     old_board = copy.deepcopy(game_manager.board)
-    winner = game_manager.execute_action(possible_actions[randint(0, len(possible_actions) - 1)])
-    print(winner)
-    # print(game_manager.get_state())
-    # game_manager.printChains()
-    # game_manager.visualize_game_state()
-    if winner > 0:                              # når en har vunnet
-        visualize_board(old_board)              # print siste state før seier
-        sleep(1)
-        game_manager.visualize_game_state()     # print state hvor en har seiret
-        break
-    # sleep(1)
+    game_manager.execute_action(possible_actions[randint(0, len(possible_actions) - 1)])
+
+winner = game_manager.get_winner()
+print(winner)
+# print(game_manager.get_state())
+# game_manager.printChains()
+# game_manager.visualize_game_state()
+if winner > 0:                              # når en har vunnet
+    visualize_board(old_board)              # print siste state før seier
+    sleep(1)
+    game_manager.visualize_game_state()     # print state hvor en har seiret
+
 
 
 
