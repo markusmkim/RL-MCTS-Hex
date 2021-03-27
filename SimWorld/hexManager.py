@@ -16,7 +16,7 @@ class HexManager:
 
             """
             Chains to ease the task of checking for a potential winner.
-            Each player has to chains, one from the "top" of the board and one for the "bottom".
+            Each player has two chains, one from the "top" of the board and one for the "bottom".
             For a particular player: 
             Each cell connected to the "top" will reside in the top chain, and vice versa. When a cell is in both
             chains, the player has won.
@@ -26,24 +26,44 @@ class HexManager:
             self.player_2_chain_top = []
             self.player_2_chain_bottom = []
 
-        # args = 'state' = [input, board, possible_actions]
+            # self.winner = 0     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+        # args = 'state' = [input, board, possible_actions, chains]
         else:
             self.player = args[0][0][:2]
             self.grid = args[0][0][2:]
             self.board = args[0][1]
             self.possible_actions = args[0][2]
+            self.player_1_chain_top = args[0][3][0][0]
+            self.player_1_chain_bottom = args[0][3][0][1]
+            self.player_2_chain_top = args[0][3][1][0]
+            self.player_2_chain_bottom = args[0][3][1][1]
+
+            # self.winner = 0 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+
+
+    def get_winner(self):
+        for cell in self.player_1_chain_top:
+            for neighbour in self.get_neighbours(cell[0], cell[1], 1):
+                if neighbour in self.player_1_chain_bottom:
+                    return 1
+        for cell in self.player_2_chain_top:
+            for neighbour in self.get_neighbours(cell[0], cell[1], 2):
+                if neighbour in self.player_2_chain_bottom:
+                    return 2
+        return 0
 
 
     def handleChains(self, row, col, player):
         """
         Manages and updates chains:
 
-        - Checks if cell is in any of the chain's starting or stopping row or columns
+        - Checks if cell is in any of the chain's starting or stopping rows or columns
           - If yes, cell will be added to corresponding chain
         - Checks for any neighbour cell if neighbour is in any of the two chains.
           - If yes, cell will be added to corresponding chain.
 
-        - If cell is connected to both chains of respective player, game over and player has won.
+        - If cell is connected to both chains of respective player, game is over and player has won.
         - If cell is added to one chain exactly, this function will be recursively called on all neighbours.
 
         :param row: row-wise index of cell
@@ -51,6 +71,9 @@ class HexManager:
         :param player: player to fill cell
         :return: name of winning player (1 or 2) if any, else 0
         """
+        # if self.winner != 0:    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        #     return self.winner
+
         if player == 1:
             chain_top = self.player_1_chain_top
             chain_bottom = self.player_1_chain_bottom
@@ -87,6 +110,7 @@ class HexManager:
                     bottom = True
 
         if top and bottom:
+            # self.winner = player !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11
             return player
 
         if top or bottom:
@@ -130,6 +154,9 @@ class HexManager:
 
 
     def execute_action(self, action):
+        if action is None:
+            return None
+
         row = action // len(self.board)
         col = action % len(self.board)
 
@@ -147,9 +174,14 @@ class HexManager:
 
     # state = [input, board, possible_moves] --> input = flat list of player + grid
     def get_state(self):
-        return copy.deepcopy([np.concatenate((self.player, self.grid)), self.board, self.possible_actions])
+        return copy.deepcopy([
+            np.concatenate((self.player, self.grid)),                  # state[0] = input
+            self.board,                                                # state[1] = board
+            self.possible_actions,                                     # state[2] = possible_moves
+            [[self.player_1_chain_top, self.player_1_chain_bottom],    # state[3] = chains
+             [self.player_2_chain_top, self.player_2_chain_bottom]]])  # chains = [[1t, 1b], [2t, 2b]]
 
-
+    """
     def is_game_over(self):
         if len(self.possible_actions) == 0:
             return True
@@ -200,7 +232,7 @@ class HexManager:
             return 2
 
         return 0
-
+    """
 
     def visualize_game_state(self):
         visualize_board(self.board)
@@ -256,8 +288,8 @@ def print_winner(board):
 
 def get_next_state(state, action):
     copyManager = HexManager(copy.deepcopy(state))
-    copyManager.execute_action(action)
-    return copyManager.get_state()
+    winner = copyManager.execute_action(action)
+    return copyManager.get_state(), winner
 
 
 def visualize_game(history):

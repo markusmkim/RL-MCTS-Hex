@@ -18,7 +18,13 @@ class Tree:
                 node.expand(get_next_state)
                 if len(node.children) > 0:
                     node = node.children[0]
-            value = node.rollout(self.actor)
+            if node.winner == 0:
+                value = node.rollout(self.actor)
+            else:
+                node.number_of_visits += 1
+                value = -1
+                if node.winner == 1:
+                    value = 1
             while node.parent is not None:
                 node = node.parent
                 node.value += value

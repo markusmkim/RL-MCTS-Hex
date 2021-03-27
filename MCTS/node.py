@@ -5,12 +5,13 @@ import numpy as np
 
 
 class Node:
-    def __init__(self, parent, state):
+    def __init__(self, parent, state, winner=0):
         self.parent = parent
-        self.state = state  # state = [input, board, possible_moves]
+        self.state = state  # state = [input, board, possible_moves, chains]
         self.value = 0
         self.number_of_visits = 0
         self.children = None
+        self.winner = winner  # if winner != 0, this node is leaf_node
 
 
     def expand(self, get_next_state):
@@ -18,8 +19,8 @@ class Node:
         if len(self.state[2]) == 0:  # no legal moves
             return None
         for action in self.state[2]:
-            next_state = get_next_state(self.state, action)
-            child = Node(self, next_state)
+            next_state, winner = get_next_state(self.state, action)
+            child = Node(self, next_state, winner)
             self.children.append(child)
         return self.children
 
@@ -27,12 +28,15 @@ class Node:
     def rollout(self, simulation_actor):
         # print("Rollout starts. Number of possible moves:", len(self.state[2]))
         simulation_manager = HexManager(copy.deepcopy(self.state))
-        while not simulation_manager.is_game_over():
+        winner = 0
+        while winner == 0:
             simulation_action = simulation_actor.find_best_action(simulation_manager.get_state())
-            simulation_manager.execute_action(simulation_action)
+            if simulation_action is None:
+                winner = simulation_manager.get_winner()
+            else:
+                winner = simulation_manager.execute_action(simulation_action)
             # print("Rollout! Game over:", simulation_manager.is_game_over())
-
-        self.value = 1 if simulation_manager.get_winner() == 1 else -1  # 1
+        self.value = 1 if winner == 1 else -1  # 1
         self.number_of_visits += 1
         # print("Rollout done!")
         return self.value

@@ -7,9 +7,6 @@ from tournament import Tournament
 from random import random
 from oneVsAll import OneVsAll
 
-bingo = [[2, 1, 1, 2], [1, 2, 1, 2], [1, 1, 1, 1], [2, 1, 1, 1]]
-
-visualize_board(bingo)
 
 def generate_training_target(visits_dict, total_visits, size):
     training_target = []
@@ -51,17 +48,18 @@ for i in range(config["episodes"] + 1):
     tree.root.number_of_visits = 1
 
     counter = 0
-    while not game_manager.is_game_over():
+    winner = 0
+    while winner == 0:
         visits_dict, total_visits, action = tree.mcts(config["mcts_simulations"], get_next_state, config["c"])
 
         if random() < config["training_probability"]:
             buffer_inputs.append(game_manager.get_state()[0])
             buffer_targets.append(generate_training_target(visits_dict, total_visits, config["size"]**2))
 
-        game_manager.execute_action(action)
+        counter += 1
+        winner = game_manager.execute_action(action)
 
         game_history.append(game_manager.get_state()[1])
-        counter += 1
 
     if i % config["training_frequency"] == 0 and len(buffer_inputs) > 0:
         print("Buffer size:", len(buffer_inputs), len(buffer_targets))
@@ -75,7 +73,7 @@ for i in range(config["episodes"] + 1):
 
     game_manager.visualize_game_state()
 
-    print("Episode:", i, " |  Winner:", game_manager.get_winner(), " |  Epsilon: ", actor.epsilon, " | Number of moves: ", counter)
+    print("Episode:", i, " |  Winner:", winner, " |  Epsilon: ", actor.epsilon, " | Number of moves: ", counter)
     # visualize_game(game_history)
     actor.decrease_epsilon()
 

@@ -38,14 +38,14 @@ class OneVsAll:
 
                     game_manager = HexManager(starting_player, self.config["size"])
 
-                    while not game_manager.is_game_over():
+                    winner = 0
+                    while winner == 0:
                         if game_manager.get_state()[0][0] == 1:
                             action = player1.find_best_action(game_manager.get_state())
                         else:
                             action = player2.find_best_action(game_manager.get_state())
-                        game_manager.execute_action(action)
+                        winner = game_manager.execute_action(action)
 
-                    winner = game_manager.get_winner()
                     if winner == 1:
                         number_of_wins[i] += 1
                         # detailed_stats[i][j] += 1
