@@ -3,9 +3,8 @@ from SimWorld.hexManager import get_next_state, print_winner, visualize_board, v
 from MCTS.tree import Tree
 from Agent.actor import Actor
 from config import config
-from tournament import ToppTournament
+from tournaments import Tournaments
 from random import random
-from oneVsAll import OneVsAll
 from utils import generate_training_target, save_metadata, save_kings, save_queens, read_kings, read_queens
 
 
@@ -71,21 +70,15 @@ for i in range(config["episodes"] + 1):
 
 # visualize_game(game_history)  # visualize last game played, hopefully a good one
 
+tournaments = Tournaments(config)
+
+win_rate = tournaments.run_one_vs_all(actor)
+print("Win rate for last actor:", win_rate)
+
 if saved_actor_count > 0:
-    # run demo tournament
-    tournament = ToppTournament(config)
-    tournament.run_tournament()
-
-    # run OneVsAll
-    tournament = OneVsAll(config)
-    win_rate = tournament.run_one_vs_all(actor)
-    print("Win rate for last actor:", win_rate)
-
+    tournaments.run_topp_tournament()
 else:
-    tournament = OneVsAll(config)
-    win_rate = tournament.run_one_vs_all(actor)
-    print(win_rate)
-    if True:  # if win rate > noe, TODO: Returnere win rate fra oneVsAll
+    if win_rate > 0.8:  # if win rate > noe, TODO: Returnere win rate fra oneVsAll
         # save network to folder 'name'
         # save config and win rate
         agent_name = config["name"]

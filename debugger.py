@@ -3,7 +3,7 @@ from SimWorld.hexManager import get_next_state, print_winner, visualize_board, v
 from MCTS.tree import Tree
 from Agent.actor import Actor
 from config import config
-from tournament import Tournament
+from tournaments import Tournament
 from random import randint
 from time import sleep
 import copy

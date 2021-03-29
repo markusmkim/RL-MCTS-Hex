@@ -1,5 +1,5 @@
 config = {
-    "name": "sara",
+    "name": "demo",
     "size": 4,
     "starting_player": "alternate",
     "episodes": 50,
