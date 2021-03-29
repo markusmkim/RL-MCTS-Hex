@@ -3,7 +3,7 @@ from SimWorld.hexManager import HexManager
 import numpy as np
 
 
-class Tournament:
+class ToppTournament:
     def __init__(self, config):
         self.config = config
 
@@ -25,7 +25,7 @@ class Tournament:
                 player = Actor(2 * (self.config["size"]**2 + 1),
                                self.config["hidden_layers"],
                                None, self.config["activation_function"], 0, None, 0, 0)
-                player.load_weights(f"Agent/saved_networks/cp-{i}.ckpt")
+                player.load_weights(f"Agent/saved_networks/demo/cp-{i}.ckpt")
             players.append(player)
             number_of_wins.append(0)
             number_of_games.append(0)

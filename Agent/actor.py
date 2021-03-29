@@ -52,7 +52,7 @@ class Actor:
             return
 
         print('Saving')
-        checkpoint_path = f"Agent/saved_networks/cp-{count}.ckpt"
+        checkpoint_path = f"Agent/saved_networks/demo/cp-{count}.ckpt"
         # Create a callback that saves the model's weights
         cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath=checkpoint_path,
                                                          save_weights_only=True,
@@ -65,6 +65,10 @@ class Actor:
 
     def load_weights(self, path):
         self.model.load_weights(path).expect_partial()
+
+
+    def save_weights(self, path):
+        self.model.save_weights(path)
 
 
     def find_best_action(self, state):

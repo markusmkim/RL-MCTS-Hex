@@ -1,9 +1,9 @@
 config = {
-    "name": "demo",
-    "size": 6,
+    "name": "sara",
+    "size": 4,
     "starting_player": "alternate",
     "episodes": 50,
-    "mcts_simulations": 20,
+    "mcts_simulations": 2,
     "hidden_layers": [128, 64],
     "optimizer": 'adam',
     "activation_function": 'relu',

@@ -3,19 +3,10 @@ from SimWorld.hexManager import get_next_state, print_winner, visualize_board, v
 from MCTS.tree import Tree
 from Agent.actor import Actor
 from config import config
-from tournament import Tournament
+from tournament import ToppTournament
 from random import random
 from oneVsAll import OneVsAll
-
-
-def generate_training_target(visits_dict, total_visits, size):
-    training_target = []
-    for k in range(size):
-        if k in visits_dict:
-            training_target.append(visits_dict[k] / total_visits)
-        else:
-            training_target.append(0)
-    return training_target
+from utils import generate_training_target, save_metadata, save_kings, save_queens, read_kings, read_queens
 
 
 actor = Actor(2 * (config["size"]**2 + 1),
@@ -52,7 +43,6 @@ for i in range(config["episodes"] + 1):
     counter = 0
     while not game_manager.is_game_over():
         visits_dict, total_visits, action = tree.mcts(config["mcts_simulations"], get_next_state, config["c"])
-        # print(visits_dict)
 
         if random() < config["training_probability"]:
             buffer_inputs.append(game_manager.get_state()[0])
@@ -83,7 +73,7 @@ for i in range(config["episodes"] + 1):
 
 if saved_actor_count > 0:
     # run demo tournament
-    tournament = Tournament(config)
+    tournament = ToppTournament(config)
     tournament.run_tournament()
 
     # run OneVsAll
@@ -95,9 +85,23 @@ else:
     tournament = OneVsAll(config)
     win_rate = tournament.run_one_vs_all(actor)
     print(win_rate)
-    if win_rate > 0.9:
+    if True:  # if win rate > noe, TODO: Returnere win rate fra oneVsAll
         # save network to folder 'name'
         # save config and win rate
+        agent_name = config["name"]
+        path = f"Agent/saved_networks/{agent_name}/"
+        network_path = path + "network.ckpt"
+        metadata_path = path + "metadata.text"  # metadata = config + win rate
+        actor.save_weights(network_path)
+        save_metadata(config, win_rate, metadata_path)
+
+        queens = read_queens()
+        print(queens)
+        new_queens = {
+            "sara": "0.7",
+            "test": "0.3"
+        }
+        save_queens(new_queens)
         # run elite tournament
         pass
 
