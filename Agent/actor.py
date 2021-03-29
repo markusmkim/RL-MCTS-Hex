@@ -39,7 +39,7 @@ class Actor:
             model.add(keras.layers.Dense(output_layer, activation='softmax'))
 
         loss = get_loss(self.loss)
-        print(loss)
+        # print(loss)
         optimizer = get_optimizer(self.optimizer, self.learning_rate)
         model.compile(optimizer=optimizer, loss=loss)
         return model

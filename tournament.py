@@ -9,7 +9,7 @@ class Tournament:
 
 
     def run_tournament(self):
-        randoms = 4
+        randoms = 0
         number_of_actors = int(self.config["episodes"] / self.config["save_frequency"]) + 1 + randoms
         print("Running tournament")
         players = []

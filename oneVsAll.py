@@ -58,3 +58,5 @@ class OneVsAll:
         print("number of games", number_of_games)
         print("Detailed")
         # print(detailed_stats)
+
+        # return win_rate

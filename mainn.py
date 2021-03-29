@@ -52,7 +52,7 @@ for i in range(config["episodes"] + 1):
     counter = 0
     while not game_manager.is_game_over():
         visits_dict, total_visits, action = tree.mcts(config["mcts_simulations"], get_next_state, config["c"])
-        print(visits_dict)
+        # print(visits_dict)
 
         if random() < config["training_probability"]:
             buffer_inputs.append(game_manager.get_state()[0])
@@ -65,7 +65,7 @@ for i in range(config["episodes"] + 1):
 
     if i % config["training_frequency"] == 0 and len(buffer_inputs) > 0:
         print("Buffer size:", len(buffer_inputs), len(buffer_targets))
-        if i % config["save_frequency"] == 0:
+        if config["name"] == "demo" and i % config["save_frequency"] == 0:
             actor.train_model(buffer_inputs, buffer_targets, count=saved_actor_count)
             saved_actor_count += 1
         else:
@@ -79,15 +79,29 @@ for i in range(config["episodes"] + 1):
 
     actor.decrease_epsilon()
 
-visualize_game(game_history)  # visualize last game played, hopefully a good one
+# visualize_game(game_history)  # visualize last game played, hopefully a good one
 
-tournament = Tournament(config)
-tournament.run_tournament()
+if saved_actor_count > 0:
+    # run demo tournament
+    tournament = Tournament(config)
+    tournament.run_tournament()
 
-print("")
+    # run OneVsAll
+    tournament = OneVsAll(config)
+    win_rate = tournament.run_one_vs_all(actor)
+    print("Win rate for last actor:", win_rate)
 
-tournament = OneVsAll(config)
-tournament.run_one_vs_all(actor)
+else:
+    tournament = OneVsAll(config)
+    win_rate = tournament.run_one_vs_all(actor)
+    print(win_rate)
+    if win_rate > 0.9:
+        # save network to folder 'name'
+        # save config and win rate
+        # run elite tournament
+        pass
+
+
 
 """
 black_1 = [[2, 1, 2], [2, 1, 1], [2, 1, 2]]
