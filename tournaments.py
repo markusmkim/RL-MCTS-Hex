@@ -11,20 +11,20 @@ class Tournaments:
     def run_topp_tournament(self):
         print("Running TOPP tournament")
         randoms = 4
-        number_of_actors = int(self.config["episodes"] / self.config["save_frequency"]) + randoms + 1
+        number_of_actors = int(self.config["episodes"] / self.config["save_frequency"]) + 1
         players = []
 
         for i in range(number_of_actors):
-            if i >= number_of_actors - randoms:
-                player = Actor(2 * (self.config["size"] ** 2 + 1),
-                               self.config["hidden_layers"],
-                               None, self.config["activation_function"], 0, None, 1, 1)
-            else:
-                player = Actor(2 * (self.config["size"]**2 + 1),
-                               self.config["hidden_layers"],
-                               None, self.config["activation_function"], 0, None, 0, 0)
-                player.load_weights(f"Agent/saved_networks/demo/cp-{i}.ckpt")
+            player = Actor(2 * (self.config["size"] ** 2 + 1),
+                           self.config["hidden_layers"],
+                           None, self.config["activation_function"], 0, None, 0, 0)
+            player.load_weights(f"Agent/saved_networks/demo/cp-{i}.ckpt")
             players.append(player)
+
+        for i in range(randoms):
+            players.append(Actor(2 * (self.config["size"] ** 2 + 1),
+                               self.config["hidden_layers"],
+                               None, self.config["activation_function"], 0, None, 1, 1))
 
         print("TOPP tournament is over. The 4 last players take random actions.")
         number_of_wins, number_of_games, detailed_stats = self.play_tournament_games(players)
@@ -48,9 +48,22 @@ class Tournaments:
         return number_of_wins[0] / number_of_games[0]
 
 
-    def run_elite_tournament(self, agents):
+    def run_elite_tournament(self, actor):
         print("Running elite tournament")
-        pass
+        names = ["a", "b", "c", "d"]  # names = read_elite_names()  TODO: a function that return the names of all elites
+        players = [actor]
+        for i in range(len(names)):
+            player = Actor(2 * (self.config["size"] ** 2 + 1),
+                           self.config["hidden_layers"],
+                           None, self.config["activation_function"], 0, None, 0, 0)
+            player.load_weights(f"Agent/saved_networks/{names[i]}/network.ckpt")  # TODO: blir denne riktig?
+            players.append(player)
+
+        number_of_wins, number_of_games, detailed_stats = self.play_tournament_games(players)
+        print("Elite tournament is over. The first player is new.")
+        print_stats(number_of_wins, number_of_games, detailed_stats)
+
+        return number_of_wins[0] / number_of_games[0]
 
 
     def play_tournament_games(self, players):

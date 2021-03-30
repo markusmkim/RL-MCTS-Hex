@@ -1,0 +1,19 @@
+name: jan
+size: 4
+starting_player: alternate
+episodes: 400
+mcts_simulations: 100
+hidden_layers: [128, 64]
+optimizer: adam
+activation_function: relu
+learning_rate: 0.005
+loss: mse
+training_frequency: 20
+training_probability: 0.5
+epsilon: 1
+epsilon_decay_rate: 0.985
+save_frequency: None
+TOPP-G: 40
+c: 1.5
+
+Win rate: 0.8333333333333334

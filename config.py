@@ -1,21 +1,21 @@
 config = {
-    "name": "demo",
+    "name": "per",
     "size": 4,
     "starting_player": "alternate",
-    "episodes": 50,
-    "mcts_simulations": 2,
+    "episodes": 600,
+    "mcts_simulations": 60,
     "hidden_layers": [128, 64],
     "optimizer": 'adam',
     "activation_function": 'relu',
     "learning_rate": 0.005,
     "loss": "mse",
-    "training_frequency": 5,
+    "training_frequency": 20,
     "training_probability": 0.5,
     "epsilon": 1,
     "epsilon_decay_rate": 0.99,
-    "save_frequency": 10,
+    "save_frequency": None,
     "TOPP-G": 40,
-    "c": 2,
+    "c": 1.5,
 }
 
 

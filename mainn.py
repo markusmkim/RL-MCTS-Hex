@@ -74,13 +74,12 @@ tournaments = Tournaments(config)
 
 win_rate = tournaments.run_one_vs_all(actor)
 print("Win rate for last actor:", win_rate)
+print("")
 
 if saved_actor_count > 0:
     tournaments.run_topp_tournament()
 else:
-    if win_rate > 0.8:  # if win rate > noe, TODO: Returnere win rate fra oneVsAll
-        # save network to folder 'name'
-        # save config and win rate
+    if win_rate > 0.8:
         agent_name = config["name"]
         path = f"Agent/saved_networks/{agent_name}/"
         network_path = path + "network.ckpt"
@@ -88,15 +87,24 @@ else:
         actor.save_weights(network_path)
         save_metadata(config, win_rate, metadata_path)
 
-        queens = read_queens()
-        print(queens)
-        new_queens = {
-            "sara": "0.7",
-            "test": "0.3"
-        }
-        save_queens(new_queens)
+        # elite_win_rate = tournaments.run_elite_tournament(actor)  TODO: run elite tournament (DONE)
+
+        # if elite_win_rate > 0.5:
+        #     add_to_elite(config["name"], win_rate)                TODO: add player to elites
+        #     print("Player was added to elites."
+
+        # queens = read_queens()                                    TODO: fjerne kings og queens og holde oss til elite?
+        # print(queens)
+        # new_queens = {
+        #     "sara": "0.7",
+        #     "test": "0.3"
+        # }
+        # save_queens(new_queens)
         # run elite tournament
-        pass
+    else:
+        print("The player was not good enough to join the elites.")
+
+
 
 
 
