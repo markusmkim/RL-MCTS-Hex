@@ -54,13 +54,13 @@ class Tournaments:
         names = [key for key in read_queens()] + [key for key in read_kings()]
         if names is None or len(names) == 0:
             print('No elites to play against')
-            return 0
+            return 1  # win rate is 1 if only player
         players = [actor]
         for i in range(len(names)):
             player = Actor(2 * (self.config["size"] ** 2 + 1),
                            self.config["hidden_layers"],
                            None, self.config["activation_function"], 0, None, 0, 0)
-            player.load_weights(f"Agent/saved_networks/{names[i]}/network.ckpt")  # TODO: blir denne riktig?
+            player.load_weights(f"Agent/saved_networks/{names[i]}/network.ckpt")
             players.append(player)
 
         number_of_wins, number_of_games, detailed_stats = self.play_tournament_games(players)

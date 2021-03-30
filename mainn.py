@@ -8,6 +8,10 @@ from random import random
 from time import time
 from utils import generate_training_target, save_metadata, save_kings, save_queens, read_kings, read_queens
 
+# --------------------------------------
+elite_group = "queens"  # kings | queens
+# --------------------------------------
+
 
 actor = Actor(2 * (config["size"]**2 + 1),
               config["hidden_layers"],
@@ -98,11 +102,22 @@ else:
         elite_win_rate = tournaments.run_elite_tournament(actor)
 
         if elite_win_rate > 0.5:
-            # add_to_elite(config["name"], elite_win_rate)          TODO: add player to kings/queens
-            print("Player was added to elites.")
+            if elite_group == "queens":
+                queens = read_queens()
+                queens[agent_name] = win_rate   # win rate against randoms
+                save_queens(queens)             # if agent was already in queens, win rate is overwritten
+                print("Player was added to queens.")
+
+            if elite_group == "kings":
+                kings = read_kings()
+                kings[agent_name] = win_rate
+                save_kings(kings)
+                print("Player was added to kings.")
+        else:
+            print("The player was not good enough to join the elites.")
 
     else:
-        print("The player was not good enough to join the elites.")
+        print("The player was not good enough to compete against elites.")
 
 
 

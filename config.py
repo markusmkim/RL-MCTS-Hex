@@ -1,9 +1,9 @@
 config = {
-    "name": "roger",
-    "size": 4,
+    "name": "silje",
+    "size": 6,
     "starting_player": "alternate",
-    "episodes": 1000,
-    "mcts_simulations": 500,
+    "episodes": 100,
+    "mcts_simulations": 60,
     "hidden_layers": [128, 64],
     "optimizer": 'adam',
     "activation_function": 'relu',
@@ -15,7 +15,7 @@ config = {
     "epsilon_decay_rate": 0.99,
     "save_frequency": None,
     "TOPP-G": 100,
-    "c": 1.5,
+    "c": 3,
 }
 
 

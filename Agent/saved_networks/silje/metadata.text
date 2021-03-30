@@ -1,0 +1,20 @@
+name: silje
+size: 6
+starting_player: alternate
+episodes: 100
+mcts_simulations: 60
+hidden_layers: [128, 64]
+optimizer: adam
+activation_function: relu
+learning_rate: 0.005
+loss: mse
+training_frequency: 10
+training_probability: 0.5
+epsilon: 1
+epsilon_decay_rate: 0.99
+save_frequency: None
+TOPP-G: 100
+c: 3
+
+Win rate in OneVsAll: 0.53
+Time spent: 1547.8198149204254
