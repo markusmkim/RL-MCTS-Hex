@@ -1,6 +1,7 @@
 from Agent.actor import Actor
 from SimWorld.hexManager import HexManager
 import numpy as np
+from utils import read_queens, read_kings
 
 
 class Tournaments:
@@ -50,7 +51,10 @@ class Tournaments:
 
     def run_elite_tournament(self, actor):
         print("Running elite tournament")
-        names = ["a", "b", "c", "d"]  # names = read_elite_names()  TODO: a function that return the names of all elites
+        names = [key for key in read_queens()] + [key for key in read_kings()]
+        if names is None or len(names) == 0:
+            print('No elites to play against')
+            return 0
         players = [actor]
         for i in range(len(names)):
             player = Actor(2 * (self.config["size"] ** 2 + 1),
