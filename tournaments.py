@@ -34,7 +34,7 @@ class Tournaments:
 
     def run_one_vs_all(self, actor):
         print("Running one vs all")
-        randoms = 9
+        randoms = 19
         players = [actor]
 
         for i in range(randoms):
@@ -65,6 +65,7 @@ class Tournaments:
 
         number_of_wins, number_of_games, detailed_stats = self.play_tournament_games(players)
         print("Elite tournament is over. The first player is new.")
+        print("All players:", names.insert(0, "New Player"))
         print_stats(number_of_wins, number_of_games, detailed_stats)
 
         return number_of_wins[0] / number_of_games[0]

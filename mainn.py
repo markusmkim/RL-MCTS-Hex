@@ -5,6 +5,7 @@ from Agent.actor import Actor
 from config import config
 from tournaments import Tournaments
 from random import random
+from time import time
 from utils import generate_training_target, save_metadata, save_kings, save_queens, read_kings, read_queens
 
 
@@ -24,6 +25,8 @@ print("Welcome to a game of Hex!")
 buffer_inputs = []
 buffer_targets = []
 game_history = []
+
+start_time = time()
 
 for i in range(config["episodes"] + 1):
     game_history = []
@@ -68,6 +71,11 @@ for i in range(config["episodes"] + 1):
 
     actor.decrease_epsilon()
 
+end_time = time()
+time_spent = end_time - start_time
+print("Time spent on entire run:", time_spent)
+print("")
+
 # visualize_game(game_history)  # visualize last game played, hopefully a good one
 
 tournaments = Tournaments(config)
@@ -85,22 +93,14 @@ else:
         network_path = path + "network.ckpt"
         metadata_path = path + "metadata.text"  # metadata = config + win rate
         actor.save_weights(network_path)
-        save_metadata(config, win_rate, metadata_path)
+        save_metadata(config, metadata_path, win_rate, time_spent)
 
-        # elite_win_rate = tournaments.run_elite_tournament(actor)  TODO: run elite tournament (DONE)
+        elite_win_rate = tournaments.run_elite_tournament(actor)
 
-        # if elite_win_rate > 0.5:
-        #     add_to_elite(config["name"], win_rate)                TODO: add player to elites
-        #     print("Player was added to elites."
+        if elite_win_rate > 0.5:
+            # add_to_elite(config["name"], elite_win_rate)          TODO: add player to kings/queens
+            print("Player was added to elites.")
 
-        # queens = read_queens()                                    TODO: fjerne kings og queens og holde oss til elite?
-        # print(queens)
-        # new_queens = {
-        #     "sara": "0.7",
-        #     "test": "0.3"
-        # }
-        # save_queens(new_queens)
-        # run elite tournament
     else:
         print("The player was not good enough to join the elites.")
 

@@ -9,11 +9,12 @@ def generate_training_target(visits_dict, total_visits, size):
     return training_target
 
 
-def save_metadata(config, win_rate, filepath):
+def save_metadata(config, filepath, win_rate, time_spent):
     data = [f"{key}: {config[key]}" for key in config]
     file = open(filepath, "w")  # w = overwrite if already exists
     [file.write(line + "\n") for line in data]
-    file.write("\nWin rate: " + str(win_rate))
+    file.write("\nWin rate in OneVsAll: " + str(win_rate))
+    file.write("\nTime spent: " + str(time_spent))
     file.close()
 
 
