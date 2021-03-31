@@ -9,9 +9,8 @@ from time import time
 from utils import generate_training_target, save_metadata, save_kings, save_queens, read_kings, read_queens
 
 # --------------------------------------
-elite_group = "queens"  # kings | queens
+elite_group = "kings"  # kings | queens
 # --------------------------------------
-
 
 actor = Actor(2 * (config["size"]**2 + 1),
               config["hidden_layers"],
@@ -46,17 +45,22 @@ for i in range(config["episodes"] + 1):
     tree = Tree(game_manager.get_state(), actor)
     tree.root.number_of_visits = 1
 
+    simulations = config["mcts_simulations"]
     counter = 0
     while not game_manager.is_game_over():
-        visits_dict, total_visits, action = tree.mcts(config["mcts_simulations"], get_next_state, config["c"])
 
         if random() < config["training_probability"]:
+            visits_dict, total_visits, action = tree.mcts(simulations, get_next_state, config["c"])
             buffer_inputs.append(game_manager.get_state()[0])
             buffer_targets.append(generate_training_target(visits_dict, total_visits, config["size"]**2))
+        else:
+            visits_dict, total_visits, action = tree.mcts(config["mcts_discounted_simulations"], get_next_state, config["c"])
 
         game_manager.execute_action(action)
 
         game_history.append(game_manager.get_state()[1])
+
+        simulations -= config["mcts_discount_constant"]
         counter += 1
 
     if i % config["training_frequency"] == 0 and len(buffer_inputs) > 0:
@@ -91,7 +95,7 @@ print("")
 if saved_actor_count > 0:
     tournaments.run_topp_tournament()
 else:
-    if win_rate > 0.8:
+    if win_rate > 0.6:
         agent_name = config["name"]
         path = f"Agent/saved_networks/{agent_name}/"
         network_path = path + "network.ckpt"
@@ -121,8 +125,6 @@ else:
 
 
 
-
-
 """
 black_1 = [[2, 1, 2], [2, 1, 1], [2, 1, 2]]
 black_2 = [[1, 2, 1], [1, 1, 2], [2, 1, 2]]
@@ -136,8 +138,3 @@ bingo = [[2, 1, 1, 2], [1, 2, 1, 2], [1, 1, 1, 1], [2, 1, 1, 1]]
 
 visualize_board(bingo)
 """
-
-
-
-
-

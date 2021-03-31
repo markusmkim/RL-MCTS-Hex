@@ -1,0 +1,22 @@
+name: ahmed
+size: 4
+starting_player: alternate
+episodes: 200
+mcts_simulations: 50
+hidden_layers: [128, 64]
+optimizer: adam
+activation_function: relu
+learning_rate: 0.005
+loss: mse
+training_frequency: 10
+training_probability: 0.5
+epsilon: 1
+epsilon_decay_rate: 0.98
+save_frequency: None
+TOPP-G: 100
+c: 1.5
+mcts_discounted_simulations: 5
+mcts_discount_constant: 3
+
+Win rate in OneVsAll: 0.7252631578947368
+Time spent: 178.7233738899231

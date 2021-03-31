@@ -1,9 +1,9 @@
 config = {
-    "name": "silje",
+    "name": "pål",  # denne tok 32.000 sekunder og hadde win_rate 0.5626. Glemte å sette ned trshold, så ble ikke lagra
     "size": 6,
     "starting_player": "alternate",
-    "episodes": 100,
-    "mcts_simulations": 60,
+    "episodes": 500,
+    "mcts_simulations": 500,
     "hidden_layers": [128, 64],
     "optimizer": 'adam',
     "activation_function": 'relu',
@@ -15,7 +15,9 @@ config = {
     "epsilon_decay_rate": 0.99,
     "save_frequency": None,
     "TOPP-G": 100,
-    "c": 3,
+    "c": 1.5,
+    "mcts_discounted_simulations": 50,
+    "mcts_discount_constant": 10,
 }
 
 
