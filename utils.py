@@ -18,6 +18,42 @@ def save_metadata(config, filepath, win_rate, time_spent):
     file.close()
 
 
+def read_metadata(filepath):
+    numeric_keys = ["size",
+                    "episodes",
+                    "mcts_simulations",
+                    "learning_rate",
+                    "training_frequency",
+                    "training_probability",
+                    "epsilon",
+                    "epsilon_decay_rate",
+                    "TOPP-G",
+                    "c"]
+    data = {}
+    file = open(filepath, "r")
+    try:
+        for line in file.readlines():
+            if line == "":
+                break
+            config_line = line.split(": ")
+            if len(config_line) == 2:
+                key = config_line[0]
+                value = config_line[1].rstrip()
+                if key in numeric_keys:
+                    value = float(value)
+
+                if key == "save_frequency" and value != "None":
+                    value = float(value)
+
+                if key == "hidden_layers":
+                    value = [int(layer) for layer in value[1:-1].split(", ")]
+
+                data[key] = value
+    finally:
+        file.close()
+    return data
+
+
 def read_kings():
     path = "Agent/saved_networks/kings.txt"
     return read_royalty(path)

@@ -9,7 +9,7 @@ from time import time
 from utils import generate_training_target, save_metadata, save_kings, save_queens, read_kings, read_queens
 
 # --------------------------------------
-elite_group = "kings"  # kings | queens
+elite_group = "queens"  # kings | queens
 # --------------------------------------
 
 actor = Actor(2 * (config["size"]**2 + 1),
@@ -56,6 +56,9 @@ for i in range(config["episodes"] + 1):
         else:
             visits_dict, total_visits, action = tree.mcts(config["mcts_discounted_simulations"], get_next_state, config["c"])
 
+        if len(buffer_inputs) == config["buffer_size"]:
+            break
+
         game_manager.execute_action(action)
 
         game_history.append(game_manager.get_state()[1])
@@ -63,13 +66,13 @@ for i in range(config["episodes"] + 1):
         simulations -= config["mcts_discount_constant"]
         counter += 1
 
-    if i % config["training_frequency"] == 0 and len(buffer_inputs) > 0:
-        print("Buffer size:", len(buffer_inputs), len(buffer_targets))
+    if len(buffer_inputs) == config["buffer_size"]:
+        print("Training actor network. Buffer size:", len(buffer_inputs), len(buffer_targets))
         if config["name"] == "demo" and i % config["save_frequency"] == 0:
-            actor.train_model(buffer_inputs, buffer_targets, count=saved_actor_count)
+            actor.train_model(buffer_inputs, buffer_targets, config["batch_size"], config["epochs"], count=saved_actor_count)
             saved_actor_count += 1
         else:
-            actor.train_model(buffer_inputs, buffer_targets)
+            actor.train_model(buffer_inputs, buffer_targets, config["batch_size"], config["epochs"])
         buffer_inputs = []
         buffer_targets = []
 
@@ -95,7 +98,7 @@ print("")
 if saved_actor_count > 0:
     tournaments.run_topp_tournament()
 else:
-    if win_rate > 0.6:
+    if win_rate > 0.1:
         agent_name = config["name"]
         path = f"Agent/saved_networks/{agent_name}/"
         network_path = path + "network.ckpt"
@@ -105,7 +108,7 @@ else:
 
         elite_win_rate = tournaments.run_elite_tournament(actor)
 
-        if elite_win_rate > 0.5:
+        if elite_win_rate > 0.1:
             if elite_group == "queens":
                 queens = read_queens()
                 queens[agent_name] = win_rate   # win rate against randoms

@@ -45,9 +45,11 @@ class Actor:
         return model
 
 
-    def train_model(self, x_train, y_train, epochs=1, count=-1):
+    def train_model(self, x_train, y_train, batch_size, epochs, count=-1):
         if count == -1:
-            self.model.fit(np.array(x_train), np.array(y_train), epochs=epochs,
+            self.model.fit(np.array(x_train), np.array(y_train),
+                           batch_size=batch_size,
+                           epochs=epochs,
                            verbose=0)  # verbose = 0 to run silent
             return
 
@@ -56,11 +58,14 @@ class Actor:
         # Create a callback that saves the model's weights
         cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath=checkpoint_path,
                                                          save_weights_only=True,
-                                                         verbose=1,
+                                                         verbose=0,
                                                          save_freq=1)
 
-        # verbose = 0 to run silent
-        self.model.fit(np.array(x_train), np.array(y_train), callbacks=[cp_callback], epochs=epochs, verbose=0)
+        self.model.fit(np.array(x_train), np.array(y_train),
+                       callbacks=[cp_callback],
+                       batch_size=batch_size,
+                       epochs=epochs,
+                       verbose=0)
 
 
     def load_weights(self, path):

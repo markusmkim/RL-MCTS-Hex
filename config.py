@@ -1,22 +1,24 @@
 config = {
-    "name": "pål",  # denne tok 32.000 sekunder og hadde win_rate 0.5626. Glemte å sette ned trshold, så ble ikke lagra
+    "name": "silje",
     "size": 6,
     "starting_player": "alternate",
-    "episodes": 500,
-    "mcts_simulations": 500,
-    "hidden_layers": [128, 64],
+    "episodes": 100,
+    "mcts_simulations": 400,
+    "hidden_layers": [512, 64],
     "optimizer": 'adam',
     "activation_function": 'relu',
-    "learning_rate": 0.005,
+    "learning_rate": 0.02,
     "loss": "mse",
-    "training_frequency": 10,
-    "training_probability": 0.5,
+    "training_probability": 0.8,
+    "buffer_size": 64,                # buffer_size / batch_size burde være et heltall
+    "batch_size": 32,
+    "epochs": 5,
     "epsilon": 1,
-    "epsilon_decay_rate": 0.99,
+    "epsilon_decay_rate": 0.9,
     "save_frequency": None,
     "TOPP-G": 100,
     "c": 1.5,
-    "mcts_discounted_simulations": 50,
+    "mcts_discounted_simulations": 120,
     "mcts_discount_constant": 10,
 }
 

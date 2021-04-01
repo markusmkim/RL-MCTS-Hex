@@ -1,7 +1,7 @@
 from Agent.actor import Actor
 from SimWorld.hexManager import HexManager
 import numpy as np
-from utils import read_queens, read_kings
+from utils import read_queens, read_kings, read_metadata
 
 
 class Tournaments:
@@ -57,8 +57,9 @@ class Tournaments:
             return 1  # win rate is 1 if only player
         players = [actor]
         for i in range(len(names)):
+            hidden_layers = read_metadata(f"Agent/saved_networks/{names[i]}/metadata.text")["hidden_layers"]
             player = Actor(2 * (self.config["size"] ** 2 + 1),
-                           self.config["hidden_layers"],
+                           hidden_layers,
                            None, self.config["activation_function"], 0, None, 0, 0)
             player.load_weights(f"Agent/saved_networks/{names[i]}/network.ckpt")
             players.append(player)
