@@ -20,7 +20,7 @@ actor = Actor(2 * (config["size"]**2 + 1),
               config["loss"],
               config["epsilon"],
               config["epsilon_decay_rate"])
-
+actor.load_weights("Agent/saved_networks/hermine/network.ckpt")
 saved_actor_count = 0
 
 print("Welcome to a game of Hex!")
@@ -30,6 +30,7 @@ buffer_targets = []
 game_history = []
 
 start_time = time()
+
 
 for i in range(config["episodes"] + 1):
     game_history = []
@@ -67,7 +68,7 @@ for i in range(config["episodes"] + 1):
         counter += 1
 
     if len(buffer_inputs) == config["buffer_size"]:
-        print("Training actor network. Buffer size:", len(buffer_inputs), len(buffer_targets))
+        print("Training actor network | Buffer size:", len(buffer_inputs))
         if config["name"] == "demo" and i % config["save_frequency"] == 0:
             actor.train_model(buffer_inputs, buffer_targets, config["batch_size"], config["epochs"], count=saved_actor_count)
             saved_actor_count += 1
@@ -98,7 +99,7 @@ print("")
 if saved_actor_count > 0:
     tournaments.run_topp_tournament()
 else:
-    if win_rate > 0.1:
+    if win_rate > 0.6:
         agent_name = config["name"]
         path = f"Agent/saved_networks/{agent_name}/"
         network_path = path + "network.ckpt"
@@ -108,7 +109,7 @@ else:
 
         elite_win_rate = tournaments.run_elite_tournament(actor)
 
-        if elite_win_rate > 0.1:
+        if elite_win_rate > 0.5:
             if elite_group == "queens":
                 queens = read_queens()
                 queens[agent_name] = win_rate   # win rate against randoms

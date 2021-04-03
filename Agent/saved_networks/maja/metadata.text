@@ -1,26 +1,26 @@
-name: silje
+name: maja
 size: 6
 starting_player: alternate
-episodes: 70
-mcts_simulations: 410
+episodes: 20
+mcts_simulations: 700
 hidden_layers: [512, 256]
 optimizer: adam
 activation_function: relu
 learning_rate: 0.006
 loss: mse
 training_probability: 0.9
-buffer_size: 64
+buffer_size: 128
 batch_size: 32
-epochs: 6
+epochs: 8
 epsilon: 1
-epsilon_decay_rate: 0.94
+epsilon_decay_rate: 0.85
 save_frequency: None
 TOPP-G: 100
 c: 1.5
-mcts_discounted_simulations: 120
+mcts_discounted_simulations: 250
 mcts_discount_constant: 0
 
-Win rate in OneVsAll: 0.6484210526315789
-Time spent: 7823.3434472084045
+Win rate in OneVsAll: 0.6494736842105263
+Time spent: 4089.339597940445
 
 All data treningsdata
