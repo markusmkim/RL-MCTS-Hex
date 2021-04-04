@@ -69,6 +69,17 @@ for i in range(config["episodes"] + 1):
 
     if len(buffer_inputs) == config["buffer_size"]:
         print("Training actor network | Buffer size:", len(buffer_inputs))
+        actor.train_model(buffer_inputs, buffer_targets, config["batch_size"], config["epochs"])
+        buffer_inputs = []
+        buffer_targets = []
+
+    if config["name"] == "demo" and i % config["save_frequency"] == 0:
+        print("Saving network")
+        # save
+
+    """
+    if len(buffer_inputs) == config["buffer_size"]:
+        print("Training actor network | Buffer size:", len(buffer_inputs))
         if config["name"] == "demo" and i % config["save_frequency"] == 0:
             actor.train_model(buffer_inputs, buffer_targets, config["batch_size"], config["epochs"], count=saved_actor_count)
             saved_actor_count += 1
@@ -76,10 +87,11 @@ for i in range(config["episodes"] + 1):
             actor.train_model(buffer_inputs, buffer_targets, config["batch_size"], config["epochs"])
         buffer_inputs = []
         buffer_targets = []
+    """
 
     # game_manager.visualize_game_state()
 
-    print("Episode:", i, " |  Starting player:  ", starting_player, "|  Winner:", game_manager.get_winner(), " |  Epsilon: ", actor.epsilon, " | Number of moves: ", counter)
+    print("Episode:", i, " |  Starting player:  ", starting_player, " |  Winner:", game_manager.get_winner(), " |  Epsilon: ", actor.epsilon, " | Number of moves: ", counter)
 
     actor.decrease_epsilon()
 
