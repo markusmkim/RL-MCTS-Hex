@@ -3,13 +3,47 @@ from SimWorld.hexManager import get_next_state, print_winner, visualize_board, v
 from MCTS.tree import Tree
 from Agent.actor import Actor
 from config import config
-from tournaments import Tournament
+from tournaments import Tournaments
 from random import randint
 from time import sleep
 import copy
+from math import sqrt
+import numpy as np
 
-game_manager = HexManager([1, 0], 6)
-old_board = []
+from OHT.BasicClientActor import BasicClientActor
+
+basicClientActor = BasicClientActor()
+
+state = [2, 0, 1, 1, 0, 0, 0, 0, 2, 0, 2, 0, 0, 2, 0, 1, 0]
+
+
+def generate_board(grid):
+    size = int(sqrt(len(grid) / 2))
+    flat_board = np.zeros(size**2)
+    for i in range(len(grid)):
+        if i % 2 == 0:
+            if grid[i] == 1:
+                flat_board[i // 2] = 1
+        else:
+            if grid[i] == 1:
+                flat_board[i // 2] = 2
+    board = []
+    index = 0
+    for i in range(size):
+        row = []
+        for j in range(size):
+            row.append(flat_board[index])
+            index += 1
+        board.append(row)
+
+    return board
+
+
+print(basicClientActor.handle_get_action(state, 4))
+
+
+"""
+game_manager = HexManager([1, 0], 4)
 
 while not game_manager.is_game_over():
     possible_actions = game_manager.get_state()[2]
@@ -27,7 +61,7 @@ if winner > 0:                              # når en har vunnet
     visualize_board(old_board)              # print siste state før seier
     sleep(1)
     game_manager.visualize_game_state()     # print state hvor en har seiret
-
+"""
 
 
 

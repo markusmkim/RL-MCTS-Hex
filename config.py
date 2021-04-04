@@ -2,7 +2,7 @@ config = {
     "name": "hermine_v2",
     "size": 6,
     "starting_player": "alternate",
-    "episodes": 1,
+    "episodes": 200,
     "mcts_simulations": 450,
     "hidden_layers": [512, 256],
     "optimizer": 'adam',

@@ -1,0 +1,24 @@
+name: henning
+size: 6
+starting_player: alternate
+episodes: 200
+mcts_simulations: 500
+hidden_layers: [512, 64]
+optimizer: adam
+activation_function: relu
+learning_rate: 0.005
+loss: mse
+training_probability: None
+buffer_size: 128
+batch_size: 64
+epochs: 5
+epsilon: 1
+epsilon_decay_rate: 0.97
+save_frequency: None
+TOPP-G: 100
+c: 5
+mcts_discounted_simulations: None
+mcts_discount_constant: 10
+
+Win rate in OneVsAll: 0.7547368421052632
+Time spent: 25992.766078472137
