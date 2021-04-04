@@ -11,6 +11,7 @@ from utils import generate_training_target, save_metadata, save_kings, save_quee
 # --------------------------------------
 elite_group = "queens"  # kings | queens
 train_from = None       # name or None
+train_from_old = None   # name from saved_networks or None
 # --------------------------------------
 
 if train_from:
@@ -25,6 +26,9 @@ else:
                   activation_function=config["activation_function"],
                   learning_rate=config["learning_rate"],
                   loss=config["loss"])
+
+    if train_from_old:
+        actor.load_weights(f"Agent/saved_networks/{train_from_old}/network.ckpt")
 
 saved_actor_count = 0
 
