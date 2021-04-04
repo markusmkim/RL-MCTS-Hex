@@ -5,7 +5,9 @@ import random
 
 
 class Actor:
-    def __init__(self, input_dim, hidden_layers, optimizer, activation_function, learning_rate, loss, epsilon, epsilon_decay_rate):
+    def __init__(self, epsilon, epsilon_decay_rate,
+                 input_dim=None, hidden_layers=None, optimizer=None, activation_function=None, learning_rate=0, loss=None,
+                 name=None, count=-1):
         self.input_dim = input_dim
         self.hidden_layers = hidden_layers
         self.learning_rate = learning_rate
@@ -14,7 +16,10 @@ class Actor:
         self.activation_function = activation_function
         self.epsilon = epsilon
         self.epsilon_decay_rate = epsilon_decay_rate
-        self.model = self.build_model()
+        if name or count >= 0:
+            self.model = self.load_model(name, count)
+        else:
+            self.model = self.build_model()
 
 
     def build_model(self):
@@ -45,35 +50,25 @@ class Actor:
         return model
 
 
-    def train_model(self, x_train, y_train, batch_size, epochs, count=-1):
-        if count == -1:
-            self.model.fit(np.array(x_train), np.array(y_train),
-                           batch_size=batch_size,
-                           epochs=epochs,
-                           verbose=0)  # verbose = 0 to run silent
-            return
-
-        print('Saving')
-        checkpoint_path = f"Agent/saved_networks/demo/cp-{count}.ckpt"
-        # Create a callback that saves the model's weights
-        cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath=checkpoint_path,
-                                                         save_weights_only=True,
-                                                         verbose=0,
-                                                         save_freq=1)
-
+    def train_model(self, x_train, y_train, batch_size, epochs):
         self.model.fit(np.array(x_train), np.array(y_train),
-                       callbacks=[cp_callback],
                        batch_size=batch_size,
                        epochs=epochs,
-                       verbose=0)
+                       verbose=0)  # verbose = 0 to run silent
 
 
-    def load_weights(self, path):
-        self.model.load_weights(path).expect_partial()
+    def save_model(self, name, count=-1):
+        if count == -1:
+            self.model.save(f"Agent/saved_models/{name}/network.h5")
+        else:
+            self.model.save(f"Agent/saved_models/demo/network-{count}.h5")
 
 
-    def save_weights(self, path):
-        self.model.save_weights(path)
+    def load_model(self, name, count=-1):
+        if count == -1:
+            return keras.models.load_model(f"Agent/saved_models/{name}/network.h5")
+        else:
+            return keras.models.load_model(f"Agent/saved_models/demo/network-{count}.h5")
 
 
     def find_best_action(self, state):
@@ -96,6 +91,15 @@ class Actor:
 
     def decrease_epsilon(self):
         self.epsilon = self.epsilon * self.epsilon_decay_rate
+
+
+    # Old methods
+    def load_weights(self, path):
+        self.model.load_weights(path).expect_partial()
+
+
+    def save_weights(self, path):
+        self.model.save_weights(path)
 
 
 def get_loss(name):

@@ -12,6 +12,7 @@ import numpy as np
 
 from OHT.BasicClientActor import BasicClientActor
 
+
 basicClientActor = BasicClientActor()
 
 state = [2, 0, 1, 1, 0, 0, 0, 0, 2, 0, 2, 0, 0, 2, 0, 1, 0]
@@ -131,4 +132,17 @@ print(game_manager.execute_action(8))
 print(game_manager.get_state())
 game_manager.printChains()
 game_manager.visualize_game_state()
+"""
+"""
+black_1 = [[2, 1, 2], [2, 1, 1], [2, 1, 2]]
+black_2 = [[1, 2, 1], [1, 1, 2], [2, 1, 2]]
+black_3 = [[2, 2, 2], [2, 2, 2], [2, 2, 2]]
+
+red_1 = [[2, 2, 1], [2, 2, 2], [1, 1, 1]]
+red_2 = [[1, 1, 2], [2, 2, 1], [2, 1, 2]]
+red_3 = [[1, 1, 1], [1, 1, 1], [1, 1, 1]]
+
+bingo = [[2, 1, 1, 2], [1, 2, 1, 2], [1, 1, 1, 1], [2, 1, 1, 1]]
+
+visualize_board(bingo)
 """

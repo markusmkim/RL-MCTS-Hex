@@ -10,17 +10,22 @@ from utils import generate_training_target, save_metadata, save_kings, save_quee
 
 # --------------------------------------
 elite_group = "queens"  # kings | queens
+train_from = None       # name or None
 # --------------------------------------
 
-actor = Actor(2 * (config["size"]**2 + 1),
-              config["hidden_layers"],
-              config["optimizer"],
-              config["activation_function"],
-              config["learning_rate"],
-              config["loss"],
-              config["epsilon"],
-              config["epsilon_decay_rate"])
-actor.load_weights("Agent/saved_networks/hermine/network.ckpt")
+if train_from:
+    actor = Actor(config["epsilon"], config["epsilon_decay_rate"], name=train_from)
+
+else:
+    actor = Actor(config["epsilon"],
+                  config["epsilon_decay_rate"],
+                  input_dim=2 * (config["size"]**2 + 1),
+                  hidden_layers=config["hidden_layers"],
+                  optimizer=config["optimizer"],
+                  activation_function=config["activation_function"],
+                  learning_rate=config["learning_rate"],
+                  loss=config["loss"])
+
 saved_actor_count = 0
 
 print("Welcome to a game of Hex!")
@@ -75,7 +80,8 @@ for i in range(config["episodes"] + 1):
 
     if config["name"] == "demo" and i % config["save_frequency"] == 0:
         print("Saving network")
-        # save
+        actor.save_model("demo", saved_actor_count)
+        saved_actor_count += 1
 
     """
     if len(buffer_inputs) == config["buffer_size"]:
@@ -111,26 +117,22 @@ print("")
 if saved_actor_count > 0:
     tournaments.run_topp_tournament()
 else:
-    if win_rate > 0.6:
-        agent_name = config["name"]
-        path = f"Agent/saved_networks/{agent_name}/"
-        network_path = path + "network.ckpt"
-        metadata_path = path + "metadata.text"  # metadata = config + win rate
-        actor.save_weights(network_path)
-        save_metadata(config, metadata_path, win_rate, time_spent)
+    if win_rate > 0.1:
+        actor.save_model(config["name"])
+        save_metadata(config, win_rate, time_spent)
 
         elite_win_rate = tournaments.run_elite_tournament(actor)
 
-        if elite_win_rate > 0.5:
+        if elite_win_rate > 0.1:
             if elite_group == "queens":
                 queens = read_queens()
-                queens[agent_name] = win_rate   # win rate against randoms
+                queens[config["name"]] = win_rate   # win rate against randoms
                 save_queens(queens)             # if agent was already in queens, win rate is overwritten
                 print("Player was added to queens.")
 
             if elite_group == "kings":
                 kings = read_kings()
-                kings[agent_name] = win_rate
+                kings[config["name"]] = win_rate
                 save_kings(kings)
                 print("Player was added to kings.")
         else:
@@ -139,18 +141,3 @@ else:
     else:
         print("The player was not good enough to compete against elites.")
 
-
-
-"""
-black_1 = [[2, 1, 2], [2, 1, 1], [2, 1, 2]]
-black_2 = [[1, 2, 1], [1, 1, 2], [2, 1, 2]]
-black_3 = [[2, 2, 2], [2, 2, 2], [2, 2, 2]]
-
-red_1 = [[2, 2, 1], [2, 2, 2], [1, 1, 1]]
-red_2 = [[1, 1, 2], [2, 2, 1], [2, 1, 2]]
-red_3 = [[1, 1, 1], [1, 1, 1], [1, 1, 1]]
-
-bingo = [[2, 1, 1, 2], [1, 2, 1, 2], [1, 1, 1, 1], [2, 1, 1, 1]]
-
-visualize_board(bingo)
-"""

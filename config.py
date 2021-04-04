@@ -1,25 +1,29 @@
 config = {
-    "name": "hermine_v2",
+    "name": "nanna",
     "size": 6,
     "starting_player": "alternate",
-    "episodes": 200,
-    "mcts_simulations": 450,
-    "hidden_layers": [512, 256],
-    "optimizer": 'adam',
-    "activation_function": 'relu',
-    "learning_rate": 0.008,
-    "loss": "mse",
-    "training_probability": 0.75,
-    "buffer_size": 128,                # buffer_size / batch_size burde være et heltall
-    "batch_size": 64,
-    "epochs": 4,
+
     "epsilon": 0.05,
     "epsilon_decay_rate": 1,
-    "save_frequency": None,
-    "TOPP-G": 100,
+
+    "hidden_layers": [544, 128],
+    "optimizer": 'adam',
+    "activation_function": 'relu',
+    "learning_rate": 0.005,
+    "loss": "mse",
+
+    "training_probability": 0.75,
+    "buffer_size": 96,                # buffer_size / batch_size burde være et heltall
+    "batch_size": 48,
+    "epochs": 4,
+
+    "episodes": 10,
+    "save_frequency": 20,
+    "mcts_simulations": 20,
+    "mcts_discounted_simulations": 10,
+    "mcts_discount_constant": 0,
+    "TOPP-G": 20,
     "c": 10,
-    "mcts_discounted_simulations": 50,
-    "mcts_discount_constant": 10,
 }
 
 

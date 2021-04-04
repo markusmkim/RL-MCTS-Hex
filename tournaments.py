@@ -16,16 +16,15 @@ class Tournaments:
         players = []
 
         for i in range(number_of_actors):
-            player = Actor(2 * (self.config["size"] ** 2 + 1),
-                           self.config["hidden_layers"],
-                           None, self.config["activation_function"], 0, None, 0, 0)
-            player.load_weights(f"Agent/saved_networks/demo/cp-{i}.ckpt")
+            player = Actor(0, 0, count=i)  # demo models
+            # player.load_weights(f"Agent/saved_networks/demo/cp-{i}.ckpt")
             players.append(player)
 
         for i in range(randoms):
-            players.append(Actor(2 * (self.config["size"] ** 2 + 1),
-                               self.config["hidden_layers"],
-                               None, self.config["activation_function"], 0, None, 1, 1))
+            players.append(Actor(1, 1,
+                                 input_dim=2 * (self.config["size"] ** 2 + 1),
+                                 hidden_layers=self.config["hidden_layers"],
+                                 activation_function=self.config["activation_function"]))
 
         print("TOPP tournament is over. The 4 last players take random actions.")
         number_of_wins, number_of_games, detailed_stats = self.play_tournament_games(players)
@@ -38,9 +37,10 @@ class Tournaments:
         players = [actor]
 
         for i in range(randoms):
-            players.append(Actor(2 * (self.config["size"] ** 2 + 1),
-                           self.config["hidden_layers"],
-                           None, self.config["activation_function"], 0, None, 1, 1))
+            players.append(Actor(1, 1,
+                                 input_dim=2 * (self.config["size"] ** 2 + 1),
+                                 hidden_layers=self.config["hidden_layers"],
+                                 activation_function=self.config["activation_function"]))
 
         number_of_wins, number_of_games, detailed_stats = self.play_tournament_games(players)
         print("OneVsAll tournament is over. Only the first player is trained.")
@@ -57,11 +57,9 @@ class Tournaments:
             return 1  # win rate is 1 if only player
         players = [actor]
         for i in range(len(names)):
-            hidden_layers = read_metadata(f"Agent/saved_networks/{names[i]}/metadata.text")["hidden_layers"]
-            player = Actor(2 * (self.config["size"] ** 2 + 1),
-                           hidden_layers,
-                           None, self.config["activation_function"], 0, None, 0, 0)
-            player.load_weights(f"Agent/saved_networks/{names[i]}/network.ckpt")
+            # hidden_layers = read_metadata(f"Agent/saved_networks/{names[i]}/metadata.text")["hidden_layers"]
+            player = Actor(0, 0, name=names[i])
+            # player.load_weights(f"Agent/saved_networks/{names[i]}/network.ckpt")
             players.append(player)
 
         number_of_wins, number_of_games, detailed_stats = self.play_tournament_games(players)

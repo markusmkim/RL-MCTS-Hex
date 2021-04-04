@@ -9,7 +9,9 @@ def generate_training_target(visits_dict, total_visits, size):
     return training_target
 
 
-def save_metadata(config, filepath, win_rate, time_spent):
+def save_metadata(config, win_rate, time_spent):
+    name = config["name"]
+    filepath = f"Agent/saved_models/{name}/metadata.text"  # metadata = config + win rate
     data = [f"{key}: {config[key]}" for key in config]
     file = open(filepath, "w")  # w = overwrite if already exists
     [file.write(line + "\n") for line in data]
@@ -55,12 +57,12 @@ def read_metadata(filepath):
 
 
 def read_kings():
-    path = "Agent/saved_networks/kings.txt"
+    path = "Agent/saved_models/kings.txt"
     return read_royalty(path)
 
 
 def read_queens():
-    path = "Agent/saved_networks/queens.txt"
+    path = "Agent/saved_models/queens.txt"
     return read_royalty(path)
 
 
@@ -81,7 +83,7 @@ def save_kings(data):
     """
     :param data: Dictionary of type {name: win_rate}
     """
-    path = "Agent/saved_networks/kings.txt"
+    path = "Agent/saved_models/kings.txt"
     save_royalty(path, data)
 
 
@@ -89,7 +91,7 @@ def save_queens(data):
     """
     :param data: Dictionary of type {name: win_rate}
     """
-    path = "Agent/saved_networks/queens.txt"
+    path = "Agent/saved_models/queens.txt"
     save_royalty(path, data)
 
 
