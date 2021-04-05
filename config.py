@@ -6,23 +6,23 @@ config = {
     "epsilon": 0.05,
     "epsilon_decay_rate": 1,
 
-    "hidden_layers": [512, 256],
+    "hidden_layers": [560, 288],
     "optimizer": 'adam',
     "activation_function": 'relu',
-    "learning_rate": 0.005,
+    "learning_rate": 0.001,
     "loss": "mse",
 
-    "training_probability": 0.75,
+    "training_probability": 0.8,
     "buffer_size": 96,                # buffer_size / batch_size burde være et heltall
     "batch_size": 48,
-    "epochs": 4,
+    "epochs": 2,
 
-    "episodes": 10,
-    "save_frequency": 1,
-    "mcts_simulations": 500,
+    "episodes": -1,
+    "save_frequency": 2,
+    "mcts_simulations": 6,
     "mcts_discounted_simulations": 100,
-    "mcts_discount_constant": 10,
-    "TOPP-G": 60,
+    "mcts_discount_constant": 0,
+    "TOPP-G": 80,
     "c": 2,
 }
 

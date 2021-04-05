@@ -51,6 +51,7 @@ class Tournaments:
     def run_elite_tournament(self, actor=None):
         print("Running elite tournament")
         names = [key for key in read_queens()] + [key for key in read_kings()]
+        print(names)
         if names is None or len(names) == 0:
             print('No elites to play against')
             return -1
@@ -63,7 +64,8 @@ class Tournaments:
         number_of_wins, number_of_games, detailed_stats = self.play_tournament_games(players)
         if actor:
             print("Elite tournament is over. The first player is new.")
-            print("All players:", names.insert(0, "New Player"))
+            names.insert(0, "New Player")
+            print("All players:", names)
         else:
             print("Elite tournament is over.")
             print("All players:", names)

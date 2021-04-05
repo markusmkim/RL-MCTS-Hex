@@ -10,7 +10,7 @@ from utils import generate_training_target, save_metadata, save_kings, save_quee
 
 # --------------------------------------
 elite_group = "queens"  # kings | queens
-train_from = None       # name or None
+train_from = "hermine"       # name or None
 run_interaction_game = False
 # --------------------------------------
 
@@ -109,6 +109,9 @@ if len(evaluation_history) > 0:
     plot_history(evaluation_history, config["save_frequency"])
 print("")
 # visualize_game(game_history)  # visualize last game played, hopefully a good one
+
+print("Setting actor epsilon = 0")
+actor.epsilon = 0
 
 if run_interaction_game:
     tournaments.run_interaction_game(actor, actor_starts=True)

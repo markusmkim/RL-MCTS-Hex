@@ -59,16 +59,16 @@ class Actor:
 
     def save_model(self, name, count=-1):
         if count == -1:
-            self.model.save(f"Agent/saved_models/{name}/network.h5")
+            self.model.save(f"Agent/saved_models/{name}/network")
         else:
-            self.model.save(f"Agent/saved_models/demo/network-{count}.h5")
+            self.model.save(f"Agent/saved_models/demo/network-{count}")
 
 
     def load_model(self, name, count=-1):
         if count == -1:
-            return keras.models.load_model(f"Agent/saved_models/{name}/network.h5")
+            return keras.models.load_model(f"Agent/saved_models/{name}/network")
         else:
-            return keras.models.load_model(f"Agent/saved_models/demo/network-{count}.h5")
+            return keras.models.load_model(f"Agent/saved_models/demo/network-{count}")
 
 
     def find_best_action(self, state):
