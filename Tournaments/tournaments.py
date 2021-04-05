@@ -1,7 +1,8 @@
 from Agent.actor import Actor
 from SimWorld.hexManager import HexManager
 import numpy as np
-from utils import read_queens, read_kings
+from Main.utils import read_queens, read_kings
+from Tournaments.utils import print_stats
 
 
 class Tournaments:
@@ -9,15 +10,14 @@ class Tournaments:
         self.config = config
 
 
-    def run_topp_tournament(self):
+    def run_topp_tournament(self, randoms=4):
         print("Running TOPP tournament")
-        randoms = 4
+        randoms = randoms
         number_of_actors = int(self.config["episodes"] / self.config["save_frequency"]) + 1
         players = []
 
         for i in range(number_of_actors):
             player = Actor(0, 0, count=i)  # demo models
-            # player.load_weights(f"Agent/saved_networks/demo/cp-{i}.ckpt")
             players.append(player)
 
         for i in range(randoms):
@@ -26,7 +26,7 @@ class Tournaments:
                                  hidden_layers=self.config["hidden_layers"],
                                  activation_function=self.config["activation_function"]))
 
-        print("TOPP tournament is over. The 4 last players take random actions.")
+        print("TOPP tournament is over. The", randoms, "last players take random actions.")
         number_of_wins, number_of_games, detailed_stats = self.play_tournament_games(players)
         print_stats(number_of_wins, number_of_games, detailed_stats)
 
@@ -48,12 +48,13 @@ class Tournaments:
         return number_of_wins[0] / number_of_games[0]
 
 
-    def run_elite_tournament(self, actor=None):
+    def run_elite_tournament(self, actor=None, names=None):
         print("Running elite tournament")
-        names = [key for key in read_queens()] + [key for key in read_kings()]
-        if names is None or len(names) == 0:
-            print('No elites to play against')
-            return -1
+        if names is None:
+            names = [key for key in read_queens()] + [key for key in read_kings()]
+            if names is None or len(names) == 0:
+                print('No elites to play against')
+                return -1
 
         players = [actor] if actor else []
         for i in range(len(names)):
@@ -107,11 +108,19 @@ class Tournaments:
 
         for i in range(number_of_players - 1):
             for j in range(i + 1, number_of_players):
-                for n in range(self.config["TOPP-G"]):
+
+                half = self.config["tournament_games"] // 2
+
+                for n in range(self.config["tournament_games"]):
                     number_of_games[i] += 1
                     number_of_games[j] += 1
-                    player1 = players[i]  # [1, 0]
-                    player2 = players[j]  # [0, 1]
+
+                    first_player = i if n >= half else j
+                    second_player = j if n >= half else i
+
+                    player1 = players[first_player]  # [1, 0]
+                    player2 = players[second_player]  # [0, 1]
+
                     starting_player = [1, 0] if n % 2 == 0 else [0, 1]
                     game_manager = HexManager(starting_player, self.config["size"])
                     while not game_manager.is_game_over():
@@ -120,25 +129,13 @@ class Tournaments:
                         else:
                             action = player2.find_best_action(game_manager.get_state())
                         game_manager.execute_action(action)
+
                     winner = game_manager.get_winner()
                     if winner == 1:
-                        number_of_wins[i] += 1
-                        detailed_stats[i][j] += 1
+                        number_of_wins[first_player] += 1
+                        detailed_stats[first_player][second_player] += 1
                     else:
-                        number_of_wins[j] += 1
-                        detailed_stats[j][i] += 1
+                        number_of_wins[second_player] += 1
+                        detailed_stats[second_player][first_player] += 1
 
         return number_of_wins, number_of_games, detailed_stats
-
-
-def print_stats(stats, games, detailed_stats):
-    print("")
-    print("Stats:")
-    print(stats)
-    print("")
-    print("Number of games:")
-    print(games)
-    print("")
-    print("Detailed stats:")
-    print(detailed_stats)
-    print("")

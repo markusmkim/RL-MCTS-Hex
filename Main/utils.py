@@ -12,6 +12,13 @@ def generate_training_target(visits_dict, total_visits, size):
     return training_target
 
 
+def plot_history(history, frequency):
+    x_axis = np.arange(len(history))
+    x_axis = x_axis * frequency
+    plt.plot(x_axis, history)
+    plt.show()
+
+
 def save_metadata(config, evaluation, time_spent):
     name = config["name"]
     filepath = f"Agent/saved_models/{name}/metadata.text"  # metadata = config + win rate
@@ -69,10 +76,3 @@ def save_royalty(filepath, data):
         [file.write(line + "\n") for line in data]
     finally:
         file.close()
-
-
-def plot_history(history, frequency):
-    x_axis = np.arange(len(history))
-    x_axis = x_axis * frequency
-    plt.plot(x_axis, history)
-    plt.show()

@@ -1,8 +1,8 @@
-from OHT.BasicClientActorAbs import BasicClientActorAbs
-from OHT.utils import convert_state, convert_action
+from Tournaments.OHT.BasicClientActorAbs import BasicClientActorAbs
+from Tournaments.OHT.utils import convert_state, convert_action
 from math import sqrt
 from Agent.actor import Actor
-from config import config
+from Main.config import config
 
 
 class BasicClientActor(BasicClientActorAbs):
@@ -98,7 +98,7 @@ class BasicClientActor(BasicClientActorAbs):
         #
         #
         ##############################
-        print("Game over, these are the stats:")
+        print("Main over, these are the stats:")
         print('Winner: ' + str(winner))
         print('End state: ' + str(end_state))
 

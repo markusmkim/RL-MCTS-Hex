@@ -1,7 +1,6 @@
 from math import sqrt, log
 from SimWorld.hexManager import HexManager
 import copy
-import numpy as np
 
 
 class Node:

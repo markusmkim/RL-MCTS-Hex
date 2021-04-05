@@ -139,8 +139,8 @@ class BasicClientActorAbs(ABC):
         what these message are. There are SEVEN possible messages:
 
         - Series start: A new series is starting and your actor is given several pieces of information.
-        - Game start: A new game is starting, and you are informed of which player will make the first move.
-        - Game end: The current game has ended and you receive basic information about the result.
+        - Main start: A new game is starting, and you are informed of which player will make the first move.
+        - Main end: The current game has ended and you receive basic information about the result.
         - Series end: A series has ended and you will receive basic summarizing statistics.
         - Tournament end; A tournament has ended. When a tournament is ended, you will receive your final score. You
                           should save this score and verify that it is the same score you are given in our system at the
@@ -169,12 +169,12 @@ class BasicClientActorAbs(ABC):
                 series_player_id = [p[1] for p in player_id_map if p[0] == unique_player_id][0]
                 self.handle_series_start(unique_player_id,series_player_id,player_id_map,num_games,game_params)
 
-            elif state == 'Game start':
+            elif state == 'Main start':
                 start_player = self.ssl_sock.recv(1024).decode('utf8')
                 self.handle_game_start(ast.literal_eval(start_player))
 
             # We received a game end message
-            elif state == 'Game end':
+            elif state == 'Main end':
                 winner = self.ssl_sock.recv(1024).decode('utf8')
                 end_state = self.ssl_sock.recv(1024).decode('utf8')
                 self.handle_game_over(ast.literal_eval(winner), ast.literal_eval(end_state))

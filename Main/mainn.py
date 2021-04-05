@@ -1,22 +1,21 @@
-from SimWorld.hexManager import HexManager
-from SimWorld.hexManager import get_next_state, print_winner, visualize_board, visualize_game
-from MCTS.tree import Tree
-from Agent.actor import Actor
-from config import config
-from tournaments import Tournaments
 from random import random
 from time import time
-from utils import generate_training_target, save_metadata, save_kings, save_queens, read_kings, read_queens, plot_history
+from MCTS.tree import Tree
+from Agent.actor import Actor
+from Main.config import config
+from Tournaments.tournaments import Tournaments
+from SimWorld.hexManager import HexManager, get_next_state
+from Main.utils import generate_training_target, plot_history
+from Main.utils import save_metadata, save_kings, save_queens, read_kings, read_queens
 
-# --------------------------------------
+# --- # --- # --- # --- # --- # --- # --- #
 elite_group = "kings"  # kings | queens
 train_from = None       # name or None
 run_interaction_game = False
-# --------------------------------------
+# --- # --- # --- # --- # --- # --- # --- #
 
 if train_from:
     actor = Actor(config["epsilon"], config["epsilon_decay_rate"], name=train_from)
-
 else:
     actor = Actor(config["epsilon"],
                   config["epsilon_decay_rate"],
@@ -27,20 +26,15 @@ else:
                   learning_rate=config["learning_rate"],
                   loss=config["loss"])
 
-saved_actor_count = 0
-
 print("Welcome to a game of Hex!")
+start_time = time()
+tournaments = Tournaments(config)
 
 buffer_inputs = []
 buffer_targets = []
-game_history = []
-
-start_time = time()
-
 evaluation_history = []
 best_evaluation = 0
-
-tournaments = Tournaments(config)
+saved_actor_count = 0
 
 for i in range(config["episodes"] + 1):
     game_history = []
@@ -57,7 +51,7 @@ for i in range(config["episodes"] + 1):
     tree.root.number_of_visits = 1
 
     simulations = config["mcts_simulations"]
-    counter = 0
+    number_of_moves = 0
     while not game_manager.is_game_over():
 
         if random() < config["training_probability"]:
@@ -65,7 +59,9 @@ for i in range(config["episodes"] + 1):
             buffer_inputs.append(game_manager.get_state()[0])
             buffer_targets.append(generate_training_target(visits_dict, total_visits, config["size"]**2))
         else:
-            visits_dict, total_visits, action = tree.mcts(config["mcts_discounted_simulations"], get_next_state, config["c"])
+            visits_dict, total_visits, action = tree.mcts(config["mcts_discounted_simulations"],
+                                                          get_next_state,
+                                                          config["c"])
 
         if len(buffer_inputs) == config["buffer_size"]:
             print("Training actor network | Buffer size:", len(buffer_inputs))
@@ -74,11 +70,10 @@ for i in range(config["episodes"] + 1):
             buffer_targets = []
 
         game_manager.execute_action(action)
-
         game_history.append(game_manager.get_state()[1])
 
         simulations -= config["mcts_discount_constant"]
-        counter += 1
+        number_of_moves += 1
 
     if i % config["save_frequency"] == 0:
         if config["name"] == "demo":
@@ -93,21 +88,26 @@ for i in range(config["episodes"] + 1):
             if evaluation > best_evaluation:
                 best_evaluation = evaluation
                 actor.save_model("best_model_last_run")
-                print("Evaluation record so far in this run!")
+                print("Best evaluation so far this run!")
 
-    print("Episode:", i, " |  Starting player:  ", starting_player, " |  Winner:", game_manager.get_winner(), " |  Epsilon: ", actor.epsilon, " | Number of moves: ", counter)
+    print("Episode:", i,
+          " |  Starting player:  ", starting_player,
+          " |  Winner:", game_manager.get_winner(),
+          " |  Epsilon: ", actor.epsilon,
+          " | Number of moves: ", number_of_moves)
 
     actor.decrease_epsilon()
 
-end_time = time()
-time_spent = end_time - start_time
+time_spent = time() - start_time
 print("Time spent on entire run:", time_spent)
+print("")
+
 if len(evaluation_history) > 0:
     plot_history(evaluation_history, config["save_frequency"])
-print("")
+
 # visualize_game(game_history)  # visualize last game played, hopefully a good one
 
-print("Setting actor epsilon = 0")
+print("Setting actor's epsilon to 0")
 actor.epsilon = 0
 
 if run_interaction_game:
@@ -117,7 +117,7 @@ if saved_actor_count > 0:
     win_rate = tournaments.run_one_vs_all(actor)
     print("Win rate for last actor:", win_rate)
     print("")
-    tournaments.run_topp_tournament()
+    tournaments.run_topp_tournament(randoms=4)
 else:
     evaluation = tournaments.evaluate_actor(actor)
     print("Evaluation:", evaluation)
@@ -127,7 +127,7 @@ else:
         if elite_group == "queens":
             queens = read_queens()
             queens[config["name"]] = evaluation   # win rate against randoms
-            save_queens(queens)             # if agent was already in queens, win rate is overwritten
+            save_queens(queens)                   # if agent was already in queens, win rate is overwritten
             print("Player was added to queens.")
 
         if elite_group == "kings":
@@ -137,5 +137,3 @@ else:
             print("Player was added to kings.")
     else:
         print("The player was not good enough to join the elites.")
-
-

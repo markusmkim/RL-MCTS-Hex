@@ -1,5 +1,18 @@
 
 
+def print_stats(stats, games, detailed_stats):
+    print("")
+    print("Stats:")
+    print(stats)
+    print("")
+    print("Number of games:")
+    print(games)
+    print("")
+    print("Detailed stats:")
+    print(detailed_stats)
+    print("")
+
+
 def convert_state(oht_state, size):
     flat_list = []
     player = [1, 0]
@@ -33,3 +46,5 @@ def convert_action(action, size):
     row = size - 1 - (action % size)
     column = action // size
     return row, column
+
+
