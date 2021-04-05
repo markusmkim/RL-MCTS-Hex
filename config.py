@@ -1,12 +1,12 @@
 config = {
-    "name": "nanna",
+    "name": "hermine",
     "size": 6,
     "starting_player": "alternate",
 
     "epsilon": 0.05,
     "epsilon_decay_rate": 1,
 
-    "hidden_layers": [544, 128],
+    "hidden_layers": [512, 256],
     "optimizer": 'adam',
     "activation_function": 'relu',
     "learning_rate": 0.005,
@@ -18,12 +18,12 @@ config = {
     "epochs": 4,
 
     "episodes": 10,
-    "save_frequency": 20,
-    "mcts_simulations": 20,
-    "mcts_discounted_simulations": 10,
-    "mcts_discount_constant": 0,
-    "TOPP-G": 20,
-    "c": 10,
+    "save_frequency": 1,
+    "mcts_simulations": 500,
+    "mcts_discounted_simulations": 100,
+    "mcts_discount_constant": 10,
+    "TOPP-G": 60,
+    "c": 2,
 }
 
 

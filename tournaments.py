@@ -1,7 +1,7 @@
 from Agent.actor import Actor
 from SimWorld.hexManager import HexManager
 import numpy as np
-from utils import read_queens, read_kings, read_metadata
+from utils import read_queens, read_kings
 
 
 class Tournaments:
@@ -31,9 +31,8 @@ class Tournaments:
         print_stats(number_of_wins, number_of_games, detailed_stats)
 
 
-    def run_one_vs_all(self, actor):
+    def run_one_vs_all(self, actor, randoms=19):
         print("Running one vs all")
-        randoms = 19
         players = [actor]
 
         for i in range(randoms):
@@ -49,25 +48,54 @@ class Tournaments:
         return number_of_wins[0] / number_of_games[0]
 
 
-    def run_elite_tournament(self, actor):
+    def run_elite_tournament(self, actor=None):
         print("Running elite tournament")
         names = [key for key in read_queens()] + [key for key in read_kings()]
         if names is None or len(names) == 0:
             print('No elites to play against')
-            return 1  # win rate is 1 if only player
-        players = [actor]
+            return -1
+
+        players = [actor] if actor else []
         for i in range(len(names)):
-            # hidden_layers = read_metadata(f"Agent/saved_networks/{names[i]}/metadata.text")["hidden_layers"]
             player = Actor(0, 0, name=names[i])
-            # player.load_weights(f"Agent/saved_networks/{names[i]}/network.ckpt")
             players.append(player)
 
         number_of_wins, number_of_games, detailed_stats = self.play_tournament_games(players)
-        print("Elite tournament is over. The first player is new.")
-        print("All players:", names.insert(0, "New Player"))
+        if actor:
+            print("Elite tournament is over. The first player is new.")
+            print("All players:", names.insert(0, "New Player"))
+        else:
+            print("Elite tournament is over.")
+            print("All players:", names)
+
         print_stats(number_of_wins, number_of_games, detailed_stats)
 
-        return number_of_wins[0] / number_of_games[0]
+        return number_of_wins[0] / number_of_games[0] if actor else None
+
+
+    def evaluate_actor(self, actor):
+        win_rate_one_vs_all = self.run_one_vs_all(actor, randoms=9)
+        win_rate_elite = self.run_elite_tournament(actor=actor)
+        if win_rate_elite == -1:
+            return win_rate_one_vs_all
+        return win_rate_one_vs_all * 0.2 + win_rate_elite * 0.8
+
+
+    def run_interaction_game(self, actor, actor_starts=False):
+        starting_player = [1, 0] if not actor_starts else [0, 1]
+        game_manager = HexManager(starting_player, self.config["size"])
+        game_manager.visualize_game_state()
+        while not game_manager.is_game_over():
+            if game_manager.get_state()[0][0] == 1:
+                action = -1
+                while action not in game_manager.get_state()[2]:
+                    action = int(input("Action: "))
+            else:
+                action = actor.find_best_action(game_manager.get_state())
+            game_manager.execute_action(action)
+            game_manager.visualize_game_state()
+        winner = game_manager.get_winner()
+        print("Winner:", winner)
 
 
     def play_tournament_games(self, players):

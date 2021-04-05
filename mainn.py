@@ -6,12 +6,12 @@ from config import config
 from tournaments import Tournaments
 from random import random
 from time import time
-from utils import generate_training_target, save_metadata, save_kings, save_queens, read_kings, read_queens
+from utils import generate_training_target, save_metadata, save_kings, save_queens, read_kings, read_queens, plot_history
 
 # --------------------------------------
 elite_group = "queens"  # kings | queens
 train_from = None       # name or None
-train_from_old = None   # name from saved_networks or None
+run_interaction_game = False
 # --------------------------------------
 
 if train_from:
@@ -27,9 +27,6 @@ else:
                   learning_rate=config["learning_rate"],
                   loss=config["loss"])
 
-    if train_from_old:
-        actor.load_weights(f"Agent/saved_networks/{train_from_old}/network.ckpt")
-
 saved_actor_count = 0
 
 print("Welcome to a game of Hex!")
@@ -40,6 +37,10 @@ game_history = []
 
 start_time = time()
 
+evaluation_history = []
+best_evaluation = 0
+
+tournaments = Tournaments(config)
 
 for i in range(config["episodes"] + 1):
     game_history = []
@@ -82,24 +83,20 @@ for i in range(config["episodes"] + 1):
         buffer_inputs = []
         buffer_targets = []
 
-    if config["name"] == "demo" and i % config["save_frequency"] == 0:
-        print("Saving network")
-        actor.save_model("demo", saved_actor_count)
-        saved_actor_count += 1
-
-    """
-    if len(buffer_inputs) == config["buffer_size"]:
-        print("Training actor network | Buffer size:", len(buffer_inputs))
-        if config["name"] == "demo" and i % config["save_frequency"] == 0:
-            actor.train_model(buffer_inputs, buffer_targets, config["batch_size"], config["epochs"], count=saved_actor_count)
+    if i % config["save_frequency"] == 0:
+        if config["name"] == "demo":
+            print("Saving network")
+            actor.save_model("demo", saved_actor_count)
             saved_actor_count += 1
-        else:
-            actor.train_model(buffer_inputs, buffer_targets, config["batch_size"], config["epochs"])
-        buffer_inputs = []
-        buffer_targets = []
-    """
-
-    # game_manager.visualize_game_state()
+        elif i > 0:
+            evaluation = tournaments.evaluate_actor(actor)
+            evaluation_history.append(evaluation)
+            actor.save_model("last_model")
+            print("Intermediate evaluation:", evaluation)
+            if evaluation > best_evaluation:
+                best_evaluation = evaluation
+                actor.save_model("best_model_last_run")
+                print("Evaluation record so far in this run!")
 
     print("Episode:", i, " |  Starting player:  ", starting_player, " |  Winner:", game_manager.get_winner(), " |  Epsilon: ", actor.epsilon, " | Number of moves: ", counter)
 
@@ -108,40 +105,37 @@ for i in range(config["episodes"] + 1):
 end_time = time()
 time_spent = end_time - start_time
 print("Time spent on entire run:", time_spent)
+if len(evaluation_history) > 0:
+    plot_history(evaluation_history, config["save_frequency"])
 print("")
-
 # visualize_game(game_history)  # visualize last game played, hopefully a good one
 
-tournaments = Tournaments(config)
-
-win_rate = tournaments.run_one_vs_all(actor)
-print("Win rate for last actor:", win_rate)
-print("")
+if run_interaction_game:
+    tournaments.run_interaction_game(actor, actor_starts=True)
 
 if saved_actor_count > 0:
+    win_rate = tournaments.run_one_vs_all(actor)
+    print("Win rate for last actor:", win_rate)
+    print("")
     tournaments.run_topp_tournament()
 else:
-    if win_rate > 0.1:
-        actor.save_model(config["name"])
-        save_metadata(config, win_rate, time_spent)
+    evaluation = tournaments.evaluate_actor(actor)
+    print("Evaluation:", evaluation)
+    actor.save_model(config["name"])
+    save_metadata(config, evaluation, time_spent)
+    if evaluation > 0.5:
+        if elite_group == "queens":
+            queens = read_queens()
+            queens[config["name"]] = evaluation   # win rate against randoms
+            save_queens(queens)             # if agent was already in queens, win rate is overwritten
+            print("Player was added to queens.")
 
-        elite_win_rate = tournaments.run_elite_tournament(actor)
-
-        if elite_win_rate > 0.1:
-            if elite_group == "queens":
-                queens = read_queens()
-                queens[config["name"]] = win_rate   # win rate against randoms
-                save_queens(queens)             # if agent was already in queens, win rate is overwritten
-                print("Player was added to queens.")
-
-            if elite_group == "kings":
-                kings = read_kings()
-                kings[config["name"]] = win_rate
-                save_kings(kings)
-                print("Player was added to kings.")
-        else:
-            print("The player was not good enough to join the elites.")
-
+        if elite_group == "kings":
+            kings = read_kings()
+            kings[config["name"]] = evaluation
+            save_kings(kings)
+            print("Player was added to kings.")
     else:
-        print("The player was not good enough to compete against elites.")
+        print("The player was not good enough to join the elites.")
+
 

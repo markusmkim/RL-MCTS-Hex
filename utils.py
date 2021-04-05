@@ -1,3 +1,6 @@
+import matplotlib.pyplot as plt
+import numpy as np
+
 
 def generate_training_target(visits_dict, total_visits, size):
     training_target = []
@@ -9,51 +12,15 @@ def generate_training_target(visits_dict, total_visits, size):
     return training_target
 
 
-def save_metadata(config, win_rate, time_spent):
+def save_metadata(config, evaluation, time_spent):
     name = config["name"]
     filepath = f"Agent/saved_models/{name}/metadata.text"  # metadata = config + win rate
     data = [f"{key}: {config[key]}" for key in config]
     file = open(filepath, "w")  # w = overwrite if already exists
     [file.write(line + "\n") for line in data]
-    file.write("\nWin rate in OneVsAll: " + str(win_rate))
+    file.write("\nEvaluation: " + str(evaluation))
     file.write("\nTime spent: " + str(time_spent))
     file.close()
-
-
-def read_metadata(filepath):
-    numeric_keys = ["size",
-                    "episodes",
-                    "mcts_simulations",
-                    "learning_rate",
-                    "training_frequency",
-                    "training_probability",
-                    "epsilon",
-                    "epsilon_decay_rate",
-                    "TOPP-G",
-                    "c"]
-    data = {}
-    file = open(filepath, "r")
-    try:
-        for line in file.readlines():
-            if line == "":
-                break
-            config_line = line.split(": ")
-            if len(config_line) == 2:
-                key = config_line[0]
-                value = config_line[1].rstrip()
-                if key in numeric_keys:
-                    value = float(value)
-
-                if key == "save_frequency" and value != "None":
-                    value = float(value)
-
-                if key == "hidden_layers":
-                    value = [int(layer) for layer in value[1:-1].split(", ")]
-
-                data[key] = value
-    finally:
-        file.close()
-    return data
 
 
 def read_kings():
@@ -102,3 +69,10 @@ def save_royalty(filepath, data):
         [file.write(line + "\n") for line in data]
     finally:
         file.close()
+
+
+def plot_history(history, frequency):
+    x_axis = np.arange(len(history))
+    x_axis = x_axis * frequency
+    plt.plot(x_axis, history)
+    plt.show()
