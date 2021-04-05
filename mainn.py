@@ -9,8 +9,8 @@ from time import time
 from utils import generate_training_target, save_metadata, save_kings, save_queens, read_kings, read_queens, plot_history
 
 # --------------------------------------
-elite_group = "queens"  # kings | queens
-train_from = "hermine"       # name or None
+elite_group = "kings"  # kings | queens
+train_from = None       # name or None
 run_interaction_game = False
 # --------------------------------------
 
@@ -68,7 +68,10 @@ for i in range(config["episodes"] + 1):
             visits_dict, total_visits, action = tree.mcts(config["mcts_discounted_simulations"], get_next_state, config["c"])
 
         if len(buffer_inputs) == config["buffer_size"]:
-            break
+            print("Training actor network | Buffer size:", len(buffer_inputs))
+            actor.train_model(buffer_inputs, buffer_targets, config["batch_size"], config["epochs"])
+            buffer_inputs = []
+            buffer_targets = []
 
         game_manager.execute_action(action)
 
@@ -76,12 +79,6 @@ for i in range(config["episodes"] + 1):
 
         simulations -= config["mcts_discount_constant"]
         counter += 1
-
-    if len(buffer_inputs) == config["buffer_size"]:
-        print("Training actor network | Buffer size:", len(buffer_inputs))
-        actor.train_model(buffer_inputs, buffer_targets, config["batch_size"], config["epochs"])
-        buffer_inputs = []
-        buffer_targets = []
 
     if i % config["save_frequency"] == 0:
         if config["name"] == "demo":

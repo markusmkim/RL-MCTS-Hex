@@ -51,7 +51,6 @@ class Tournaments:
     def run_elite_tournament(self, actor=None):
         print("Running elite tournament")
         names = [key for key in read_queens()] + [key for key in read_kings()]
-        print(names)
         if names is None or len(names) == 0:
             print('No elites to play against')
             return -1

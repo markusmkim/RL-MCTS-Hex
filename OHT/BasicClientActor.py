@@ -23,6 +23,8 @@ class BasicClientActor(BasicClientActorAbs):
         :return: Your actor's selected action as a tuple (row, column)
         """
 
+        # må endre denne --> actor forventer state på vårt format
+
         size = int(sqrt(len(state) - 1))
 
         new_state = convert_state(state, size)
