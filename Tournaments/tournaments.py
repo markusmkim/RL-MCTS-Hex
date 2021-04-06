@@ -48,7 +48,7 @@ class Tournaments:
         return number_of_wins[0] / number_of_games[0]
 
 
-    def run_elite_tournament(self, actor=None, names=None):
+    def run_elite_tournament(self, actor=None, names=None, randoms=0, update=False):
         print("Running elite tournament")
         if names is None:
             names = [key for key in read_queens()] + [key for key in read_kings()]
@@ -61,7 +61,18 @@ class Tournaments:
             player = Actor(0, 0, name=names[i])
             players.append(player)
 
+        for i in range(randoms):
+            names.append("random")
+            players.append(Actor(1, 1,
+                                 input_dim=2 * (self.config["size"] ** 2 + 1),
+                                 hidden_layers=self.config["hidden_layers"],
+                                 activation_function=self.config["activation_function"]))
+
         number_of_wins, number_of_games, detailed_stats = self.play_tournament_games(players)
+
+        if update:
+            return names, number_of_wins, number_of_games
+
         if actor:
             print("Elite tournament is over. The first player is new.")
             names.insert(0, "New Player")
@@ -70,9 +81,22 @@ class Tournaments:
             print("Elite tournament is over.")
             print("All players:", names)
 
+        if randoms > 0:
+            print("The last", randoms, "players take random actions.")
+
         print_stats(number_of_wins, number_of_games, detailed_stats)
 
         return number_of_wins[0] / number_of_games[0] if actor else None
+
+
+    def update_elite_evaluations(self):
+        print(" --- Updating elite evaluations --- ")
+        names, number_of_wins, number_of_games = self.run_elite_tournament(update=True)
+        for i in range(len(names)):
+            win_rate = self.run_one_vs_all(names[i], 19)
+            elite_win_rate = number_of_wins[i] / number_of_games[i]
+            evaluation = 0.2 * win_rate + 0.8 * elite_win_rate
+            # TODO: Update 'evaluation' for actor names[i]
 
 
     def evaluate_actor(self, actor):

@@ -1,0 +1,24 @@
+name: arnold
+size: 6
+starting_player: alternate
+epsilon: 0.05
+epsilon_decay_rate: 1
+hidden_layers: [516, 256, 128, 64]
+optimizer: adam
+activation_function: relu
+learning_rate: 0.005
+loss: mse
+training_probability: 0.8
+buffer_size: 128
+batch_size: 64
+epochs: 2
+episodes: 20
+save_frequency: 2
+mcts_simulations: 1000
+mcts_discount_constant: 20
+mcts_discounted_simulations: 200
+tournament_games: 40
+c: 2
+
+Evaluation: 0.14722222222222223
+Time spent: 8084.689069032669

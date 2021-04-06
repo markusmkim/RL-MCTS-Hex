@@ -5,6 +5,6 @@ from Tournaments.tournaments import Tournaments
 
 tournaments = Tournaments(config)
 
-names = ["hermine", "hermine"]
+names = ["last_model", "sylvester", "best_nils", "hermine", "henning", "arnold", "nils"]
 
-tournaments.run_elite_tournament(names=names)
+tournaments.run_elite_tournament(names=names, randoms=3)

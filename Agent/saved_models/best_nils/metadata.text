@@ -1,0 +1,24 @@
+name: best_nils
+size: 6
+starting_player: alternate
+epsilon: 0.05
+epsilon_decay_rate: 1
+hidden_layers: [516, 256, 128]
+optimizer: adam
+activation_function: relu
+learning_rate: 0.005
+loss: mse
+training_probability: 0.8
+buffer_size: 96
+batch_size: 48
+epochs: 2
+episodes: 0
+save_frequency: 2
+mcts_simulations: 800
+mcts_discount_constant: 20
+mcts_discounted_simulations: 200
+tournament_games: 80
+c: 2
+
+Evaluation: 0.7463888888888889
+Time spent: 211.94468140602112

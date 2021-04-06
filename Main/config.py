@@ -1,5 +1,5 @@
-config = {
-    "name": "sylvester",
+config = {  # ikke kjørt denne enda
+    "name": "marco",
     "size": 6,
     "starting_player": "alternate",
 
@@ -9,7 +9,7 @@ config = {
     "hidden_layers": [516, 256, 128],
     "optimizer": 'adam',
     "activation_function": 'relu',
-    "learning_rate": 0.001,
+    "learning_rate": 0.01,
     "loss": "mse",
 
     "training_probability": 0.8,
@@ -18,10 +18,10 @@ config = {
     "epochs": 2,
 
     "episodes": 10,
-    "save_frequency": 2,
-    "mcts_simulations": 200,
-    "mcts_discount_constant": 5,
-    "mcts_discounted_simulations": 20,
-    "tournament_games": 40,                   # bør kunne deles på 4 for mest presise resultater
+    "save_frequency": 0,
+    "mcts_simulations": 400,
+    "mcts_discount_constant": 10,
+    "mcts_discounted_simulations": 200,
+    "tournament_games": 80,                   # bør kunne deles på 8 for mest presise resultater
     "c": 2,
 }

@@ -9,7 +9,7 @@ from Main.utils import generate_training_target, plot_history
 from Main.utils import save_metadata, save_kings, save_queens, read_kings, read_queens
 
 # --- # --- # --- # --- # --- # --- # --- #
-elite_group = "kings"  # kings | queens
+elite_group = "kings"   # kings | queens
 train_from = None       # name or None
 run_interaction_game = False
 # --- # --- # --- # --- # --- # --- # --- #
@@ -87,7 +87,7 @@ for i in range(config["episodes"] + 1):
             print("Intermediate evaluation:", evaluation)
             if evaluation > best_evaluation:
                 best_evaluation = evaluation
-                actor.save_model("best_model_last_run")
+                actor.save_model("best_nils")
                 print("Best evaluation so far this run!")
 
     print("Episode:", i,
