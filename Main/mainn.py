@@ -11,6 +11,7 @@ from Main.utils import save_metadata, save_kings, save_queens, read_kings, read_
 # --- # --- # --- # --- # --- # --- # --- #
 elite_group = "kings"   # kings | queens
 train_from = None       # name or None
+rollout_actor = Actor(0, 0, name="henning")
 run_interaction_game = False
 # --- # --- # --- # --- # --- # --- # --- #
 
@@ -48,6 +49,9 @@ for i in range(config["episodes"] + 1):
     game_history.append(game_manager.get_state()[1])
 
     tree = Tree(game_manager.get_state(), actor)
+    if rollout_actor:
+        if i < config["episodes"] // 2:
+            tree = Tree(game_manager.get_state(), rollout_actor)
     tree.root.number_of_visits = 1
 
     simulations = config["mcts_simulations"]
@@ -87,7 +91,7 @@ for i in range(config["episodes"] + 1):
             print("Intermediate evaluation:", evaluation)
             if evaluation > best_evaluation:
                 best_evaluation = evaluation
-                actor.save_model("best_nils")
+                actor.save_model("best_model_last_run")
                 print("Best evaluation so far this run!")
 
     print("Episode:", i,
