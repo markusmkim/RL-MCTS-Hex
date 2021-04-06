@@ -22,6 +22,6 @@ config = {  # ikke kjørt denne enda
     "mcts_simulations": 400,
     "mcts_discount_constant": 10,
     "mcts_discounted_simulations": 200,
-    "tournament_games": 80,                   # bør kunne deles på 8 for mest presise resultater
+    "tournament_games": 40,                   # bør kunne deles på 8 for mest presise resultater
     "c": 2,
 }

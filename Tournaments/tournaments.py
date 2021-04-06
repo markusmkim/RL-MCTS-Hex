@@ -1,7 +1,7 @@
 from Agent.actor import Actor
 from SimWorld.hexManager import HexManager
 import numpy as np
-from Main.utils import read_queens, read_kings
+from Main.utils import read_queens, read_kings, save_queens, save_kings
 from Tournaments.utils import print_stats
 
 
@@ -92,11 +92,22 @@ class Tournaments:
     def update_elite_evaluations(self):
         print(" --- Updating elite evaluations --- ")
         names, number_of_wins, number_of_games = self.run_elite_tournament(update=True)
+
+        queens = read_queens()
+        kings = read_kings()
+
         for i in range(len(names)):
-            win_rate = self.run_one_vs_all(names[i], 19)
+            actor = Actor(0, 0, name=names[i])
+            win_rate = self.run_one_vs_all(actor, randoms=19)
             elite_win_rate = number_of_wins[i] / number_of_games[i]
             evaluation = 0.2 * win_rate + 0.8 * elite_win_rate
-            # TODO: Update 'evaluation' for actor names[i]
+            if names[i] in queens:
+                queens[names[i]] = evaluation
+            else:
+                kings[names[i]] = evaluation
+
+        save_queens(queens)
+        save_kings(kings)
 
 
     def evaluate_actor(self, actor):
