@@ -39,7 +39,6 @@ class Node:
             if self.state[0][0] == 1:  # 1,  player 1 (=[1, 0])
                 return self.argmax(c)
             return self.argmin(c)
-
         return None
 
 
@@ -51,6 +50,7 @@ class Node:
             if score > best_score:
                 best_child = child
                 best_score = score
+
         return best_child
 
 
@@ -62,6 +62,7 @@ class Node:
             if score < best_score:
                 best_child = child
                 best_score = score
+
         return best_child
 
 

@@ -31,8 +31,9 @@ class Tournaments:
         print_stats(number_of_wins, number_of_games, detailed_stats)
 
 
-    def run_one_vs_all(self, actor, randoms=19):
-        print("Running one vs all")
+    def run_one_vs_all(self, actor, randoms=19, display=True):
+        if display:
+            print("Running one vs all")
         players = [actor]
 
         for i in range(randoms):
@@ -42,18 +43,22 @@ class Tournaments:
                                  activation_function=self.config["activation_function"]))
 
         number_of_wins, number_of_games, detailed_stats = self.play_tournament_games(players)
-        print("OneVsAll tournament is over. Only the first player is trained.")
-        print_stats(number_of_wins, number_of_games, detailed_stats)
+
+        if display:
+            print("OneVsAll tournament is over. Only the first player is trained.")
+            print_stats(number_of_wins, number_of_games, detailed_stats)
 
         return number_of_wins[0] / number_of_games[0]
 
 
-    def run_elite_tournament(self, actor=None, names=None, randoms=0, update=False):
-        print("Running elite tournament")
+    def run_elite_tournament(self, actor=None, names=None, randoms=0, update=False, display=True):
+        if display:
+            print("Running elite tournament")
         if names is None:
             names = [key for key in read_queens()] + [key for key in read_kings()]
             if names is None or len(names) == 0:
-                print('No elites to play against')
+                if display:
+                    print('No elites to play against')
                 return -1
 
         players = [actor] if actor else []
@@ -73,18 +78,19 @@ class Tournaments:
         if update:
             return names, number_of_wins, number_of_games
 
-        if actor:
-            print("Elite tournament is over. The first player is new.")
-            names.insert(0, "New Player")
-            print("All players:", names)
-        else:
-            print("Elite tournament is over.")
-            print("All players:", names)
+        if display:
+            if actor:
+                print("Elite tournament is over. The first player is new.")
+                names.insert(0, "New Player")
+                print("All players:", names)
+            else:
+                print("Elite tournament is over.")
+                print("All players:", names)
 
-        if randoms > 0:
-            print("The last", randoms, "players take random actions.")
+            if randoms > 0:
+                print("The last", randoms, "players take random actions.")
 
-        print_stats(number_of_wins, number_of_games, detailed_stats)
+            print_stats(number_of_wins, number_of_games, detailed_stats)
 
         return number_of_wins[0] / number_of_games[0] if actor else None
 
@@ -110,9 +116,9 @@ class Tournaments:
         save_kings(kings)
 
 
-    def evaluate_actor(self, actor):
-        win_rate_one_vs_all = self.run_one_vs_all(actor, randoms=9)
-        win_rate_elite = self.run_elite_tournament(actor=actor)
+    def evaluate_actor(self, actor, display=True):
+        win_rate_one_vs_all = self.run_one_vs_all(actor, randoms=9, display=display)
+        win_rate_elite = self.run_elite_tournament(actor=actor, display=display)
         if win_rate_elite == -1:
             return win_rate_one_vs_all
         return win_rate_one_vs_all * 0.2 + win_rate_elite * 0.8

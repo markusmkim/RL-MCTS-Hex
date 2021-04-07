@@ -8,8 +8,12 @@ class Actor:
     def __init__(self, epsilon, epsilon_decay_rate,
                  input_dim=None, hidden_layers=None, optimizer=None,
                  activation_function=None, learning_rate=0, loss=None,
-                 name=None, count=-1):
+                 name=None, count=-1, akimbo=False):
+
         self.input_dim = input_dim
+        if input_dim and akimbo:
+            self.input_dim = input_dim - 2
+
         self.hidden_layers = hidden_layers
         self.learning_rate = learning_rate
         self.loss = loss
@@ -17,17 +21,28 @@ class Actor:
         self.activation_function = activation_function
         self.epsilon = epsilon
         self.epsilon_decay_rate = epsilon_decay_rate
-        if name or count >= 0:
-            self.model = load_model(name, count)
+        self.akimbo = akimbo
+
+        if akimbo:
+            if name or count >= 0:
+                self.black_model = load_model(name, count, "black")
+                self.red_model = load_model(name, count, "red")
+            else:
+                self.black_model = self.build_model()
+                self.red_model = self.build_model()
+
         else:
-            self.model = self.build_model()
+            if name or count >= 0:
+                self.model = load_model(name, count)
+            else:
+                self.model = self.build_model()
 
 
     def build_model(self):
         model = keras.Sequential()
         if len(self.hidden_layers) == 0:
             """ if no hidden layer, the output layer is the only layer """
-            output_layer = (self.input_dim // 2) - 1  # must correspond to number of cells on board
+            output_layer = (self.input_dim // 2) if self.akimbo else (self.input_dim // 2) - 1
             # add output layer with softmax
             model.add(keras.layers.Dense(output_layer, activation='softmax', input_shape=(self.input_dim,)))
 
@@ -44,7 +59,7 @@ class Actor:
                 model.add(keras.layers.Dense(layer, activation=self.activation_function))
 
             # add output layer, with softmax activation
-            output_layer = (self.input_dim // 2) - 1  # must correspond to number of cells on board
+            output_layer = (self.input_dim // 2) if self.akimbo else (self.input_dim // 2) - 1
             model.add(keras.layers.Dense(output_layer, activation='softmax'))
 
         loss = get_loss(self.loss)
@@ -54,18 +69,39 @@ class Actor:
         return model
 
 
-    def train_model(self, x_train, y_train, batch_size, epochs):
-        self.model.fit(np.array(x_train), np.array(y_train),
-                       batch_size=batch_size,
-                       epochs=epochs,
-                       verbose=0)  # verbose = 0 to run silent
+    def train_model(self, x_train, y_train, batch_size, epochs, color=None):
+        if color:
+            if color == 1:
+                self.black_model.fit(np.array(x_train), np.array(y_train),
+                                     batch_size=batch_size,
+                                     epochs=epochs,
+                                     verbose=0)  # verbose = 0 to run silent
+
+            else:
+                self.red_model.fit(np.array(x_train), np.array(y_train),
+                                   batch_size=batch_size,
+                                   epochs=epochs,
+                                   verbose=0)  # verbose = 0 to run silent
+        else:
+            self.model.fit(np.array(x_train), np.array(y_train),
+                           batch_size=batch_size,
+                           epochs=epochs,
+                           verbose=0)  # verbose = 0 to run silent
 
 
     def save_model(self, name, count=-1):
-        if count == -1:
-            self.model.save(f"Agent/saved_models/{name}/network")
+        if self.akimbo:
+            if count == -1:
+                self.black_model.save(f"Agent/saved_models/{name}/black/network")
+                self.red_model.save(f"Agent/saved_models/{name}/red/network")
+            else:
+                self.black_model.save(f"Agent/saved_models/demo/black/network-{count}")
+                self.red_model.save(f"Agent/saved_models/demo/red/network-{count}")
         else:
-            self.model.save(f"Agent/saved_models/demo/network-{count}")
+            if count == -1:
+                self.model.save(f"Agent/saved_models/{name}/network")
+            else:
+                self.model.save(f"Agent/saved_models/demo/network-{count}")
 
 
     def find_best_action(self, state):
@@ -76,11 +112,18 @@ class Actor:
         if random.random() < self.epsilon:
             return possible_actions[random.randint(0, len(possible_actions) - 1)]
 
-        output = np.array(self.model(state[0].reshape(1, len(state[0]))))
+        if self.akimbo:
+            grid = state[0][2:]
+            if state[0][0] == 1:  # black to move
+                output = np.array(self.black_model(grid.reshape(1, len(grid))))
+            else:  # red to move
+                output = np.array(self.red_model(grid.reshape(1, len(grid))))
+        else:
+            output = np.array(self.model(state[0].reshape(1, len(state[0]))))
 
         best_action = np.argmax(output, axis=1)[0]
         while best_action not in possible_actions:
-            output[0][best_action] = 0
+            output[0][best_action] = -1
             best_action = np.argmax(output, axis=1)[0]
 
         return best_action

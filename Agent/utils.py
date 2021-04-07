@@ -1,11 +1,17 @@
 from tensorflow import keras
 
 
-def load_model(name, count=-1):
-    if count == -1:
-        return keras.models.load_model(f"Agent/saved_models/{name}/network")
+def load_model(name, count=-1, color=None):
+    if color:
+        if count == -1:
+            return keras.models.load_model(f"Agent/saved_models/{name}/{color}/network")
+        else:
+            return keras.models.load_model(f"Agent/saved_models/demo/{color}/network-{count}")
     else:
-        return keras.models.load_model(f"Agent/saved_models/demo/network-{count}")
+        if count == -1:
+            return keras.models.load_model(f"Agent/saved_models/{name}/network")
+        else:
+            return keras.models.load_model(f"Agent/saved_models/demo/network-{count}")
 
 
 def get_loss(name):

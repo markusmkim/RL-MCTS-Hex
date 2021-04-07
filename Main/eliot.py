@@ -2,10 +2,11 @@
 
 from Main.config import config
 from Tournaments.tournaments import Tournaments
+import numpy as np
 
-tournaments = Tournaments(config)
+# tournaments = Tournaments(config)
 
 # names = ["last_model", "sylvester", "best_marco", "hermine", "henning", "arnold", "nils"]
 # tournaments.run_elite_tournament(names=names, randoms=3)
 
-tournaments.update_elite_evaluations()
+# tournaments.update_elite_evaluations()
