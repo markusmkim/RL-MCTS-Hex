@@ -63,7 +63,10 @@ class Tournaments:
 
         players = [actor] if actor else []
         for i in range(len(names)):
-            player = Actor(0, 0, name=names[i])
+            akimbo = False
+            if len(names[i]) > 5 and names[i][:6] == "akimbo":
+                akimbo = True
+            player = Actor(0, 0, name=names[i], akimbo=akimbo)
             players.append(player)
 
         for i in range(randoms):
@@ -103,7 +106,10 @@ class Tournaments:
         kings = read_kings()
 
         for i in range(len(names)):
-            actor = Actor(0, 0, name=names[i])
+            akimbo = False
+            if len(names[i]) > 5 and names[i][:6] == "akimbo":
+                akimbo = True
+            actor = Actor(0, 0, name=names[i], akimbo=akimbo)
             win_rate = self.run_one_vs_all(actor, randoms=19)
             elite_win_rate = number_of_wins[i] / number_of_games[i]
             evaluation = 0.2 * win_rate + 0.8 * elite_win_rate
