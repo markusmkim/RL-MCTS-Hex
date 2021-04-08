@@ -5,6 +5,7 @@ from MCTS.tree import Tree
 from Agent.actor import Actor
 from Agent.critic import Critic
 from SimWorld.hexManager import HexManager, get_next_state
+from time import time
 
 
 def generate_training_target(visits_dict, total_visits, size):
@@ -20,18 +21,27 @@ def generate_training_target(visits_dict, total_visits, size):
 def train_actor(actor, critic, config, tournaments, rollout_actor):
     print("Training models...")
 
-    evaluation_history = []
-    best_evaluation = 0
-    saved_actor_count = 0
     buffer_inputs = []
     buffer_targets = []
+
+    last_game_history = []
+    evaluation_history = []
+
+    best_evaluation = 0
+    saved_actor_count = 0
+
+    rollout_prob = config["rollout_prob"]
+
+    """ Time-stuff """
+    total_start_time = time()
+    last_save_start_time = time()
+    time_history = []
+
+    """ Akimbo-stuff """
     red_buffer_inputs = []
     red_buffer_targets = []
     black_buffer_inputs = []
     black_buffer_targets = []
-    last_game_history = []
-
-    rollout_prob = config["rollout_prob"]
 
     if rollout_actor:
         rollout_actor = initialize_actor(config, rollout_actor)
@@ -108,9 +118,23 @@ def train_actor(actor, critic, config, tournaments, rollout_actor):
             simulations -= config["mcts_discount_constant"]
             number_of_moves += 1
 
-        if i % config["save_frequency"] == 0:
+        if i % config["save_frequency"] == 0 and i > 0:
+            print("Saving network")
+
+            """ Time-stuff """
+            time_spent_on_save = time() - last_save_start_time
+            time_history.append(time_spent_on_save)
+            if len(time_history) > 1:
+                time_spent_on_last_save = time_history[-2]
+                ratio = time_spent_on_save / time_spent_on_last_save
+                print("Time spent on current save:  ", time_spent_on_save)
+                print("Time spent on previous save: ", time_spent_on_last_save)
+                print("Ratio:", ratio)
+                print("Time history:", time_history)
+            else:
+                print("Time spent on first save:", time_spent_on_save)
+
             if config["name"] == "demo":
-                print("Saving network")
                 actor.save_model("demo", saved_actor_count)
                 saved_actor_count += 1
             elif i > 0:
@@ -125,6 +149,8 @@ def train_actor(actor, critic, config, tournaments, rollout_actor):
                     best_evaluation = evaluation
                     actor.save_model("best_model_last_run")
                     print("Best evaluation so far this run!")
+
+            last_save_start_time = time()
 
         print("Episode:", i,
               " |  Starting player:  ", starting_player,
