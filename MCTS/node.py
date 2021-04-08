@@ -27,7 +27,9 @@ class Node:
     def rollout(self, simulation_actor, critic, rollout_prob):
         self.number_of_visits += 1
         if random.random() > rollout_prob:
-            return None, critic.evaluate(self.state)
+            value = critic.evaluate(self.state)
+            self.value = value
+            return None, value
 
         simulation_manager = HexManager(copy.deepcopy(self.state))
         while not simulation_manager.is_game_over():
