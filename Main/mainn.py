@@ -9,7 +9,7 @@ from Main.utils import save_metadata, save_kings, save_queens, read_kings, read_
 elite_group = "queens"
 train_from = "emma"
 akimbo = False
-rollout_actor = False
+rollout_actor = "emma"
 plot_evaluation_history = True
 visualize_last_game = False
 run_interaction_game = False

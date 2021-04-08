@@ -33,6 +33,9 @@ def train_actor(actor, critic, config, tournaments, rollout_actor):
 
     rollout_prob = config["rollout_prob"]
 
+    if rollout_actor:
+        rollout_actor = initialize_actor(config, rollout_actor)
+
     for i in range(config["episodes"] + 1):
         starting_player = [1, 0] if i % 2 == 0 else [0, 1]
         game_manager = HexManager(starting_player, config["size"])
@@ -42,7 +45,7 @@ def train_actor(actor, critic, config, tournaments, rollout_actor):
 
         tree = Tree(game_manager.get_state(), actor, critic)
         if rollout_actor:
-            if i < config["episodes"] // 2:
+            if i < 50:
                 tree = Tree(game_manager.get_state(), rollout_actor, critic)
         tree.root.number_of_visits = 1
 
@@ -136,9 +139,9 @@ def train_actor(actor, critic, config, tournaments, rollout_actor):
     return evaluation_history, last_game_history, saved_actor_count
 
 
-def initialize_actor(config, train_from, akimbo):
-    if train_from:
-        return Actor(config["epsilon"], config["epsilon_decay_rate"], name=train_from, akimbo=akimbo)
+def initialize_actor(config, name=False, akimbo=False):
+    if name:
+        return Actor(config["epsilon"], config["epsilon_decay_rate"], name=name, akimbo=akimbo)
     return Actor(config["epsilon"],
                  config["epsilon_decay_rate"],
                  input_dim=2 * (config["size"] ** 2 + 1),
@@ -151,14 +154,15 @@ def initialize_actor(config, train_from, akimbo):
                  akimbo=akimbo)
 
 
-def initialize_critic(config):
+def initialize_critic(config, name=False):
     return Critic(input_dim=2 * (config["size"] ** 2 + 1),
                   hidden_layers=config["hidden_layers"],
                   optimizer=config["optimizer"],
                   activation=config["activation"],
                   learning_rate=config["learning_rate"],
                   l2_reg=config["l2_reg"],
-                  loss=config["loss"])
+                  loss=config["loss"],
+                  name=name)
 
 
 def plot_history(history, frequency):
