@@ -24,7 +24,7 @@ class Tournaments:
             players.append(Actor(1, 1,
                                  input_dim=2 * (self.config["size"] ** 2 + 1),
                                  hidden_layers=self.config["hidden_layers"],
-                                 activation_function=self.config["activation_function"]))
+                                 activation=self.config["activation"]))
 
         print("TOPP tournament is over. The", randoms, "last players take random actions.")
         number_of_wins, number_of_games, detailed_stats = self.play_tournament_games(players)
@@ -40,7 +40,7 @@ class Tournaments:
             players.append(Actor(1, 1,
                                  input_dim=2 * (self.config["size"] ** 2 + 1),
                                  hidden_layers=self.config["hidden_layers"],
-                                 activation_function=self.config["activation_function"]))
+                                 activation=self.config["activation"]))
 
         number_of_wins, number_of_games, detailed_stats = self.play_tournament_games(players)
 
@@ -74,7 +74,7 @@ class Tournaments:
             players.append(Actor(1, 1,
                                  input_dim=2 * (self.config["size"] ** 2 + 1),
                                  hidden_layers=self.config["hidden_layers"],
-                                 activation_function=self.config["activation_function"]))
+                                 activation=self.config["activation"]))
 
         number_of_wins, number_of_games, detailed_stats = self.play_tournament_games(players)
 

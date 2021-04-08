@@ -19,15 +19,15 @@ class Actor:
 
         if akimbo:
             if name or count >= 0:
-                self.black_model = load_model(name, count, "black")
-                self.red_model = load_model(name, count, "red")
+                self.black_model = load_model(name, count=count, color="black")
+                self.red_model = load_model(name, count=count, color="red")
             else:
                 self.black_model = build_model(hidden_layers, input_dim, activation, loss, optimizer, learning_rate, l2_reg, akimbo=akimbo)
                 self.red_model = build_model(hidden_layers, input_dim, activation, loss, optimizer, learning_rate, l2_reg, akimbo=akimbo)
 
         else:
             if name or count >= 0:
-                self.model = load_model(name, count)
+                self.model = load_model(name, count=count)
             else:
                 self.model = build_model(hidden_layers, input_dim, activation, loss, optimizer, learning_rate, l2_reg, akimbo=akimbo)
 
