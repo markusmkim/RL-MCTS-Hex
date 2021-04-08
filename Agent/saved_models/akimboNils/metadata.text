@@ -11,13 +11,13 @@ training_probability: 0.8
 buffer_size: 64
 batch_size: 32
 epochs: 2
-episodes: 150
+episodes: 1
 save_frequency: 10
 mcts_simulations: 100
-mcts_discount_constant: 5
+mcts_discount_constant: 2
 mcts_discounted_simulations: 40
 tournament_games: 40
 c: 2
 
-Evaluation: 0.33611111111111114
-Time spent: 634.717413187027
+Evaluation: 0.5888888888888889
+Time spent: 8.644221305847168

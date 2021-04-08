@@ -16,10 +16,10 @@ config = {
     "batch_size": 32,
     "epochs": 2,
 
-    "episodes": 150,
+    "episodes": 1,
     "save_frequency": 10,
     "mcts_simulations": 100,
-    "mcts_discount_constant": 5,
+    "mcts_discount_constant": 2,
     "mcts_discounted_simulations": 40,
     "tournament_games": 40,                    # bør kunne deles på 8 for mest presise resultater
     "c": 2,
