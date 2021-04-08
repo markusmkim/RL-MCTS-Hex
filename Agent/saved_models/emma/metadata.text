@@ -1,0 +1,24 @@
+name: emma
+size: 6
+starting_player: alternate
+epsilon: 0.05
+epsilon_decay_rate: 1
+hidden_layers: [256, 128, 64]
+optimizer: adam
+activation_function: relu
+learning_rate: 0.01
+loss: mse
+training_probability: 0.5
+buffer_size: 128
+batch_size: 64
+epochs: 4
+episodes: -1
+save_frequency: 10
+mcts_simulations: 700
+mcts_discount_constant: 12
+mcts_discounted_simulations: 50
+tournament_games: 40
+c: 1
+
+Evaluation: 0.7361111111111112
+Time spent: 0.0
