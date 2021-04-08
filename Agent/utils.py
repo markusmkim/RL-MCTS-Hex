@@ -1,6 +1,35 @@
 from tensorflow import keras
 
 
+def build_model(hidden_layers, input_dim, activation, loss, optimizer, learning_rate, critic=False, akimbo=False):
+    model = keras.Sequential()
+    output_activation = "tanh" if critic else "softmax"
+    output_layer = 1 if critic else (input_dim // 2) if akimbo else (input_dim // 2) - 1
+
+    if len(hidden_layers) == 0:
+        """ if no hidden layer, the output layer is the only layer """
+        model.add(keras.layers.Dense(output_layer, activation=output_activation, input_shape=(input_dim,)))
+
+    else:
+        # add first hidden layer
+        first_hidden_layer = hidden_layers[0]
+        model.add(keras.layers.Dense(
+            first_hidden_layer,
+            activation=activation,
+            input_shape=(input_dim,)))
+
+        # add the rest of the hidden layers
+        for layer in hidden_layers[1:]:
+            model.add(keras.layers.Dense(layer, activation=activation))
+
+        model.add(keras.layers.Dense(output_layer, activation=output_activation))
+
+    loss = get_loss(loss)
+    optimizer = get_optimizer(optimizer, learning_rate)
+    model.compile(optimizer=optimizer, loss=loss)
+    return model
+
+
 def load_model(name, count=-1, color=None):
     if color:
         if count == -1:

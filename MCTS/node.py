@@ -1,6 +1,7 @@
 from math import sqrt, log
 from SimWorld.hexManager import HexManager
 import copy
+import random
 
 
 class Node:
@@ -23,15 +24,19 @@ class Node:
         return self.children
 
 
-    def rollout(self, simulation_actor):
+    def rollout(self, simulation_actor, critic, rollout_prob):
+        self.number_of_visits += 1
+        if random.random() > rollout_prob:
+            return None, critic.evaluate(self.state)
+
         simulation_manager = HexManager(copy.deepcopy(self.state))
         while not simulation_manager.is_game_over():
             simulation_action = simulation_actor.find_best_action(simulation_manager.get_state())
             simulation_manager.execute_action(simulation_action)
 
         self.value = 1 if simulation_manager.get_winner() == 1 else -1  # 1
-        self.number_of_visits += 1
-        return self.value
+
+        return self.state[0], self.value
 
 
     def best_child(self, c):

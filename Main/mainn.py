@@ -2,14 +2,14 @@ from time import time
 from Main.config import config
 from Tournaments.tournaments import Tournaments
 from SimWorld.utils import visualize_game
-from Main.utils import plot_history, initialize_actor, train_actor
+from Main.utils import plot_history, initialize_actor, initialize_critic, train_actor
 from Main.utils import save_metadata, save_kings, save_queens, read_kings, read_queens
 
 # --- # --- # --- # --- # --- # --- # --- #
-elite_group = "kings"
+elite_group = "queens"
 train_from = False
-akimbo = True
-rollout_actor = False
+akimbo = False
+rollout_actor = "emma"
 plot_evaluation_history = True
 visualize_last_game = False
 run_interaction_game = False
@@ -18,13 +18,14 @@ run_interaction_game = False
 print("Welcome to a game of Hex!")
 
 actor = initialize_actor(config, train_from, akimbo)
+critic = initialize_critic(config)
 
 print("Actor initialized")
 
 tournaments = Tournaments(config)
 start_time = time()
 
-evaluation_history, last_game_history, saved_actor_count = train_actor(actor, config, tournaments, rollout_actor)
+evaluation_history, last_game_history, saved_actor_count = train_actor(actor, critic, config, tournaments, rollout_actor)
 
 time_spent = time() - start_time
 print("Time spent on entire run:", time_spent)

@@ -3,6 +3,7 @@ import numpy as np
 from random import random
 from MCTS.tree import Tree
 from Agent.actor import Actor
+from Agent.critic import Critic
 from SimWorld.hexManager import HexManager, get_next_state
 
 
@@ -16,8 +17,8 @@ def generate_training_target(visits_dict, total_visits, size):
     return training_target
 
 
-def train_actor(actor, config, tournaments, rollout_actor):
-    print("Training actor...")
+def train_actor(actor, critic, config, tournaments, rollout_actor):
+    print("Training models...")
 
     evaluation_history = []
     best_evaluation = 0
@@ -30,6 +31,8 @@ def train_actor(actor, config, tournaments, rollout_actor):
     black_buffer_targets = []
     last_game_history = []
 
+    rollout_prob = config["rollout_prob"]
+
     for i in range(config["episodes"] + 1):
         starting_player = [1, 0] if i % 2 == 0 else [0, 1]
         game_manager = HexManager(starting_player, config["size"])
@@ -37,17 +40,22 @@ def train_actor(actor, config, tournaments, rollout_actor):
         if i == config["episodes"]:
             last_game_history.append(game_manager.get_state()[1])
 
-        tree = Tree(game_manager.get_state(), actor)
+        tree = Tree(game_manager.get_state(), actor, critic)
         if rollout_actor:
             if i < config["episodes"] // 2:
-                tree = Tree(game_manager.get_state(), rollout_actor)
+                tree = Tree(game_manager.get_state(), rollout_actor, critic)
         tree.root.number_of_visits = 1
 
         simulations = config["mcts_simulations"]
         number_of_moves = 0
         while not game_manager.is_game_over():
             if random() < config["training_probability"]:
-                visits_dict, total_visits, action = tree.mcts(simulations, get_next_state, config["c"])
+                visits_dict, total_visits, action, critic_input_buffer, critic_target_buffer = tree.mcts(
+                    simulations,
+                    get_next_state,
+                    config["c"],
+                    rollout_prob)
+
                 if actor.akimbo:
                     if game_manager.get_state()[0][1]:  # black to move
                         black_buffer_inputs.append(game_manager.get_state()[0][2:])
@@ -62,9 +70,10 @@ def train_actor(actor, config, tournaments, rollout_actor):
                     buffer_inputs.append(game_manager.get_state()[0])
                     buffer_targets.append(generate_training_target(visits_dict, total_visits, config["size"] ** 2))
             else:
-                visits_dict, total_visits, action = tree.mcts(config["mcts_discounted_simulations"],
-                                                              get_next_state,
-                                                              config["c"])
+                visits_dict, total_visits, action, critic_input_buffer, critic_target_buffer = tree.mcts(
+                    config["mcts_discounted_simulations"],
+                    get_next_state,
+                    config["c"], rollout_prob)
 
             if len(buffer_inputs) == config["buffer_size"]:
                 print("Training actor network | Buffer size:", len(buffer_inputs))
@@ -89,6 +98,9 @@ def train_actor(actor, config, tournaments, rollout_actor):
 
             if i == config["episodes"]:
                 last_game_history.append(game_manager.get_state()[1])
+
+            if len(critic_input_buffer) > 8:
+                critic.train_model(critic_input_buffer, critic_target_buffer, config["batch_size"], config["epochs"])
 
             simulations -= config["mcts_discount_constant"]
             number_of_moves += 1
@@ -115,9 +127,11 @@ def train_actor(actor, config, tournaments, rollout_actor):
               " |  Starting player:  ", starting_player,
               " |  Winner:", game_manager.get_winner(),
               " |  Epsilon: ", actor.epsilon,
-              " | Number of moves: ", number_of_moves)
+              " |  Rollout prob", rollout_prob,
+              " |  Number of moves: ", number_of_moves)
 
         actor.decrease_epsilon()
+        rollout_prob = rollout_prob * config["rollout_prob_decay_rate"]
 
     return evaluation_history, last_game_history, saved_actor_count
 
@@ -130,10 +144,19 @@ def initialize_actor(config, train_from, akimbo):
                  input_dim=2 * (config["size"] ** 2 + 1),
                  hidden_layers=config["hidden_layers"],
                  optimizer=config["optimizer"],
-                 activation_function=config["activation_function"],
+                 activation=config["activation"],
                  learning_rate=config["learning_rate"],
                  loss=config["loss"],
                  akimbo=akimbo)
+
+
+def initialize_critic(config):
+    return Critic(input_dim=2 * (config["size"] ** 2 + 1),
+                  hidden_layers=config["hidden_layers"],
+                  optimizer=config["optimizer"],
+                  activation=config["activation"],
+                  learning_rate=config["learning_rate"],
+                  loss=config["loss"])
 
 
 def plot_history(history, frequency):

@@ -2,15 +2,18 @@ from MCTS.node import Node
 
 
 class Tree:
-    def __init__(self, root_state, actor):
+    def __init__(self, root_state, actor, critic):
         self.root = Node(None, root_state)
         self.actor = actor
+        self.critic = critic
 
 
-    def mcts(self, number_of_simulations, get_next_state, c):
+    def mcts(self, number_of_simulations, get_next_state, c, rollout_prob):
         if self.root.children is None:
             self.root.expand(get_next_state)
         node = self.root
+        critic_input_buffer = []
+        critic_target_buffer = []
         for i in range(number_of_simulations):
             while node.children and len(node.children) > 0:
                 node = node.best_child(c)
@@ -18,7 +21,10 @@ class Tree:
                 node.expand(get_next_state)
                 if len(node.children) > 0:
                     node = node.children[0]
-            value = node.rollout(self.actor)
+            state, value = node.rollout(self.actor, self.critic, rollout_prob)
+            if state is not None:
+                critic_input_buffer.append(state)
+                critic_target_buffer.append(value)
             while node.parent is not None:
                 node = node.parent
                 node.value += value
@@ -28,6 +34,5 @@ class Tree:
 
         self.root = best_child
         self.root.parent = None
-        # self.root.number_of_visits = 1
 
-        return visits_dict, total_visits, best_action
+        return visits_dict, total_visits, best_action, critic_input_buffer, critic_target_buffer
