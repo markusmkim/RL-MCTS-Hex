@@ -5,7 +5,7 @@ config = {
     "epsilon": 0.05,
     "epsilon_decay_rate": 1,
     "rollout_prob": 1,
-    "rollout_prob_decay_rate": 0.95,
+    "rollout_prob_decay_rate": 0.98,
     "training_probability": 0.8,
 
     "hidden_layers": [256, 128, 64],
@@ -13,7 +13,7 @@ config = {
     "activation": 'relu',
     "learning_rate": 0.01,
     "loss": "mse",
-    "l2_reg": 0.001,
+    "l2_reg": 0.003,
 
     "buffer_size": 128,                        # buffer_size / batch_size burde være et heltall
     "batch_size": 64,
