@@ -13,6 +13,7 @@ config = {
     "activation": 'relu',
     "learning_rate": 0.005,
     "loss": "mae",
+    "l2_reg": 0.001,
 
     "buffer_size": 64,                        # buffer_size / batch_size burde være et heltall
     "batch_size": 32,

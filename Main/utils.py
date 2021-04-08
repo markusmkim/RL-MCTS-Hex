@@ -146,6 +146,7 @@ def initialize_actor(config, train_from, akimbo):
                  optimizer=config["optimizer"],
                  activation=config["activation"],
                  learning_rate=config["learning_rate"],
+                 l2_reg=config["l2_reg"],
                  loss=config["loss"],
                  akimbo=akimbo)
 
@@ -156,6 +157,7 @@ def initialize_critic(config):
                   optimizer=config["optimizer"],
                   activation=config["activation"],
                   learning_rate=config["learning_rate"],
+                  l2_reg=config["l2_reg"],
                   loss=config["loss"])
 
 

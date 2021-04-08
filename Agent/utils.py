@@ -1,14 +1,15 @@
 from tensorflow import keras
 
 
-def build_model(hidden_layers, input_dim, activation, loss, optimizer, learning_rate, critic=False, akimbo=False):
+def build_model(hidden_layers, input_dim, activation, loss, optimizer, learning_rate, l2_reg, critic=False, akimbo=False):
     model = keras.Sequential()
     output_activation = "tanh" if critic else "softmax"
     output_layer = 1 if critic else (input_dim // 2) if akimbo else (input_dim // 2) - 1
+    reg = keras.regularizers.l2(l2=l2_reg)
 
     if len(hidden_layers) == 0:
         """ if no hidden layer, the output layer is the only layer """
-        model.add(keras.layers.Dense(output_layer, activation=output_activation, input_shape=(input_dim,)))
+        model.add(keras.layers.Dense(output_layer, activation=output_activation, input_shape=(input_dim,), kernel_regularizer=reg))
 
     else:
         # add first hidden layer
@@ -20,9 +21,9 @@ def build_model(hidden_layers, input_dim, activation, loss, optimizer, learning_
 
         # add the rest of the hidden layers
         for layer in hidden_layers[1:]:
-            model.add(keras.layers.Dense(layer, activation=activation))
+            model.add(keras.layers.Dense(layer, activation=activation, kernel_regularizer=reg))
 
-        model.add(keras.layers.Dense(output_layer, activation=output_activation))
+        model.add(keras.layers.Dense(output_layer, activation=output_activation, kernel_regularizer=reg))
 
     loss = get_loss(loss)
     optimizer = get_optimizer(optimizer, learning_rate)
@@ -30,7 +31,10 @@ def build_model(hidden_layers, input_dim, activation, loss, optimizer, learning_
     return model
 
 
-def load_model(name, count=-1, color=None):
+def load_model(name, critic=False, count=-1, color=None):
+    if critic:
+        return keras.models.load_model(f"Agent/saved_critics/{name}/network")
+
     if color:
         if count == -1:
             return keras.models.load_model(f"Agent/saved_models/{name}/{color}/network")

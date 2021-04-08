@@ -27,6 +27,8 @@ start_time = time()
 
 evaluation_history, last_game_history, saved_actor_count = train_actor(actor, critic, config, tournaments, rollout_actor)
 
+critic.save_model(config["name"])
+
 time_spent = time() - start_time
 print("Time spent on entire run:", time_spent)
 print("")

@@ -6,7 +6,7 @@ from Agent.utils import load_model, build_model
 class Actor:
     def __init__(self, epsilon, epsilon_decay_rate,
                  input_dim=None, hidden_layers=None, optimizer=None,
-                 activation=None, learning_rate=0, loss=None,
+                 activation=None, learning_rate=0, l2_reg=0, loss=None,
                  name=None, count=-1, akimbo=False):
 
         self.input_dim = input_dim
@@ -22,14 +22,14 @@ class Actor:
                 self.black_model = load_model(name, count, "black")
                 self.red_model = load_model(name, count, "red")
             else:
-                self.black_model = build_model(hidden_layers, input_dim, activation, loss, optimizer, learning_rate, akimbo=akimbo)
-                self.red_model = build_model(hidden_layers, input_dim, activation, loss, optimizer, learning_rate, akimbo=akimbo)
+                self.black_model = build_model(hidden_layers, input_dim, activation, loss, optimizer, learning_rate, l2_reg, akimbo=akimbo)
+                self.red_model = build_model(hidden_layers, input_dim, activation, loss, optimizer, learning_rate, l2_reg, akimbo=akimbo)
 
         else:
             if name or count >= 0:
                 self.model = load_model(name, count)
             else:
-                self.model = build_model(hidden_layers, input_dim, activation, loss, optimizer, learning_rate, akimbo=akimbo)
+                self.model = build_model(hidden_layers, input_dim, activation, loss, optimizer, learning_rate, l2_reg, akimbo=akimbo)
 
 
     def train_model(self, x_train, y_train, batch_size, epochs, color=None):
