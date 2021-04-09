@@ -55,7 +55,7 @@ def train_actor(actor, critic, config, tournaments, rollout_actor):
 
         tree = Tree(game_manager.get_state(), actor, critic)
         if rollout_actor:
-            if i < 50:
+            if i < 100:
                 tree = Tree(game_manager.get_state(), rollout_actor, critic)
         tree.root.number_of_visits = 1
 
