@@ -130,7 +130,7 @@ class Tournaments:
         return win_rate_one_vs_all * 0.2 + win_rate_elite * 0.8
 
 
-    def run_interaction_game(self, actor, actor_starts=False):
+    def run_interaction_game(self, actor, actor_starts=False, critic=None):
         starting_player = [1, 0] if not actor_starts else [0, 1]
         game_manager = HexManager(starting_player, self.config["size"])
         game_manager.visualize_game_state()
@@ -143,6 +143,8 @@ class Tournaments:
                 action = actor.find_best_action(game_manager.get_state())
             game_manager.execute_action(action)
             game_manager.visualize_game_state()
+            if critic:
+                print(critic.evaluate(game_manager.get_state()).numpy()[0])
         winner = game_manager.get_winner()
         print("Winner:", winner)
 

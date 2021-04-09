@@ -3,8 +3,8 @@ from tensorflow import keras
 
 def build_model(hidden_layers, input_dim, activation, loss, optimizer, learning_rate, l2_reg, critic=False, akimbo=False):
     model = keras.Sequential()
-    output_activation = "tanh" if critic else "softmax"
-    output_layer = 1 if critic else (input_dim // 2) if akimbo else (input_dim // 2) - 1
+    output_activation = "softmax"
+    output_layer = 2 if critic else (input_dim // 2) if akimbo else (input_dim // 2) - 1
     reg = keras.regularizers.l2(l2=l2_reg)
 
     if len(hidden_layers) == 0:

@@ -24,7 +24,7 @@ class Tree:
             state, value = node.rollout(self.actor, self.critic, rollout_prob)
             if state is not None:
                 critic_input_buffer.append(state)
-                critic_target_buffer.append(value)
+                critic_target_buffer.append([1, 0] if value == 1 else [0, 1])
             while node.parent is not None:
                 node = node.parent
                 node.value += value

@@ -2,6 +2,7 @@ from math import sqrt, log
 from SimWorld.hexManager import HexManager
 import copy
 import random
+import numpy as np
 
 
 class Node:
@@ -27,7 +28,8 @@ class Node:
     def rollout(self, simulation_actor, critic, rollout_prob):
         self.number_of_visits += 1
         if random.random() > rollout_prob:
-            value = critic.evaluate(self.state).numpy()[0][0]
+            output = critic.evaluate(self.state).numpy()[0]
+            value = 1 if np.argmax(output) == 0 else -1
             self.value = value
             return None, value
 
