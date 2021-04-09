@@ -1,4 +1,4 @@
-from time import time
+from time import time, sleep
 from Main.config import config
 from Tournaments.tournaments import Tournaments
 from SimWorld.utils import visualize_game
@@ -6,8 +6,8 @@ from Main.utils import plot_history, initialize_actor, initialize_critic, train_
 from Main.utils import save_metadata, save_kings, save_queens, read_kings, read_queens
 
 # --- # --- # --- # --- # --- # --- # --- #
-elite_group = "queens"
-train_from = "emma"
+elite_group = "kings"
+train_from = False
 akimbo = False
 rollout_actor = False
 plot_evaluation_history = True
@@ -18,7 +18,7 @@ run_interaction_game = False
 print("Welcome to a game of Hex!")
 
 actor = initialize_actor(config, train_from, akimbo)
-critic = initialize_critic(config)
+critic = initialize_critic(config, train_from)
 
 print("Actor initialized")
 

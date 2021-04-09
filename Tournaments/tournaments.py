@@ -23,11 +23,11 @@ class Tournaments:
         for i in range(randoms):
             players.append(Actor(1, 1,
                                  input_dim=2 * (self.config["size"] ** 2 + 1),
-                                 hidden_layers=self.config["hidden_layers"],
-                                 activation=self.config["activation"]))
+                                 hidden_layers=self.config["actor_hidden_layers"],
+                                 activation=self.config["actor_activation"]))
 
-        print("TOPP tournament is over. The", randoms, "last players take random actions.")
         number_of_wins, number_of_games, detailed_stats = self.play_tournament_games(players)
+        print("TOPP tournament is over. The", randoms, "last players take random actions.")
         print_stats(number_of_wins, number_of_games, detailed_stats)
 
 
@@ -39,8 +39,8 @@ class Tournaments:
         for i in range(randoms):
             players.append(Actor(1, 1,
                                  input_dim=2 * (self.config["size"] ** 2 + 1),
-                                 hidden_layers=self.config["hidden_layers"],
-                                 activation=self.config["activation"]))
+                                 hidden_layers=self.config["actor_hidden_layers"],
+                                 activation=self.config["actor_activation"]))
 
         number_of_wins, number_of_games, detailed_stats = self.play_tournament_games(players)
 
@@ -73,8 +73,8 @@ class Tournaments:
             names.append("random")
             players.append(Actor(1, 1,
                                  input_dim=2 * (self.config["size"] ** 2 + 1),
-                                 hidden_layers=self.config["hidden_layers"],
-                                 activation=self.config["activation"]))
+                                 hidden_layers=self.config["actor_hidden_layers"],
+                                 activation=self.config["actor_activation"]))
 
         number_of_wins, number_of_games, detailed_stats = self.play_tournament_games(players)
 
