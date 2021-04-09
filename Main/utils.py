@@ -118,21 +118,22 @@ def train_actor(actor, critic, config, tournaments, rollout_actor):
             simulations -= config["mcts_discount_constant"]
             number_of_moves += 1
 
-        if i % config["save_frequency"] == 0 and i > 0:
+        if i % config["save_frequency"] == 0:
             print("Saving network")
 
             """ Time-stuff """
-            time_spent_on_save = time() - last_save_start_time
-            time_history.append(time_spent_on_save)
-            if len(time_history) > 1:
-                time_spent_on_last_save = time_history[-2]
-                ratio = time_spent_on_save / time_spent_on_last_save
-                print("Time spent on current save:  ", time_spent_on_save)
-                print("Time spent on previous save: ", time_spent_on_last_save)
-                print("Ratio:", ratio)
-                print("Time history:", time_history)
-            else:
-                print("Time spent on first save:", time_spent_on_save)
+            if i > 0:
+                time_spent_on_save = time() - last_save_start_time
+                time_history.append(time_spent_on_save)
+                if len(time_history) > 1:
+                    time_spent_on_last_save = time_history[-2]
+                    ratio = time_spent_on_save / time_spent_on_last_save
+                    print("Time spent on current save:  ", time_spent_on_save)
+                    print("Time spent on previous save: ", time_spent_on_last_save)
+                    print("Ratio:", ratio)
+                    print("Time history:", time_history)
+                else:
+                    print("Time spent on first save:", time_spent_on_save)
 
             if config["name"] == "demo":
                 actor.save_model("demo", saved_actor_count)
@@ -171,23 +172,23 @@ def initialize_actor(config, name=False, akimbo=False):
     return Actor(config["epsilon"],
                  config["epsilon_decay_rate"],
                  input_dim=2 * (config["size"] ** 2 + 1),
-                 hidden_layers=config["hidden_layers"],
-                 optimizer=config["optimizer"],
-                 activation=config["activation"],
-                 learning_rate=config["learning_rate"],
-                 l2_reg=config["l2_reg"],
-                 loss=config["loss"],
+                 hidden_layers=config["actor_hidden_layers"],
+                 optimizer=config["actor_optimizer"],
+                 activation=config["actor_activation"],
+                 learning_rate=config["actor_learning_rate"],
+                 l2_reg=config["actor_l2_reg"],
+                 loss=config["actor_loss"],
                  akimbo=akimbo)
 
 
 def initialize_critic(config, name=False):
     return Critic(input_dim=2 * (config["size"] ** 2 + 1),
-                  hidden_layers=config["hidden_layers"],
-                  optimizer=config["optimizer"],
-                  activation=config["activation"],
-                  learning_rate=config["learning_rate"],
-                  l2_reg=config["l2_reg"],
-                  loss=config["loss"],
+                  hidden_layers=config["critic_hidden_layers"],
+                  optimizer=config["critic_optimizer"],
+                  activation=config["critic_activation"],
+                  learning_rate=config["critic_learning_rate"],
+                  l2_reg=config["critic_l2_reg"],
+                  loss=config["critic_loss"],
                   name=name)
 
 
