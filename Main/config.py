@@ -1,6 +1,6 @@
 config = {
-    "name": "demo",
-    "size": 4,
+    "name": "tull",
+    "size": 6,
 
     "epsilon": 0.025,
     "epsilon_decay_rate": 1,
@@ -29,9 +29,14 @@ config = {
 
     "episodes": 500,
     "save_frequency": 50,
-    "mcts_simulations": 200,
-    "mcts_discount_constant": 5,
+
+    "mcts_starting_simulations": 50,
+    "mcts_move_increase": 10,
+    "mcts_increase_constant": 25,
+    "mcts_move_decrease": 20,
+    "mcts_decrease_constant": 10,
     "mcts_discounted_simulations": 50,
-    "tournament_games": 40,                    # bør kunne deles på 8 for mest presise resultater
+
+    "tournament_games": 8,                    # bør kunne deles på 8 for mest presise resultater
     "c": 4,
 }

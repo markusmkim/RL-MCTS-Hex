@@ -1,0 +1,32 @@
+name: criticChris
+size: 6
+epsilon: 0.025
+epsilon_decay_rate: 1
+rollout_prob: 0.4
+rollout_prob_decay_rate: 1
+training_probability: 0.9
+actor_hidden_layers: [256, 128, 64]
+actor_optimizer: adam
+actor_activation: relu
+actor_learning_rate: 0.005
+actor_loss: mse
+actor_l2_reg: 0.001
+critic_hidden_layers: [256, 128, 64]
+critic_optimizer: adam
+critic_activation: relu
+critic_learning_rate: 0.001
+critic_loss: binary_crossentropy
+critic_l2_reg: 0.001
+buffer_size: 128
+batch_size: 64
+epochs: 2
+episodes: 100
+save_frequency: 50
+mcts_simulations: 300
+mcts_discount_constant: 5
+mcts_discounted_simulations: 50
+tournament_games: 40
+c: 4
+
+Evaluation: 0.4544444444444445
+Time spent: 6590.52512383461

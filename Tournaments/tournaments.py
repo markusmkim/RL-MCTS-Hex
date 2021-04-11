@@ -110,9 +110,9 @@ class Tournaments:
             if len(names[i]) > 5 and names[i][:6] == "akimbo":
                 akimbo = True
             actor = Actor(0, 0, name=names[i], akimbo=akimbo)
-            win_rate = self.run_one_vs_all(actor, randoms=19)
+            win_rate = self.run_one_vs_all(actor, randoms=9, display=False)
             elite_win_rate = number_of_wins[i] / number_of_games[i]
-            evaluation = 0.2 * win_rate + 0.8 * elite_win_rate
+            evaluation = 0.5 * win_rate + 0.5 * elite_win_rate
             if names[i] in queens:
                 queens[names[i]] = evaluation
             else:
@@ -127,7 +127,7 @@ class Tournaments:
         win_rate_elite = self.run_elite_tournament(actor=actor, display=display)
         if win_rate_elite == -1:
             return win_rate_one_vs_all
-        return win_rate_one_vs_all * 0.2 + win_rate_elite * 0.8
+        return win_rate_one_vs_all * 0.5 + win_rate_elite * 0.5
 
 
     def run_interaction_game(self, actor, actor_starts=False, critic=None):

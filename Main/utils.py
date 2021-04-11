@@ -33,7 +33,6 @@ def train_actor(actor, critic, config, tournaments, rollout_actor):
     rollout_prob = config["rollout_prob"]
     total_rollout_prob = config["min_rollout_prob"] + rollout_prob
 
-
     """ Time-stuff """
     last_save_start_time = time()
     time_history = []
@@ -60,8 +59,9 @@ def train_actor(actor, critic, config, tournaments, rollout_actor):
                 tree = Tree(game_manager.get_state(), rollout_actor, critic)
         tree.root.number_of_visits = 1
 
-        simulations = config["mcts_simulations"]
         number_of_moves = 0
+        simulations = config["mcts_starting_simulations"]
+
         while not game_manager.is_game_over():
             if random() < config["training_probability"]:
                 visits_dict, total_visits, action, critic_input_buffer, critic_target_buffer = tree.mcts(
@@ -116,7 +116,11 @@ def train_actor(actor, critic, config, tournaments, rollout_actor):
             if len(critic_input_buffer) > 8:
                 critic.train_model(critic_input_buffer, critic_target_buffer, config["batch_size"], config["epochs"])
 
-            simulations -= config["mcts_discount_constant"]
+            if number_of_moves > config["mcts_move_increase"]:
+                if number_of_moves > config["mcts_move_decrease"]:
+                    simulations -= config["mcts_decrease_constant"]
+                else:
+                    simulations += config["mcts_increase_constant"]
             number_of_moves += 1
 
         if i % config["save_frequency"] == 0:

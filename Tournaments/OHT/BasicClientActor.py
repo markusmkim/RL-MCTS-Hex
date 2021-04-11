@@ -48,7 +48,6 @@ class BasicClientActor(BasicClientActorAbs):
         :param num_games - number of games to be played in the series
         :param game_params - important game parameters.  For Hex = list with one item = board size (e.g. 5)
         :return
-
         """
         self.series_id = series_id
         #############################
