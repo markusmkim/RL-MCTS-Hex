@@ -1,5 +1,5 @@
 from Tournaments.OHT.BasicClientActorAbs import BasicClientActorAbs
-from Tournaments.OHT.utils import convert_state, convert_action
+from Tournaments.utils import convert_state, convert_action
 from math import sqrt
 from Agent.actor import Actor
 from Main.config import config
@@ -23,24 +23,16 @@ class BasicClientActor(BasicClientActorAbs):
         :return: Your actor's selected action as a tuple (row, column)
         """
 
-        # må endre denne --> actor forventer state på vårt format
-
         size = int(sqrt(len(state) - 1))
 
         new_state = convert_state(state, size)
 
-        actor = Actor(2 * (config["size"] ** 2 + 1),
-                      config["hidden_layers"],
-                      config["optimizer"],
-                      config["activation_function"],
-                      config["learning_rate"],
-                      config["loss"],
-                      config["epsilon"],
-                      config["epsilon_decay_rate"])
+        print("New state:", new_state)
 
-        actor.load_weights("Agent/saved_networks/henning/network.ckpt")
+        actor = Actor(0, 0, name="nora")
 
         action = actor.find_best_action(new_state)
+        print("Our action", action)
 
         oht_action = convert_action(action, size)
 

@@ -5,6 +5,7 @@ config = {
     "epsilon": 0.025,
     "epsilon_decay_rate": 1,
     "rollout_prob": 1,
+    "min_rollout_prob": 0.2,
     "rollout_prob_decay_rate": 0.99,
     "training_probability": 0.8,
 

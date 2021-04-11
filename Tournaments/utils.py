@@ -1,3 +1,4 @@
+import numpy as np
 
 
 def print_stats(stats, games, detailed_stats):
@@ -37,9 +38,14 @@ def convert_state(oht_state, size):
             row = bit_representation + row
         flat_list = flat_list + row
 
-    new_state = player + flat_list
+    input_list = player + flat_list
 
-    return new_state
+    possible_moves = []
+    for i in range(0, len(flat_list), 2):
+        if flat_list[i] == 0 and flat_list[i + 1] == 0:
+            possible_moves.append(i // 2)
+
+    return [np.array(input_list), None, possible_moves]
 
 
 def convert_action(action, size):

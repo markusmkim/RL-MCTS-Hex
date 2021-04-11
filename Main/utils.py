@@ -31,9 +31,10 @@ def train_actor(actor, critic, config, tournaments, rollout_actor):
     saved_actor_count = 0
 
     rollout_prob = config["rollout_prob"]
+    total_rollout_prob = config["min_rollout_prob"] + rollout_prob
+
 
     """ Time-stuff """
-    total_start_time = time()
     last_save_start_time = time()
     time_history = []
 
@@ -67,7 +68,7 @@ def train_actor(actor, critic, config, tournaments, rollout_actor):
                     simulations,
                     get_next_state,
                     config["c"],
-                    rollout_prob)
+                    total_rollout_prob)
 
                 if actor.akimbo:
                     if game_manager.get_state()[0][1]:  # black to move
@@ -86,7 +87,7 @@ def train_actor(actor, critic, config, tournaments, rollout_actor):
                 visits_dict, total_visits, action, critic_input_buffer, critic_target_buffer = tree.mcts(
                     config["mcts_discounted_simulations"],
                     get_next_state,
-                    config["c"], rollout_prob)
+                    config["c"], total_rollout_prob)
 
             if len(buffer_inputs) == config["buffer_size"]:
                 print("Training actor network | Buffer size:", len(buffer_inputs))
@@ -162,6 +163,7 @@ def train_actor(actor, critic, config, tournaments, rollout_actor):
 
         actor.decrease_epsilon()
         rollout_prob = rollout_prob * config["rollout_prob_decay_rate"]
+        total_rollout_prob = config["min_rollout_prob"] + rollout_prob
 
     return evaluation_history, last_game_history, saved_actor_count
 

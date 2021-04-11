@@ -6,7 +6,7 @@ from Main.utils import plot_history, initialize_actor, initialize_critic, train_
 from Main.utils import save_metadata, save_kings, save_queens, read_kings, read_queens
 
 # --- # --- # --- # --- # --- # --- # --- #
-elite_group = "kings"
+elite_group = "queens"
 train_from = False
 akimbo = False
 rollout_actor = False
