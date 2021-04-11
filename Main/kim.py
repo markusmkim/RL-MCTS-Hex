@@ -7,8 +7,10 @@ from Tournaments.tournaments import Tournaments
 
 tournaments = Tournaments(config)
 
-emma = Actor(0, 0, name="emma")
-critic = Critic(name="triana")
+tournaments.run_elite_tournament()
 
-tournaments.run_interaction_game(emma, actor_starts=True, critic=critic)
+# a = Actor(0, 0, name="nora")
+# critic = Critic(name="nora")
+
+# tournaments.run_interaction_game(a, actor_starts=True, critic=critic)
 

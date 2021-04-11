@@ -1,0 +1,32 @@
+name: kajsa
+size: 6
+epsilon: 0.05
+epsilon_decay_rate: 1
+rollout_prob: 1
+rollout_prob_decay_rate: 0.996
+training_probability: 0.8
+actor_hidden_layers: [256, 128, 64]
+actor_optimizer: adam
+actor_activation: relu
+actor_learning_rate: 0.002
+actor_loss: mse
+actor_l2_reg: 0.0005
+critic_hidden_layers: [256, 128, 64]
+critic_optimizer: adam
+critic_activation: relu
+critic_learning_rate: 2e-06
+critic_loss: binary_crossentropy
+critic_l2_reg: 0.001
+buffer_size: 128
+batch_size: 64
+epochs: 2
+episodes: 300
+save_frequency: 10
+mcts_simulations: 600
+mcts_discount_constant: 16
+mcts_discounted_simulations: 50
+tournament_games: 40
+c: 2
+
+Evaluation: 0.51
+Time spent: 22469.492558717728
