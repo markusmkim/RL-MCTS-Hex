@@ -26,14 +26,14 @@ config = {
     "batch_size": 64,
     "epochs": 1,
 
-    "episodes": 200,
-    "save_frequency": 20,
+    "episodes": 20,
+    "save_frequency": 5,
 
-    "mcts_starting_simulations": 200,
+    "mcts_starting_simulations": 2,
     "mcts_move_increase": 2,
-    "mcts_increase_constant": 10,
+    "mcts_increase_constant": 0,
     "mcts_move_decrease": 12,
-    "mcts_decrease_constant": 2,
+    "mcts_decrease_constant": 0,
 
     "tournament_games": 40,                    # bør kunne deles på 8 for mest presise resultater
     "c": 3,

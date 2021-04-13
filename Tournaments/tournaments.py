@@ -2,7 +2,7 @@ from Agent.actor import Actor
 from SimWorld.hexManager import HexManager
 import numpy as np
 from Main.utils import read_queens, read_kings, save_queens, save_kings
-from Tournaments.utils import print_stats
+from Tournaments.utils import print_stats, plot_stats
 
 
 class Tournaments:
@@ -10,7 +10,7 @@ class Tournaments:
         self.config = config
 
 
-    def run_topp_tournament(self, randoms=0):
+    def run_topp_tournament(self, randoms=0, plot=False):
         print("Running TOPP tournament")
         randoms = randoms
         number_of_actors = int(self.config["episodes"] / self.config["save_frequency"]) + 1
@@ -29,6 +29,8 @@ class Tournaments:
         number_of_wins, number_of_games, detailed_stats = self.play_tournament_games(players)
         print("TOPP tournament is over. The", randoms, "last players take random actions.")
         print_stats(number_of_wins, number_of_games, detailed_stats)
+        if plot:
+            plot_stats(number_of_wins, np.arange(0, self.config["episodes"] + 1, self.config["save_frequency"]))
 
 
     def run_one_vs_all(self, actor, randoms=19, display=True):

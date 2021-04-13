@@ -48,7 +48,7 @@ if saved_actor_count > 0:
     win_rate = tournaments.run_one_vs_all(actor)
     print("Win rate for last actor:", win_rate)
     print("")
-    tournaments.run_topp_tournament(randoms=4)
+    tournaments.run_topp_tournament(plot=True)
 else:
     if config["size"] == 6:
         evaluation = tournaments.evaluate_actor(actor)

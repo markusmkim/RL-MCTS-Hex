@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 def print_stats(stats, games, detailed_stats):
@@ -53,4 +54,8 @@ def convert_action(action, size):
     column = action // size
     return row, column
 
+
+def plot_stats(wins, episodes_list):
+    plt.bar(episodes_list, wins)
+    plt.show()
 
