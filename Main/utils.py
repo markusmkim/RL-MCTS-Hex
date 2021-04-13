@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from random import random
+from random import randrange
 from MCTS.tree import Tree
 from Agent.actor import Actor
 from Agent.critic import Critic
@@ -24,8 +24,7 @@ def train_actor(actor, critic, config, tournaments, rollout_actor):
     buffer_inputs = []
     buffer_targets = []
 
-    all_inputs = []
-    all_targets = []
+    buffer = {}
 
     last_game_history = []
     evaluation_history = []
@@ -39,12 +38,6 @@ def train_actor(actor, critic, config, tournaments, rollout_actor):
     """ Time-stuff """
     last_save_start_time = time()
     time_history = []
-
-    """ Akimbo-stuff """
-    red_buffer_inputs = []
-    red_buffer_targets = []
-    black_buffer_inputs = []
-    black_buffer_targets = []
 
     if rollout_actor:
         rollout_actor = initialize_actor(config, rollout_actor)
@@ -66,51 +59,14 @@ def train_actor(actor, critic, config, tournaments, rollout_actor):
         simulations = config["mcts_starting_simulations"]
 
         while not game_manager.is_game_over():
-            if random() < config["training_probability"]:
-                visits_dict, total_visits, action, critic_input_buffer, critic_target_buffer = tree.mcts(
-                    simulations,
-                    get_next_state,
-                    config["c"],
-                    total_rollout_prob)
+            visits_dict, total_visits, action, critic_input_buffer, critic_target_buffer = tree.mcts(
+                simulations,
+                get_next_state,
+                config["c"],
+                total_rollout_prob)
 
-                if actor.akimbo:
-                    if game_manager.get_state()[0][1]:  # black to move
-                        black_buffer_inputs.append(game_manager.get_state()[0][2:])
-                        black_buffer_targets.append(
-                            generate_training_target(visits_dict, total_visits, config["size"] ** 2))
-                    else:
-                        red_buffer_inputs.append(game_manager.get_state()[0][2:])
-                        red_buffer_targets.append(
-                            generate_training_target(visits_dict, total_visits, config["size"] ** 2))
-
-                else:
-                    buffer_inputs.append(game_manager.get_state()[0])
-                    buffer_targets.append(generate_training_target(visits_dict, total_visits, config["size"] ** 2))
-            else:
-                visits_dict, total_visits, action, critic_input_buffer, critic_target_buffer = tree.mcts(
-                    config["mcts_discounted_simulations"],
-                    get_next_state,
-                    config["c"], total_rollout_prob)
-            """
-            if len(buffer_inputs) == config["buffer_size"]:
-                print("Training actor network | Buffer size:", len(buffer_inputs))
-                actor.train_model(buffer_inputs, buffer_targets, config["batch_size"], config["epochs"])
-                buffer_inputs = []
-                buffer_targets = []
-            """
-
-            if actor.akimbo:
-                if len(black_buffer_inputs) == config["buffer_size"]:
-                    print("Training akimboActors black network | Buffer size:", len(black_buffer_inputs))
-                    actor.train_model(black_buffer_inputs, black_buffer_targets, config["batch_size"], config["epochs"], color=1)
-                    black_buffer_inputs = []
-                    black_buffer_targets = []
-
-                if len(red_buffer_inputs) == config["buffer_size"]:
-                    print("Training akimboActors red network | Buffer size:", len(red_buffer_inputs))
-                    actor.train_model(red_buffer_inputs, red_buffer_targets, config["batch_size"], config["epochs"], color=2)
-                    red_buffer_inputs = []
-                    red_buffer_targets = []
+            buffer_inputs.append(game_manager.get_state()[0])
+            buffer_targets.append(generate_training_target(visits_dict, total_visits, config["size"] ** 2))
 
             game_manager.execute_action(action)
 
@@ -127,16 +83,12 @@ def train_actor(actor, critic, config, tournaments, rollout_actor):
                     simulations += config["mcts_increase_constant"]
             number_of_moves += 1
 
-        all_inputs = all_inputs + buffer_inputs
-        all_targets = all_targets + buffer_targets
+        old_buffer_size = len(buffer)
+
+        train_network(actor, buffer, buffer_inputs, buffer_targets, config)
+
         buffer_inputs = []
         buffer_targets = []
-        if len(all_inputs) > 1024:
-            all_inputs = all_inputs[len(all_inputs) - 1024:]
-            all_targets = all_targets[len(all_targets) - 1024:]
-        if len(all_inputs) > config["batch_size"]:
-            print("Training actor network | Buffer size:", len(all_inputs))
-            actor.train_model(all_inputs, all_targets, config["batch_size"], config["epochs"])
 
         if i % config["save_frequency"] == 0:
             print("Saving network")
@@ -174,11 +126,14 @@ def train_actor(actor, critic, config, tournaments, rollout_actor):
             last_save_start_time = time()
 
         print("Episode:", i,
-              " |  Starting player:  ", starting_player,
-              " |  Winner:", game_manager.get_winner(),
+              " |  Starting player: ", starting_player,
+              " |  Winner: ", game_manager.get_winner(),
               " |  Epsilon: ", actor.epsilon,
-              " |  Rollout prob", total_rollout_prob,
-              " |  Number of moves: ", number_of_moves)
+              " |  Rollout prob: ", "{:.3f}".format(total_rollout_prob),
+              " |  Number of moves:  " if number_of_moves < 10 else " |  Number of moves: ", number_of_moves,
+              " |  New buffer data:  " if len(buffer) - old_buffer_size < 10 else " |  New buffer data: ",
+              len(buffer) - old_buffer_size,
+              " |  Buffer dict size: ", len(buffer))
 
         actor.decrease_epsilon()
         rollout_prob = rollout_prob * config["rollout_prob_decay_rate"]
@@ -187,9 +142,35 @@ def train_actor(actor, critic, config, tournaments, rollout_actor):
     return evaluation_history, last_game_history, saved_actor_count
 
 
-def initialize_actor(config, name=False, akimbo=False):
+def train_network(actor, buffer, buffer_inputs, buffer_targets, config):
+    batch_inputs = buffer_inputs
+    batch_targets = buffer_targets
+
+    for ii in range(len(buffer_inputs)):
+        buffer_input = buffer_inputs[ii]
+        buffer_key = "".join(str(elem) for elem in buffer_input)
+        buffer[buffer_key] = [buffer_input, buffer_targets[ii]]
+
+    keys = list(buffer.keys())
+
+    if len(keys) < config["buffer_size"]:
+        for key in keys:
+            batch_inputs.append(buffer[key][0])
+            batch_targets.append(buffer[key][1])
+
+    else:
+        while len(batch_inputs) < config["buffer_size"]:
+            key = keys[randrange(0, len(keys))]
+            batch_inputs.append(buffer[key][0])
+            batch_targets.append(buffer[key][1])
+
+    print("Training actor network | Buffer size:", len(batch_inputs))
+    actor.train_model(batch_inputs, batch_targets, config["batch_size"], config["epochs"])
+
+
+def initialize_actor(config, name=False):
     if name:
-        return Actor(config["epsilon"], config["epsilon_decay_rate"], name=name, akimbo=akimbo)
+        return Actor(config["epsilon"], config["epsilon_decay_rate"], name=name)
     return Actor(config["epsilon"],
                  config["epsilon_decay_rate"],
                  input_dim=2 * (config["size"] ** 2 + 1),
@@ -198,8 +179,7 @@ def initialize_actor(config, name=False, akimbo=False):
                  activation=config["actor_activation"],
                  learning_rate=config["actor_learning_rate"],
                  l2_reg=config["actor_l2_reg"],
-                 loss=config["actor_loss"],
-                 akimbo=akimbo)
+                 loss=config["actor_loss"])
 
 
 def initialize_critic(config, name=False):

@@ -8,7 +8,6 @@ from Main.utils import save_metadata, save_kings, save_queens, read_kings, read_
 # --- # --- # --- # --- # --- # --- # --- #
 elite_group = "queens"
 train_from = False
-akimbo = False
 rollout_actor = False
 plot_evaluation_history = True
 visualize_last_game = False
@@ -17,7 +16,7 @@ run_interaction_game = False
 
 print("Welcome to a game of Hex!")
 
-actor = initialize_actor(config, train_from, akimbo)
+actor = initialize_actor(config, train_from)
 critic = initialize_critic(config, train_from)
 
 print("Actor initialized")

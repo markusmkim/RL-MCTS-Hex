@@ -1,15 +1,14 @@
 config = {
-    "name": "mia",
-    "size": 6,
+    "name": "demo",
+    "size": 4,
 
     "epsilon": 0.05,
     "epsilon_decay_rate": 1,
-    "rollout_prob": 0.9,
+    "rollout_prob": 1,
     "min_rollout_prob": 0.2,
-    "rollout_prob_decay_rate": 0.999,
-    "training_probability": 0.8,
+    "rollout_prob_decay_rate": 1,
 
-    "actor_hidden_layers": [256, 128, 64],
+    "actor_hidden_layers": [64, 64],
     "actor_optimizer": 'adam',
     "actor_activation": 'relu',
     "actor_learning_rate": 0.001,
@@ -27,15 +26,14 @@ config = {
     "batch_size": 64,
     "epochs": 1,
 
-    "episodes": 120,
-    "save_frequency": 10,
+    "episodes": 200,
+    "save_frequency": 20,
 
-    "mcts_starting_simulations": 100,
-    "mcts_move_increase": 4,
-    "mcts_increase_constant": 30,
-    "mcts_move_decrease": 20,
-    "mcts_decrease_constant": 10,
-    "mcts_discounted_simulations": 100,
+    "mcts_starting_simulations": 200,
+    "mcts_move_increase": 2,
+    "mcts_increase_constant": 10,
+    "mcts_move_decrease": 12,
+    "mcts_decrease_constant": 2,
 
     "tournament_games": 40,                    # bør kunne deles på 8 for mest presise resultater
     "c": 3,
