@@ -56,6 +56,7 @@ def convert_action(action, size):
 
 
 def plot_stats(wins, episodes_list):
-    plt.bar(episodes_list, wins)
+    plt.bar(episodes_list, wins, width=10)
+    plt.xticks(episodes_list)
     plt.show()
 

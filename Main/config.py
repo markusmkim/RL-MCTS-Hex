@@ -26,10 +26,10 @@ config = {
     "batch_size": 64,
     "epochs": 1,
 
-    "episodes": 20,
-    "save_frequency": 5,
+    "episodes": 200,
+    "save_frequency": 50,
 
-    "mcts_starting_simulations": 2,
+    "mcts_starting_simulations": 3,
     "mcts_move_increase": 2,
     "mcts_increase_constant": 0,
     "mcts_move_decrease": 12,
