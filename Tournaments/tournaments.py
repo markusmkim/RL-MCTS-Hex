@@ -17,7 +17,7 @@ class Tournaments:
         players = []
 
         for i in range(number_of_actors):
-            player = Actor(0, 0, count=i)  # demo models
+            player = Actor(0, 0, count=i)  # bestDemo models
             players.append(player)
 
         for i in range(randoms):
