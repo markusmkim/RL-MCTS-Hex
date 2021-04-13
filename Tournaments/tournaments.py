@@ -123,7 +123,9 @@ class Tournaments:
 
 
     def evaluate_actor(self, actor, display=True):
-        win_rate_one_vs_all = self.run_one_vs_all(actor, randoms=9, display=display)
+        win_rate_one_vs_all = self.run_one_vs_all(actor, randoms=19, display=display)
+        if not display:
+            print("Win rate one vs all:", win_rate_one_vs_all)
         win_rate_elite = self.run_elite_tournament(actor=actor, display=display)
         if win_rate_elite == -1:
             return win_rate_one_vs_all

@@ -24,6 +24,9 @@ def train_actor(actor, critic, config, tournaments, rollout_actor):
     buffer_inputs = []
     buffer_targets = []
 
+    all_inputs = []
+    all_targets = []
+
     last_game_history = []
     evaluation_history = []
 
@@ -88,12 +91,13 @@ def train_actor(actor, critic, config, tournaments, rollout_actor):
                     config["mcts_discounted_simulations"],
                     get_next_state,
                     config["c"], total_rollout_prob)
-
+            """
             if len(buffer_inputs) == config["buffer_size"]:
                 print("Training actor network | Buffer size:", len(buffer_inputs))
                 actor.train_model(buffer_inputs, buffer_targets, config["batch_size"], config["epochs"])
                 buffer_inputs = []
                 buffer_targets = []
+            """
 
             if actor.akimbo:
                 if len(black_buffer_inputs) == config["buffer_size"]:
@@ -122,6 +126,17 @@ def train_actor(actor, critic, config, tournaments, rollout_actor):
                 else:
                     simulations += config["mcts_increase_constant"]
             number_of_moves += 1
+
+        all_inputs = all_inputs + buffer_inputs
+        all_targets = all_targets + buffer_targets
+        buffer_inputs = []
+        buffer_targets = []
+        if len(all_inputs) > 1024:
+            all_inputs = all_inputs[len(all_inputs) - 1024:]
+            all_targets = all_targets[len(all_targets) - 1024:]
+        if len(all_inputs) > config["batch_size"]:
+            print("Training actor network | Buffer size:", len(all_inputs))
+            actor.train_model(all_inputs, all_targets, config["batch_size"], config["epochs"])
 
         if i % config["save_frequency"] == 0:
             print("Saving network")
@@ -162,7 +177,7 @@ def train_actor(actor, critic, config, tournaments, rollout_actor):
               " |  Starting player:  ", starting_player,
               " |  Winner:", game_manager.get_winner(),
               " |  Epsilon: ", actor.epsilon,
-              " |  Rollout prob", rollout_prob,
+              " |  Rollout prob", total_rollout_prob,
               " |  Number of moves: ", number_of_moves)
 
         actor.decrease_epsilon()
