@@ -31,20 +31,15 @@ def build_model(hidden_layers, input_dim, activation, loss, optimizer, learning_
     return model
 
 
-def load_model(name, critic=False, count=-1, color=None):
+def load_model(name, critic=False, count=-1, best=False):
     if critic:
         return keras.models.load_model(f"Agent/saved_critics/{name}/network")
 
-    if color:
-        if count == -1:
-            return keras.models.load_model(f"Agent/saved_models/{name}/{color}/network")
-        else:
-            return keras.models.load_model(f"Agent/saved_models/demo/{color}/network-{count}")
+    if count == -1:
+        return keras.models.load_model(f"Agent/saved_models/{name}/network")
     else:
-        if count == -1:
-            return keras.models.load_model(f"Agent/saved_models/{name}/network")
-        else:
-            return keras.models.load_model(f"Agent/saved_models/demo/network-{count}")
+        demodir = "bestDemo" if best else "demo"
+        return keras.models.load_model(f"Agent/saved_models/{demodir}/network-{count}")
 
 
 def get_loss(name):

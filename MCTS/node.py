@@ -28,7 +28,6 @@ class Node:
     def rollout(self, simulation_actor, critic, rollout_prob):
         self.number_of_visits += 1
         if critic and random.random() > rollout_prob:
-            print("HEI")
             output = critic.evaluate(self.state).numpy()[0]
             value = 1 if np.argmax(output) == 0 else -1
             self.value = value

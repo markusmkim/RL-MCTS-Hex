@@ -10,6 +10,7 @@ class BasicClientActor(BasicClientActorAbs):
     def __init__(self, IP_address=None, verbose=True):
         self.series_id = -1
         BasicClientActorAbs.__init__(self, IP_address, verbose=verbose)
+        self.actor = Actor(0, 0, name="nora_v2")
 
 
     def handle_get_action(self, state):
@@ -29,9 +30,9 @@ class BasicClientActor(BasicClientActorAbs):
 
         print("New state:", new_state)
 
-        actor = Actor(0, 0, name="nora")
+        # actor = Actor(0, 0, name="nora_v2")
 
-        action = actor.find_best_action(new_state)
+        action = self.actor.find_best_action(new_state)
         print("Our action", action)
 
         oht_action = convert_action(action, size)

@@ -2,6 +2,7 @@ from math import sqrt
 import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
+from time import sleep
 
 
 def print_winner(board):
@@ -110,8 +111,9 @@ def visualize_board(board):
     plt.show()
 
 
-def visualize_game(history):
+def visualize_game(history, sleep_time=1):
     for board in history:
+        sleep(sleep_time)
         visualize_board(board)
 
 

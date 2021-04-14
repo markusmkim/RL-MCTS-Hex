@@ -7,14 +7,14 @@ class Actor:
     def __init__(self, epsilon, epsilon_decay_rate,
                  input_dim=None, hidden_layers=None, optimizer=None,
                  activation=None, learning_rate=0, l2_reg=0, loss=None,
-                 name=None, count=-1):
+                 name=None, count=-1, best=False):
 
         self.input_dim = input_dim
         self.epsilon = epsilon
         self.epsilon_decay_rate = epsilon_decay_rate
 
         if name or count >= 0:
-            self.model = load_model(name, count=count)
+            self.model = load_model(name, count=count, best=best)
         else:
             self.model = build_model(hidden_layers, input_dim, activation, loss, optimizer, learning_rate, l2_reg)
 
