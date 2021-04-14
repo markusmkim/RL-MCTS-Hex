@@ -18,7 +18,7 @@ def generate_training_target(visits_dict, total_visits, size):
     return training_target
 
 
-def train_actor(actor, critic, config, tournaments, rollout_actor):
+def train_actor(actor, critic, config, tournaments, rollout_actor, rollout_actor_episodes):
     print("Training models...")
 
     buffer_inputs = []
@@ -43,8 +43,8 @@ def train_actor(actor, critic, config, tournaments, rollout_actor):
     if rollout_actor:
         rollout_actor = initialize_actor(config, rollout_actor)
 
-    if config["name"] == "bestDemo":
-        actor.save_model("bestDemo", saved_actor_count)
+    if config["name"] == "demo":
+        actor.save_model("demo", saved_actor_count)
         saved_actor_count += 1
 
     for i in range(1, config["episodes"] + 1):
@@ -56,7 +56,7 @@ def train_actor(actor, critic, config, tournaments, rollout_actor):
 
         tree = Tree(game_manager.get_state(), actor, critic)
         if rollout_actor:
-            if i < 100:
+            if i < rollout_actor_episodes:
                 tree = Tree(game_manager.get_state(), rollout_actor, critic)
         tree.root.number_of_visits = 1
 
@@ -112,8 +112,8 @@ def train_actor(actor, critic, config, tournaments, rollout_actor):
                 else:
                     print("Time spent on first save:", time_spent_on_save)
 
-            if config["name"] == "bestDemo":
-                actor.save_model("bestDemo", saved_actor_count)
+            if config["name"] == "demo":
+                actor.save_model("demo", saved_actor_count)
                 saved_actor_count += 1
             elif i > 0:
                 if config["size"] == 6:

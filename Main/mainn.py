@@ -8,7 +8,9 @@ from Main.utils import save_metadata, save_kings, save_queens, read_kings, read_
 # --- # --- # --- # --- # --- # --- # --- #
 elite_group = "kings"
 train_from = False
+use_critic = False
 rollout_actor = False
+rollout_actor_episodes = 0
 plot_evaluation_history = True
 visualize_last_game = False
 run_interaction_game = False
@@ -17,16 +19,22 @@ run_interaction_game = False
 print("Welcome to a game of Hex!")
 
 actor = initialize_actor(config, train_from)
-critic = initialize_critic(config, train_from)
+critic = initialize_critic(config, train_from) if use_critic else False
 
 print("Actor initialized")
 
 tournaments = Tournaments(config)
 start_time = time()
 
-evaluation_history, last_game_history, saved_actor_count = train_actor(actor, critic, config, tournaments, rollout_actor)
+evaluation_history, last_game_history, saved_actor_count = train_actor(actor,
+                                                                       critic,
+                                                                       config,
+                                                                       tournaments,
+                                                                       rollout_actor,
+                                                                       rollout_actor_episodes)
 
-critic.save_model(config["name"])
+if use_critic:
+    critic.save_model(config["name"])
 
 time_spent = time() - start_time
 print("Time spent on entire run:", time_spent)
