@@ -2,7 +2,7 @@ from Agent.actor import Actor
 from SimWorld.hexManager import HexManager
 import numpy as np
 from Main.utils import read_queens, read_kings, save_queens, save_kings
-from Tournaments.utils import print_stats
+from Tournaments.utils import print_stats, plot_stats
 
 
 class Tournaments:
@@ -10,14 +10,14 @@ class Tournaments:
         self.config = config
 
 
-    def run_topp_tournament(self, randoms=4):
+    def run_topp_tournament(self, randoms=0, plot=False):
         print("Running TOPP tournament")
         randoms = randoms
         number_of_actors = int(self.config["episodes"] / self.config["save_frequency"]) + 1
         players = []
 
         for i in range(number_of_actors):
-            player = Actor(0, 0, count=i)  # demo models
+            player = Actor(0, 0, count=i)  # bestDemo models
             players.append(player)
 
         for i in range(randoms):
@@ -29,6 +29,8 @@ class Tournaments:
         number_of_wins, number_of_games, detailed_stats = self.play_tournament_games(players)
         print("TOPP tournament is over. The", randoms, "last players take random actions.")
         print_stats(number_of_wins, number_of_games, detailed_stats)
+        if plot:
+            plot_stats(number_of_wins, np.arange(0, self.config["episodes"] + 1, self.config["save_frequency"]))
 
 
     def run_one_vs_all(self, actor, randoms=19, display=True):
@@ -63,10 +65,7 @@ class Tournaments:
 
         players = [actor] if actor else []
         for i in range(len(names)):
-            akimbo = False
-            if len(names[i]) > 5 and names[i][:6] == "akimbo":
-                akimbo = True
-            player = Actor(0, 0, name=names[i], akimbo=akimbo)
+            player = Actor(0, 0, name=names[i])
             players.append(player)
 
         for i in range(randoms):
@@ -106,10 +105,7 @@ class Tournaments:
         kings = read_kings()
 
         for i in range(len(names)):
-            akimbo = False
-            if len(names[i]) > 5 and names[i][:6] == "akimbo":
-                akimbo = True
-            actor = Actor(0, 0, name=names[i], akimbo=akimbo)
+            actor = Actor(0, 0, name=names[i])
             win_rate = self.run_one_vs_all(actor, randoms=9, display=False)
             elite_win_rate = number_of_wins[i] / number_of_games[i]
             evaluation = 0.5 * win_rate + 0.5 * elite_win_rate
@@ -123,7 +119,9 @@ class Tournaments:
 
 
     def evaluate_actor(self, actor, display=True):
-        win_rate_one_vs_all = self.run_one_vs_all(actor, randoms=9, display=display)
+        win_rate_one_vs_all = self.run_one_vs_all(actor, randoms=19, display=display)
+        if not display:
+            print("Win rate one vs all:", win_rate_one_vs_all)
         win_rate_elite = self.run_elite_tournament(actor=actor, display=display)
         if win_rate_elite == -1:
             return win_rate_one_vs_all

@@ -6,10 +6,11 @@ from Main.utils import plot_history, initialize_actor, initialize_critic, train_
 from Main.utils import save_metadata, save_kings, save_queens, read_kings, read_queens
 
 # --- # --- # --- # --- # --- # --- # --- #
-elite_group = "queens"
+elite_group = "kings"
 train_from = False
-akimbo = False
+use_critic = False
 rollout_actor = False
+rollout_actor_episodes = 0
 plot_evaluation_history = True
 visualize_last_game = False
 run_interaction_game = False
@@ -17,17 +18,23 @@ run_interaction_game = False
 
 print("Welcome to a game of Hex!")
 
-actor = initialize_actor(config, train_from, akimbo)
-critic = initialize_critic(config, train_from)
+actor = initialize_actor(config, train_from)
+critic = initialize_critic(config, train_from) if use_critic else False
 
 print("Actor initialized")
 
 tournaments = Tournaments(config)
 start_time = time()
 
-evaluation_history, last_game_history, saved_actor_count = train_actor(actor, critic, config, tournaments, rollout_actor)
+evaluation_history, last_game_history, saved_actor_count = train_actor(actor,
+                                                                       critic,
+                                                                       config,
+                                                                       tournaments,
+                                                                       rollout_actor,
+                                                                       rollout_actor_episodes)
 
-critic.save_model(config["name"])
+if use_critic:
+    critic.save_model(config["name"])
 
 time_spent = time() - start_time
 print("Time spent on entire run:", time_spent)
@@ -49,7 +56,7 @@ if saved_actor_count > 0:
     win_rate = tournaments.run_one_vs_all(actor)
     print("Win rate for last actor:", win_rate)
     print("")
-    tournaments.run_topp_tournament(randoms=4)
+    tournaments.run_topp_tournament(plot=True)
 else:
     if config["size"] == 6:
         evaluation = tournaments.evaluate_actor(actor)
