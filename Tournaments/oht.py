@@ -1,6 +1,6 @@
 """ Main for OHT """
 
-from Tournaments.OHT.BasicClientActor import BasicClientActor
+from BasicClientActor import BasicClientActor
 
 basicClientActor = BasicClientActor()
 

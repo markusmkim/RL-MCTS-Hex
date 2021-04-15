@@ -1,8 +1,7 @@
-from Tournaments.OHT.BasicClientActorAbs import BasicClientActorAbs
+from BasicClientActorAbs import BasicClientActorAbs
 from Tournaments.utils import convert_state, convert_action
 from math import sqrt
 from Agent.actor import Actor
-from Main.config import config
 
 
 class BasicClientActor(BasicClientActorAbs):
@@ -37,6 +36,8 @@ class BasicClientActor(BasicClientActorAbs):
 
         oht_action = convert_action(action, size)
 
+        print("OHT action", oht_action)
+
         return oht_action
 
 
@@ -54,7 +55,6 @@ class BasicClientActor(BasicClientActorAbs):
         #############################
         #
         #
-        # YOUR CODE (if you have anything else) HERE
         #
         #
         ##############################
@@ -69,7 +69,6 @@ class BasicClientActor(BasicClientActorAbs):
         #############################
         #
         #
-        # YOUR CODE (if you have anything else) HERE
         #
         #
         ##############################
