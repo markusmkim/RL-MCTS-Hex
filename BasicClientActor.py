@@ -27,16 +27,16 @@ class BasicClientActor(BasicClientActorAbs):
 
         new_state = convert_state(state, size)
 
-        print("New state:", new_state)
+        # print("New state:", new_state)
 
         # actor = Actor(0, 0, name="nora_v2")
 
         action = self.actor.find_best_action(new_state)
-        print("Our action", action)
+        # print("Our action", action)
 
         oht_action = convert_action(action, size)
 
-        print("OHT action", oht_action)
+        # print("OHT action", oht_action)
 
         return oht_action
 
@@ -54,7 +54,7 @@ class BasicClientActor(BasicClientActorAbs):
         self.series_id = series_id
         #############################
         #
-        #
+        print("La oss se hva kimliot kan få til!")
         #
         #
         ##############################
