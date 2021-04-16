@@ -31,7 +31,7 @@ class Node:
             output = critic.evaluate(self.state).numpy()[0]
             value = 1 if np.argmax(output) == 0 else -1
             self.value = value
-            return None, value
+            return value
 
         simulation_manager = HexManager(copy.deepcopy(self.state))
         while not simulation_manager.is_game_over():
@@ -40,7 +40,7 @@ class Node:
 
         self.value = 1 if simulation_manager.get_winner() == 1 else -1  # 1
 
-        return self.state[0], self.value
+        return self.value
 
 
     def best_child(self, c):

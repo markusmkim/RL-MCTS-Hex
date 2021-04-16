@@ -2,7 +2,7 @@ from MCTS.tree import Tree
 from SimWorld.hexManager import HexManager, get_next_state
 from SimWorld.utils import visualize_game
 from time import time
-from RL.utils import train_network, generate_training_target, prune_buffer
+from RL.utils import train_networks, generate_training_target, prune_buffer
 from Main.utils import initialize_actor, display_buffer_counts_stats
 
 
@@ -57,7 +57,7 @@ def run_rl_algorithm(actor, critic, config, tournaments):
             last_game_history = [game_manager.get_state()[1]]
 
         while not game_manager.is_game_over():
-            visits_dict, total_visits, action, critic_input_buffer, critic_target_buffer = tree.mcts(
+            visits_dict, total_visits, action = tree.mcts(
                 simulations,
                 get_next_state,
                 config["c"],
@@ -71,10 +71,6 @@ def run_rl_algorithm(actor, critic, config, tournaments):
             if i % config["save_frequency"] == 0 or i == config["episodes"]:
                 last_game_history.append(game_manager.get_state()[1])
 
-            if len(critic_input_buffer) > 8:
-                critic.train_model(critic_input_buffer, critic_target_buffer, config["batch_size"],
-                                   config["epochs"])
-
             if number_of_moves > config["mcts_move_increase"]:
                 if number_of_moves > config["mcts_move_decrease"]:
                     simulations -= config["mcts_decrease_constant"]
@@ -84,7 +80,15 @@ def run_rl_algorithm(actor, critic, config, tournaments):
 
         old_buffer_size = len(buffer)
 
-        train_network(actor, buffer, buffer_counts, buffer_inputs, buffer_targets, total_number_of_moves, config)
+        train_networks(actor,
+                       critic,
+                       buffer,
+                       buffer_counts,
+                       buffer_inputs,
+                       buffer_targets,
+                       game_manager.get_winner(),
+                       total_number_of_moves,
+                       config)
 
         buffer_inputs = []
         buffer_targets = []
