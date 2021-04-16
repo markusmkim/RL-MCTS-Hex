@@ -10,9 +10,9 @@ config = {
 
     "epsilon": 0.01,
     "epsilon_decay_rate": 1,
-    "rollout_prob": 0,
-    "min_rollout_prob": 0,
-    "rollout_prob_decay_rate": 0,
+    "rollout_prob": 1000,
+    "min_rollout_prob": 0.2,
+    "rollout_prob_decay_rate": 0.995,
 
     "actor_hidden_layers": [64, 64],
     "actor_optimizer": 'adam',
@@ -37,8 +37,8 @@ config = {
     "batch_size": 64,
     "epochs": 1,
 
-    "episodes": 10,
-    "save_frequency": 5,
+    "episodes": 2000,
+    "save_frequency": 50,
 
     "mcts_starting_simulations": 140,
     "mcts_move_increase": 4,
