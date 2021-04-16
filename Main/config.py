@@ -1,6 +1,6 @@
 config = {
-    "name": "demo1",
-    "train_from": "demo1",
+    "name": "tungSize4",
+    "train_from": False,
     "size": 4,
 
     "plot_evaluation_history": True,
@@ -11,8 +11,8 @@ config = {
     "epsilon": 0.01,
     "epsilon_decay_rate": 1,
     "rollout_prob": 0,
-    "min_rollout_prob": 0.2,
-    "rollout_prob_decay_rate": 1,
+    "min_rollout_prob": 0,
+    "rollout_prob_decay_rate": 0,
 
     "actor_hidden_layers": [64, 64],
     "actor_optimizer": 'adam',
@@ -32,23 +32,23 @@ config = {
     "critic_loss": "binary_crossentropy",
     "critic_l2_reg": 0.0001,
 
-    "buffer_size": 1000,
+    "buffer_size": 2048,
     "train_size": 512,                                # train_size / batch_size burde være et heltall
     "batch_size": 64,
     "epochs": 1,
 
-    "episodes": 300,
-    "save_frequency": 50,
+    "episodes": 10,
+    "save_frequency": 5,
 
-    "mcts_starting_simulations": 100,
+    "mcts_starting_simulations": 140,
     "mcts_move_increase": 4,
-    "mcts_increase_constant": 25,
-    "mcts_move_decrease": 8,
-    "mcts_decrease_constant": 0,
+    "mcts_increase_constant": 20,
+    "mcts_move_decrease": 12,
+    "mcts_decrease_constant": -10,
 
     "tournament_games": 40,                    # bør kunne deles på 8 for mest presise resultater
     "f": 0,
-    "c": 2,
+    "c": 4,
 }
 
 

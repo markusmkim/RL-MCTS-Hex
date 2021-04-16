@@ -16,7 +16,7 @@ print("Actor initialized")
 tournaments = Tournaments(config)
 start_time = time()
 
-evaluation_history, last_game_history, saved_actor_count = run_rl_algorithm(actor, critic, config, tournaments)
+evaluation_history, last_game_history, saved_actor_count, rph = run_rl_algorithm(actor, critic, config, tournaments)
 
 if config["use_critic"]:
     critic.save_model(config["name"])
@@ -27,6 +27,7 @@ print("")
 
 if config["plot_evaluation_history"] and len(evaluation_history) > 0:
     plot_history(evaluation_history, config["save_frequency"])
+    plot_history(rph, config["save_frequency"])
 
 if config["visualize_last_game"]:
     visualize_game(last_game_history)

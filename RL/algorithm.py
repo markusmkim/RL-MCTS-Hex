@@ -18,6 +18,7 @@ def run_rl_algorithm(actor, critic, config, tournaments):
 
     last_game_history = []
     evaluation_history = []
+    rph = []  # rollout prop history
 
     best_evaluation = 0
     saved_actor_count = 0
@@ -119,6 +120,7 @@ def run_rl_algorithm(actor, critic, config, tournaments):
                 else:
                     evaluation = tournaments.run_one_vs_all(actor, 9, display=False)
                 evaluation_history.append(evaluation)
+                rph.append(rollout_prob)
                 actor.save_model("last_model")
                 print("Intermediate evaluation:", evaluation)
                 if evaluation > best_evaluation:
@@ -149,4 +151,4 @@ def run_rl_algorithm(actor, critic, config, tournaments):
         total_number_of_moves += number_of_moves
 
     display_buffer_counts_stats(buffer_counts)
-    return evaluation_history, last_game_history, saved_actor_count
+    return evaluation_history, last_game_history, saved_actor_count, rph
