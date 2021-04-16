@@ -8,8 +8,8 @@ from RL.algorithm import run_rl_algorithm
 
 print("Welcome to a game of Hex!")
 
-actor = initialize_actor(config, config["train_from"])
-critic = initialize_critic(config, config["train_from"]) if config["use_critic"] else False
+actor = initialize_actor(config, config["train_from_actor"])
+critic = initialize_critic(config, config["train_from_critic"]) if config["use_critic"] else False
 
 print("Actor initialized")
 

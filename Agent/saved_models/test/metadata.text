@@ -1,37 +1,39 @@
-name: tungSize4
-train_from: False
+name: test
 size: 4
+train_from_actor: False
+train_from_critic: firmino
 plot_evaluation_history: True
 visualize_last_game: False
 visualize_game_on_every_save: False
 run_interaction_game: False
 epsilon: 0.01
 epsilon_decay_rate: 1
-rollout_prob: 1000
-min_rollout_prob: 0.2
-rollout_prob_decay_rate: 0.995
+rollout_prob: 0
+min_rollout_prob: 0
+rollout_prob_decay_rate: 0
 actor_hidden_layers: [64, 64]
 actor_optimizer: adam
 actor_activation: relu
-actor_learning_rate: 0.005
+actor_learning_rate: 0.01
 actor_loss: mse
 actor_l2_reg: 0.0001
 rollout_actor: False
 rollout_actor_episodes: 0
 use_critic: True
+train_critic: False
 critic_hidden_layers: [64, 64]
 critic_optimizer: adam
 critic_activation: relu
-critic_learning_rate: 0.005
+critic_learning_rate: 0.01
 critic_loss: binary_crossentropy
 critic_l2_reg: 0.0001
-buffer_size: 2048
-train_size: 512
+buffer_size: 512
+train_size: 256
 batch_size: 64
 epochs: 1
-episodes: 2000
-save_frequency: 50
-mcts_starting_simulations: 140
+episodes: 200
+save_frequency: 20
+mcts_starting_simulations: 40
 mcts_move_increase: 4
 mcts_increase_constant: 20
 mcts_move_decrease: 12
@@ -40,5 +42,5 @@ tournament_games: 40
 f: 0
 c: 4
 
-Evaluation: 0.9416666666666667
-Time spent: 8968.436212539673
+Evaluation: 0.6416666666666667
+Time spent: 191.51159596443176

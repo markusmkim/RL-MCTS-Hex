@@ -44,7 +44,7 @@ def train_networks(actor, critic, buffer, buffer_counts, buffer_inputs, buffer_t
 
     print("Training networks | Train size:", len(batch_inputs))
     actor.train_model(batch_inputs, batch_targets, config["batch_size"], config["epochs"])
-    if critic:
+    if critic and config["train_critic"]:
         critic.train_model(batch_inputs, critic_targets, config["batch_size"], config["epochs"])
 
 
