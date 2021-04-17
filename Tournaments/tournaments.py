@@ -3,7 +3,6 @@ from SimWorld.hexManager import HexManager
 import numpy as np
 from Main.utils import read_elites, save_elites
 from Tournaments.utils import print_stats, plot_stats
-from SimWorld.utils import visualize_game
 from time import sleep
 
 
@@ -12,10 +11,11 @@ class Tournaments:
         self.config = config
 
 
-    def run_topp_tournament(self, randoms=0, plot=False, best=False):
-        print("Running TOPP tournament")
+    def run_topp_tournament(self, number_of_actors=None, randoms=0, plot=False, best=False):
+        print("\nRunning TOPP tournament...")
         randoms = randoms
-        number_of_actors = int(self.config["episodes"] / self.config["save_frequency"]) + 1
+        if number_of_actors is None:
+            number_of_actors = int(self.config["episodes"] / self.config["save_frequency"]) + 1
         players = []
 
         for i in range(number_of_actors):
@@ -23,14 +23,13 @@ class Tournaments:
             players.append(player)
 
         for i in range(randoms):
-            players.append(Actor(1, 1,
-                                 input_dim=2 * (self.config["size"] ** 2 + 1),
-                                 hidden_layers=self.config["actor_hidden_layers"],
-                                 activation=self.config["actor_activation"]))
+            players.append(Actor(None, None, randomized=True))
 
-        number_of_wins, number_of_games, detailed_stats = self.play_tournament_games(players,
-                                                                                     visualize_freq=self.config["f"])
-        print("TOPP tournament is over. The", randoms, "last players take random actions.")
+        number_of_wins, number_of_games, detailed_stats = self.play_tournament_games(players)
+
+        print("TOPP tournament is over.")
+        if randoms > 0:
+            print("The last", randoms, "players take random actions.")
         print_stats(number_of_wins, number_of_games, detailed_stats)
         if plot:
             plot_stats(number_of_wins, np.arange(0, self.config["episodes"] + 1, self.config["save_frequency"]))
@@ -42,10 +41,7 @@ class Tournaments:
         players = [actor]
 
         for i in range(randoms):
-            players.append(Actor(1, 1,
-                                 input_dim=2 * (self.config["size"] ** 2 + 1),
-                                 hidden_layers=self.config["actor_hidden_layers"],
-                                 activation=self.config["actor_activation"]))
+            players.append(Actor(None, None, randomized=True))
 
         number_of_wins, number_of_games, detailed_stats = self.play_tournament_games(players)
 
@@ -73,10 +69,7 @@ class Tournaments:
 
         for i in range(randoms):
             names.append("random")
-            players.append(Actor(1, 1,
-                                 input_dim=2 * (self.config["size"] ** 2 + 1),
-                                 hidden_layers=self.config["actor_hidden_layers"],
-                                 activation=self.config["actor_activation"]))
+            players.append(Actor(None, None, randomized=True))
 
         number_of_wins, number_of_games, detailed_stats = self.play_tournament_games(players)
 
@@ -118,6 +111,7 @@ class Tournaments:
 
 
     def evaluate_actor(self, actor, display=True):
+        print("Evaluating actor...")
         win_rate_one_vs_all = self.run_one_vs_all(actor, randoms=19, display=display)
         if not display:
             print("Win rate one vs all:", win_rate_one_vs_all)
@@ -169,7 +163,7 @@ class Tournaments:
         print("Winner:", winner)
 
 
-    def play_tournament_games(self, players, visualize_freq=0):
+    def play_tournament_games(self, players):
         number_of_players = len(players)
         number_of_games = np.zeros(number_of_players)
         number_of_wins = np.zeros(number_of_players)
@@ -196,14 +190,12 @@ class Tournaments:
                     starting_player = [1, 0] if n % 2 == 0 else [0, 1]
                     game_manager = HexManager(starting_player, self.config["size"])
 
-                    history = [game_manager.get_state()[1]]
                     while not game_manager.is_game_over():
                         if game_manager.get_state()[0][0] == 1:
                             action = player1.find_best_action(game_manager.get_state())
                         else:
                             action = player2.find_best_action(game_manager.get_state())
                         game_manager.execute_action(action)
-                        history.append(game_manager.get_state()[1])
 
                     winner = game_manager.get_winner()
                     if winner == 1:
@@ -212,8 +204,5 @@ class Tournaments:
                     else:
                         number_of_wins[second_player] += 1
                         detailed_stats[second_player][first_player] += 1
-
-                    if visualize_freq != 0 and counter % visualize_freq == 0:
-                        visualize_game(history)
 
         return number_of_wins, number_of_games, detailed_stats

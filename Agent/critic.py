@@ -4,8 +4,14 @@ from Agent.utils import build_model, load_model
 
 class Critic:
     def __init__(self,
-                 input_dim=None, hidden_layers=None, optimizer=None,
-                 activation=None, learning_rate=0, l2_reg=0, loss=None, name=None):
+                 input_dim=None,
+                 hidden_layers=None,
+                 optimizer=None,
+                 activation=None,
+                 learning_rate=0,
+                 l2_reg=0,
+                 loss=None,
+                 name=None):
 
         if name:
             self.model = load_model(name, critic=True)

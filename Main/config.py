@@ -1,5 +1,5 @@
 config = {
-    "name": "gerrard",
+    "name": "huhu",
     "size": 6,
     "train_from_actor": False,
     "train_from_critic": False,
@@ -11,9 +11,9 @@ config = {
 
     "epsilon": 0.01,
     "epsilon_decay_rate": 1,
-    "rollout_prob": 1,
-    "min_rollout_prob": 1,
-    "rollout_prob_decay_rate": 1,
+    "rollout_prob": 5,
+    "min_rollout_prob": 0.3,
+    "rollout_prob_decay_rate": 0.8,
 
     "actor_hidden_layers": [256, 128, 64],
     "actor_optimizer": 'adam',
@@ -39,17 +39,16 @@ config = {
     "batch_size": 64,
     "epochs": 1,
 
-    "episodes": 100,
-    "save_frequency": 20,
+    "episodes": 40,
+    "save_frequency": 10,
 
-    "mcts_starting_simulations": 100,
+    "mcts_starting_simulations": 2,
     "mcts_move_increase": 5,
-    "mcts_increase_constant": 30,
+    "mcts_increase_constant": 0,
     "mcts_move_decrease": 25,
     "mcts_decrease_constant": 0,
 
-    "tournament_games": 40,                    # bør kunne deles på 8 for mest presise resultater
-    "f": 0,
+    "tournament_games": 8,                    # bør kunne deles på 8 for mest presise resultater
     "c": 4,
 }
 
@@ -59,7 +58,6 @@ best_demo_config = {
     "save_frequency": 100,
     "size": 4,
     "tournament_games": 50,
-    "f": 0,
     "actor_hidden_layers": [],
     "actor_activation": None,
 }

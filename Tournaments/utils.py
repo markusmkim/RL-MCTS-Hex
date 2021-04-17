@@ -58,5 +58,6 @@ def convert_action(action, size):
 def plot_stats(wins, episodes_list):
     plt.bar(episodes_list, wins, width=8)
     plt.xticks(episodes_list)
+    plt.title("TOPP-Tournament")
     plt.show()
 

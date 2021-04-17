@@ -3,7 +3,7 @@ from SimWorld.hexManager import HexManager, get_next_state
 from SimWorld.utils import visualize_game
 from time import time
 from RL.utils import train_networks, generate_training_target, prune_buffer
-from Main.utils import initialize_actor, display_buffer_counts_stats
+from Main.utils import initialize_actor, display_buffer_counts_stats, display_episode_stats, display_time_stats, evaluate_progression
 
 
 def run_rl_algorithm(actor, critic, config, tournaments):
@@ -18,7 +18,7 @@ def run_rl_algorithm(actor, critic, config, tournaments):
 
     last_game_history = []
     evaluation_history = []
-    rph = []  # rollout prop history
+    rph = []  # rollout prob history
 
     best_evaluation = 0
     saved_actor_count = 0
@@ -34,9 +34,10 @@ def run_rl_algorithm(actor, critic, config, tournaments):
     if config["rollout_actor"]:
         rollout_actor = initialize_actor(config, config["rollout_actor"])
 
-    if config["name"] == "demo":
-        actor.save_model("demo", saved_actor_count)
-        saved_actor_count += 1
+    first_evaluation = evaluate_progression(actor, saved_actor_count, tournaments, config["size"])
+    evaluation_history.append(first_evaluation)
+    rph.append(min(1, total_rollout_prob))
+    saved_actor_count += 1
 
     for i in range(1, config["episodes"] + 1):
         starting_player = [1, 0] if i % 2 == 0 else [0, 1]
@@ -101,32 +102,18 @@ def run_rl_algorithm(actor, critic, config, tournaments):
             if i > 0:
                 time_spent_on_save = time() - last_save_start_time
                 time_history.append(time_spent_on_save)
-                if len(time_history) > 1:
-                    time_spent_on_last_save = time_history[-2]
-                    ratio = time_spent_on_save / time_spent_on_last_save
-                    print("Time spent on current save:  ", time_spent_on_save)
-                    print("Time spent on previous save: ", time_spent_on_last_save)
-                    print("Ratio:", ratio)
-                    print("Time history:", time_history)
-                else:
-                    print("Time spent on first save:", time_spent_on_save)
+                display_time_stats(time_spent_on_save, time_history)
 
-            if config["name"] == "demo":
-                actor.save_model("demo", saved_actor_count)
-                saved_actor_count += 1
-            elif i > 0:
-                if config["size"] == 6:
-                    evaluation = tournaments.evaluate_actor(actor, display=False)
-                else:
-                    evaluation = tournaments.run_one_vs_all(actor, 9, display=False)
-                evaluation_history.append(evaluation)
-                rph.append(rollout_prob)
-                actor.save_model("last_model")
-                print("Intermediate evaluation:", evaluation)
-                if evaluation > best_evaluation:
-                    best_evaluation = evaluation
-                    actor.save_model("best_model_last_run")
-                    print("Best evaluation so far this run!")
+            evaluation = evaluate_progression(actor, saved_actor_count, tournaments, config["size"])
+            evaluation_history.append(evaluation)
+            rph.append(min(1, total_rollout_prob))
+            saved_actor_count += 1
+
+            if evaluation > best_evaluation:
+                best_evaluation = evaluation
+                actor.save_model("best_model_last_run")
+                print("Best evaluation so far this run!")
+            print("\n")
 
             prune_buffer(buffer, total_number_of_moves, config["buffer_size"])
 
@@ -135,15 +122,14 @@ def run_rl_algorithm(actor, critic, config, tournaments):
         if config["visualize_game_on_every_save"] and i % config["save_frequency"] == 0:
             visualize_game(last_game_history)
 
-        print("Episode:", i,
-              " |  Starting player: ", starting_player,
-              " |  Winner: ", game_manager.get_winner(),
-              " |  Epsilon: ", actor.epsilon,
-              " |  Rollout prob: ", "{:.3f}".format(total_rollout_prob),
-              " |  Number of moves:  " if number_of_moves < 10 else " |  Number of moves: ", number_of_moves,
-              " |  New buffer data:  " if len(buffer) - old_buffer_size < 10 else " |  New buffer data: ",
-              len(buffer) - old_buffer_size,
-              " |  Buffer dict size: ", len(buffer))
+        display_episode_stats(i,
+                              starting_player,
+                              game_manager.get_winner(),
+                              actor.epsilon,
+                              total_rollout_prob,
+                              number_of_moves,
+                              len(buffer),
+                              old_buffer_size)
 
         actor.decrease_epsilon()
         rollout_prob = rollout_prob * config["rollout_prob_decay_rate"]

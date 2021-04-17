@@ -61,3 +61,4 @@ def prune_buffer(buffer, total_number_moves, buffer_size):
 
     for key in keys_to_remove:
         del buffer[key]
+

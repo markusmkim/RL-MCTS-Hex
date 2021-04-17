@@ -4,19 +4,33 @@ from Agent.utils import load_model, build_model
 
 
 class Actor:
-    def __init__(self, epsilon, epsilon_decay_rate,
-                 input_dim=None, hidden_layers=None, optimizer=None,
-                 activation=None, learning_rate=0, l2_reg=0, loss=None,
-                 name=None, count=-1, best=False):
+    def __init__(self,
+                 epsilon,
+                 epsilon_decay_rate,
+                 input_dim=None,
+                 hidden_layers=None,
+                 optimizer=None,
+                 activation=None,
+                 learning_rate=0,
+                 l2_reg=0,
+                 loss=None,
+                 name=None,
+                 count=-1,
+                 best=False,
+                 randomized=False):
 
-        self.input_dim = input_dim
-        self.epsilon = epsilon
-        self.epsilon_decay_rate = epsilon_decay_rate
+        if randomized:
+            self.epsilon = 1
 
-        if name or count >= 0:
-            self.model = load_model(name, count=count, best=best)
         else:
-            self.model = build_model(hidden_layers, input_dim, activation, loss, optimizer, learning_rate, l2_reg)
+            self.input_dim = input_dim
+            self.epsilon = epsilon
+            self.epsilon_decay_rate = epsilon_decay_rate
+
+            if name or count >= 0:
+                self.model = load_model(name, count=count, best=best)
+            else:
+                self.model = build_model(hidden_layers, input_dim, activation, loss, optimizer, learning_rate, l2_reg)
 
 
     def train_model(self, x_train, y_train, batch_size, epochs):
@@ -30,7 +44,7 @@ class Actor:
         if count == -1:
             self.model.save(f"Agent/saved_models/{name}/network")
         else:
-            self.model.save(f"Agent/saved_models/demo/network-{count}")
+            self.model.save(f"Agent/saved_models/training/network-{count}")
 
 
     def find_best_action(self, state):

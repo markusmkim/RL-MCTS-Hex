@@ -29,6 +29,47 @@ def initialize_critic(config, name=False):
                   name=name)
 
 
+def evaluate_progression(actor, saved_actor_count, tournaments, size, final=False, plot_topp=False):
+    actor.save_model("training", saved_actor_count)
+
+    if saved_actor_count > 0:
+        tournaments.run_topp_tournament(number_of_actors=None if final else saved_actor_count + 1, plot=plot_topp)
+
+    if size == 6:
+        evaluation = tournaments.evaluate_actor(actor, display=False)
+    else:
+        evaluation = tournaments.run_one_vs_all(actor, 9, display=False)
+
+    time_expression = "Final" if final else "First" if saved_actor_count == 0 else "Intermediate"
+    s = time_expression + " evaluation:"
+    print(s, evaluation)
+    return evaluation
+
+
+def display_episode_stats(episode, starting_player, winner, epsilon, rollout_prob, n_moves, buff_size, old_buff_size):
+    print("Episode:", episode,
+          " |  Starting player: ", starting_player,
+          " |  Winner: ", winner,
+          " |  Epsilon: ", epsilon,
+          " |  Rollout prob: ", "{:.3f}".format(rollout_prob),
+          " |  Number of moves:  " if n_moves < 10 else " |  Number of moves: ", n_moves,
+          " |  New buffer data:  " if buff_size - old_buff_size < 10 else " |  New buffer data: ",
+          buff_size - old_buff_size,
+          " |  Buffer dict size: ", buff_size)
+
+
+def display_time_stats(time_spent_on_save, time_history):
+    if len(time_history) > 1:
+        time_spent_on_last_save = time_history[-2]
+        ratio = time_spent_on_save / time_spent_on_last_save
+        print("Time spent on current save:  ", time_spent_on_save)
+        print("Time spent on previous save: ", time_spent_on_last_save)
+        print("Ratio:", ratio)
+        print("Time history:", time_history)
+    else:
+        print("Time spent on first save:", time_spent_on_save)
+
+
 def display_buffer_counts_stats(buffer_counts):
     n_single_counts = 0
     total_count = 0
@@ -52,13 +93,16 @@ def display_buffer_counts_stats(buffer_counts):
     plt.plot(x_axis, counts)
     ax = plt.gca()
     ax.axes.xaxis.set_visible(False)
+    plt.title("Buffer counts distribution")
     plt.show()
 
 
-def plot_history(history, frequency):
-    x_axis = np.arange(len(history))
-    x_axis = x_axis * frequency
-    plt.plot(x_axis, history)
+def plot_histories(histories, labels, frequency):
+    x_axis = np.arange(len(histories[0])) * frequency
+    for i in range(len(histories)):
+        plt.plot(x_axis, histories[i], label=labels[i])
+    plt.legend(fontsize="large")
+    plt.title("History")
     plt.show()
 
 

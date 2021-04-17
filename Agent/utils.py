@@ -37,9 +37,9 @@ def load_model(name, critic=False, count=-1, best=False):
 
     if count == -1:
         return keras.models.load_model(f"Agent/saved_models/{name}/network")
-    else:
-        demodir = "bestDemo" if best else "demo"
-        return keras.models.load_model(f"Agent/saved_models/{demodir}/network-{count}")
+
+    directory = "bestDemo" if best else "training"
+    return keras.models.load_model(f"Agent/saved_models/{directory}/network-{count}")
 
 
 def get_loss(name):
