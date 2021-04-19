@@ -1,6 +1,8 @@
 import numpy as np
 import random
 from Agent.utils import load_model, build_model
+from MCTS.tree import Tree
+from SimWorld.hexManager import get_next_state
 
 
 class Actor:
@@ -37,7 +39,7 @@ class Actor:
         self.model.fit(np.array(x_train), np.array(y_train),
                        batch_size=batch_size,
                        epochs=epochs,
-                       verbose=0)  # verbose = 0 to run silent
+                       verbose=1)  # verbose = 0 to run silent
 
 
     def save_model(self, name, count=-1):
@@ -47,10 +49,13 @@ class Actor:
             self.model.save(f"Agent/saved_models/training/network-{count}")
 
 
-    def find_best_action(self, state):
+    def find_best_action(self, state, use_mcts=False):
         possible_actions = state[2]
         if len(possible_actions) == 0:
             return None
+
+        if use_mcts:
+            return self.find_best_action_by_mcts(state)
 
         if random.random() < self.epsilon:
             return possible_actions[random.randint(0, len(possible_actions) - 1)]
@@ -63,6 +68,14 @@ class Actor:
             best_action = np.argmax(output, axis=1)[0]
 
         return best_action
+
+
+    def find_best_action_by_mcts(self, state):
+        tree = Tree(state, self, None)
+        tree.root.number_of_visits = 1
+        v, _, action = tree.mcts(1200, get_next_state, 3, 1)
+        print(v)
+        return action
 
 
     def decrease_epsilon(self):

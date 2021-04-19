@@ -121,7 +121,7 @@ class Tournaments:
         return win_rate_one_vs_all * 0.5 + win_rate_elite * 0.5
 
 
-    def run_duel(self, actor1, actor2, size, starting_player=1):
+    def run_duel(self, actor1, actor2, size, starting_player=1, actor2_runs_mcts=False):
         if actor2 == "random":
             actor2 = Actor(1, 1, input_dim=2 * (size ** 2 + 1), hidden_layers=[])
 
@@ -129,14 +129,15 @@ class Tournaments:
         game_manager = HexManager(starting_player, size)
         game_manager.visualize_game_state()
         while not game_manager.is_game_over():
-            sleep(1)
+            sleep(0.2)
             if game_manager.get_state()[0][0] == 1:
                 action = actor1.find_best_action(game_manager.get_state())
             else:
-                action = actor2.find_best_action(game_manager.get_state())
+                action = actor2.find_best_action(game_manager.get_state(), use_mcts=actor2_runs_mcts)
             game_manager.execute_action(action)
             game_manager.visualize_game_state()
-
+        sleep(0.2)
+        game_manager.visualize_game_state()
         winner = game_manager.get_winner()
         if winner == 1:
             print("First actor won")
@@ -154,7 +155,7 @@ class Tournaments:
                 while action not in game_manager.get_state()[2]:
                     action = int(input("Action: "))
             else:
-                action = actor.find_best_action(game_manager.get_state())
+                action = actor.find_best_action(game_manager.get_state(), use_mcts=True)
             game_manager.execute_action(action)
             game_manager.visualize_game_state()
             if critic:
