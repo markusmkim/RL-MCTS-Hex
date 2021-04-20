@@ -3,6 +3,7 @@ from Tournaments.utils import convert_state, convert_action
 from math import sqrt
 from Tournaments.OHT.oht_actor import OhtActor
 from SimWorld.hexManager import HexManager
+from time import time
 
 
 class BasicClientActor(BasicClientActorAbs):
@@ -25,6 +26,8 @@ class BasicClientActor(BasicClientActorAbs):
         :return: Your actor's selected action as a tuple (row, column)
         """
 
+        start_time = time()
+
         # size = int(sqrt(len(state) - 1))
 
         new_state = convert_state(state, 6)
@@ -39,6 +42,8 @@ class BasicClientActor(BasicClientActorAbs):
         oht_action = convert_action(action, 6)
 
         # print("OHT action", oht_action)
+
+        print("Time spent on finding action:", time() - start_time)
 
         return oht_action
 

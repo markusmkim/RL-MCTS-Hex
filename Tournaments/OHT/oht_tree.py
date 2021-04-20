@@ -13,7 +13,7 @@ class Tree:
             self.root.expand(get_next_state)
         node = self.root
         sim_count = 0
-        while time() - start_time < 8:
+        while time() - start_time < 9:
             while node.children and len(node.children) > 0:
                 node = node.best_child(c)
             if node.number_of_visits == 1:
@@ -27,7 +27,7 @@ class Tree:
                 node.number_of_visits += 1
             sim_count += 1
 
-        print(sim_count)
+        print("Number of simulations for this move:", sim_count)
 
         visits_dict, total_visits, best_child, best_action = self.root.children_visits()
 

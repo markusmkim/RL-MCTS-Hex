@@ -44,7 +44,7 @@ def convert_state(oht_state, size):
         flat_list = flat_list + bit_row
         board.append(board_row)
 
-    print("board", board)
+    # print("board", board)
 
     input_list = player + flat_list
 

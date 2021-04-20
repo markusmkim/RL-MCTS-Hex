@@ -8,7 +8,7 @@ from RL.utils import generate_training_target
 class OhtActor:
 
     def find_best_action_by_mcts(self, state):
-        tree = Tree(state, self,)
+        tree = Tree(state, self)
         tree.root.number_of_visits = 1
         v, _, action = tree.mcts(time(), get_next_state, 10)
         return action
