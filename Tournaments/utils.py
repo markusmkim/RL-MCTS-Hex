@@ -80,11 +80,12 @@ def generate_chains(board):
     south_east_chains = []
 
     # TODO: Calculate chains
-    # Legge alle brikker som befinner seg på kanten til den chainen som hører til den kanten
-    # Disse brikkene utgjør "køen"
-    # For hver brikke i køen:
-    #     Legg alle naboer av samma farge til chainen og til køen, og fjern brikken fra køen
-    # Når køen er tom er chainen ferdig (?)
+    # For hver chain:
+    #     Legge alle brikker som befinner seg på kanten til den chainen som hører til den kanten
+    #     Disse brikkene utgjør "køen"
+    #     For hver brikke i køen:
+    #         Legg alle naboer av samma farge til chainen og til køen, og fjern brikken fra køen
+    #     Når køen er tom er chainen ferdig (?)
 
     return [
         north_east_chains,
