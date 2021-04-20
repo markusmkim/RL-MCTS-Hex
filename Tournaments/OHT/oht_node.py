@@ -1,8 +1,6 @@
 from math import sqrt, log
 from SimWorld.hexManager import HexManager
 import copy
-import random
-import numpy as np
 
 
 class Node:
@@ -21,7 +19,6 @@ class Node:
         for action in self.state[2]:
             next_state = get_next_state(self.state, action)
             child = Node(self, next_state)
-            self.children.append(child)
         return self.children
 
 
