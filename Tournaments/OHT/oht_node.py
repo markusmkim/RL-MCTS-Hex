@@ -19,6 +19,7 @@ class Node:
         for action in self.state[2]:
             next_state = get_next_state(self.state, action)
             child = Node(self, next_state)
+            self.children.append(child)
         return self.children
 
 
@@ -26,11 +27,15 @@ class Node:
         self.number_of_visits += 1
 
         simulation_manager = HexManager(copy.deepcopy(self.state))
+        counter = 0
         while not simulation_manager.is_game_over():
             simulation_action = simulation_actor.find_best_action(simulation_manager.get_state())
             simulation_manager.execute_action(simulation_action)
+            counter += 1
 
-        self.value = 1 if simulation_manager.get_winner() == 1 else -1
+        reward = 20 if counter == 0 else 1
+
+        self.value = reward if simulation_manager.get_winner() == 1 else -reward
 
         return self.value
 

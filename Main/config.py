@@ -10,7 +10,7 @@ config = {
     "run_interaction_game": False,
 
     "epsilon": 1.2,
-    "epsilon_decay_rate": 0.992,
+    "epsilon_decay_rate": 0.999,
     "rollout_prob": 1,
     "min_rollout_prob": 1,
     "rollout_prob_decay_rate": 0.995,
@@ -40,7 +40,7 @@ config = {
     "epochs": 1,
 
     "episodes": 200,
-    "save_frequency": 40,
+    "save_frequency": 20,
 
     "mcts_starting_simulations": 600,
     "mcts_move_increase": 5,

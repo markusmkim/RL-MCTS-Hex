@@ -40,9 +40,11 @@ def convert_state(oht_state, size):
             elif old_state[j][i] == 2:
                 bit_representation = [1, 0]
             bit_row = bit_representation + bit_row
-            board_row = old_state[j][i] + board_row
+            board_row = [old_state[j][i]] + board_row
         flat_list = flat_list + bit_row
-        board = board + board_row
+        board.append(board_row)
+
+    print("board", board)
 
     input_list = player + flat_list
 
@@ -53,7 +55,7 @@ def convert_state(oht_state, size):
 
     chains = generate_chains(board)
 
-    return [np.array(input_list), None, possible_moves, chains, None]
+    return [np.array(input_list), board, possible_moves, chains, None]
 
 
 def convert_action(action, size):
@@ -70,26 +72,86 @@ def plot_stats(wins, episodes_list):
 
 
 def generate_chains(board):
-
     # player 1
-    north_east_chains = []
-    south_west_chains = []
+    player_1_chain_top = []     # top left
+    player_1_chain_bottom = []  # bottom right
 
     # player 2
-    north_west_chains = []
-    south_east_chains = []
+    player_2_chain_top = []     # top right
+    player_2_chain_bottom = []  # bottom left
 
-    # TODO: Calculate chains
     # For hver chain:
     #     Legge alle brikker som befinner seg på kanten til den chainen som hører til den kanten
     #     Disse brikkene utgjør "køen"
     #     For hver brikke i køen:
     #         Legg alle naboer av samma farge til chainen og til køen, og fjern brikken fra køen
     #     Når køen er tom er chainen ferdig (?)
+    for row in range(len(board)):
+        for col in range(len(board)):
+            if row == 0 and board[row][col] == 1:
+                player_1_chain_top.append((row, col))
+            if row == 5 and board[row][col] == 1:
+                player_1_chain_bottom.append((row, col))
+            if col == 0 and board[row][col] == 2:
+                player_2_chain_bottom.append((row, col))
+            if row == 0 and board[row][col] == 2:
+                player_2_chain_top.append((row, col))
+
+    chains = [player_1_chain_top, player_1_chain_bottom, player_2_chain_top, player_2_chain_bottom]
+    for i in range(len(chains)):
+        chain = chains[i]
+        player = 1 if i < 2 else 2
+        queue = []
+        for cell in chain:
+            queue.append(cell)
+
+        processed = []
+        while len(queue) > 0:
+            cell_in_focus = queue.pop()
+            processed.append(cell_in_focus)
+            neighbours = get_neighbours(board, cell_in_focus[0], cell_in_focus[1], player)
+            for n in neighbours:
+                if n not in queue and n not in processed:
+                    queue.append(n)
+                if n not in chain:
+                    chain.append(n)
 
     return [
-        north_east_chains,
-        south_west_chains,
-        north_west_chains,
-        south_east_chains
+        player_1_chain_top,
+        player_1_chain_bottom,
+        player_2_chain_top,
+        player_2_chain_bottom
     ]
+
+
+def get_neighbours(board, row, col, player):
+    """
+    Finds all neighbours for a given cell.
+    A neighbour is defined as another cell that is directly connected to this cell AND has been filled by
+    the same player as this cell (cell has same color).
+    :param row: row-wise index of cell
+    :param col: col-wise index of cell
+    :param player: player
+    :return: all neighbours
+    """
+    neighbours = []
+    if row < len(board) - 1 and board[row + 1][col] == player:
+        neighbours.append((row + 1, col))
+
+    if row > 0 and board[row - 1][col] == player:
+        neighbours.append((row - 1, col))
+
+    if col < len(board) - 1 and board[row][col + 1] == player:
+        neighbours.append((row, col + 1))
+
+    if col > 0 and board[row][col - 1] == player:
+        neighbours.append((row, col - 1))
+
+    if row < len(board) - 1 and col < len(board) - 1 and board[row + 1][col + 1] == player:
+        neighbours.append((row + 1, col + 1))
+
+    if row > 0 and col > 0 and board[row - 1][col - 1] == player:
+        neighbours.append((row - 1, col - 1))
+
+    return neighbours
+
