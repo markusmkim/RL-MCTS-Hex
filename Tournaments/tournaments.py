@@ -3,7 +3,7 @@ from SimWorld.hexManager import HexManager
 import numpy as np
 from Main.utils import read_elites, save_elites
 from Tournaments.utils import print_stats, plot_stats
-from time import sleep
+from time import sleep, time
 
 
 class Tournaments:
@@ -121,7 +121,7 @@ class Tournaments:
         return win_rate_one_vs_all * 0.5 + win_rate_elite * 0.5
 
 
-    def run_duel(self, actor1, actor2, size, starting_player=1, actor2_runs_mcts=False):
+    def run_duel(self, actor1, actor2, size, starting_player=1, actor2_runs_mcts=False, oht_actor_as_actor2=False):
         if actor2 == "random":
             actor2 = Actor(1, 1, input_dim=2 * (size ** 2 + 1), hidden_layers=[])
 
@@ -133,7 +133,12 @@ class Tournaments:
             if game_manager.get_state()[0][0] == 1:
                 action = actor1.find_best_action(game_manager.get_state())
             else:
-                action = actor2.find_best_action(game_manager.get_state(), use_mcts=actor2_runs_mcts)
+                if oht_actor_as_actor2:
+                    start_time = time()
+                    action = actor2.find_best_action_by_mcts(game_manager.get_state())
+                    print("Time spent on finding action:", time() - start_time)
+                else:
+                    action = actor2.find_best_action(game_manager.get_state(), use_mcts=actor2_runs_mcts)
             game_manager.execute_action(action)
             game_manager.visualize_game_state()
         sleep(0.2)

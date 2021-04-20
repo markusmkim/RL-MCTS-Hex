@@ -39,7 +39,7 @@ class Actor:
         self.model.fit(np.array(x_train), np.array(y_train),
                        batch_size=batch_size,
                        epochs=epochs,
-                       verbose=1)  # verbose = 0 to run silent
+                       verbose=0)  # verbose = 0 to run silent
 
 
     def save_model(self, name, count=-1):
@@ -74,7 +74,7 @@ class Actor:
         tree = Tree(state, self, None)
         tree.root.number_of_visits = 1
         v, _, action = tree.mcts(1200, get_next_state, 3, 1)
-        print(v)
+        # print(v)
         return action
 
 
