@@ -26,10 +26,10 @@ class HexManager:
             Each cell connected to the "top" will reside in the top chain, and vice versa. When a cell is in both
             chains, the player has won.
             """
-            self.player_1_chain_top = []
-            self.player_1_chain_bottom = []
-            self.player_2_chain_top = []
-            self.player_2_chain_bottom = []
+            self.top_right_chain = []
+            self.bottom_left_chain = []
+            self.top_left_chain = []
+            self.bottom_right_chain = []
 
             self.winner = None
 
@@ -39,10 +39,10 @@ class HexManager:
             self.grid = args[0][0][2:]
             self.board = args[0][1]
             self.possible_actions = args[0][2]
-            self.player_1_chain_top = args[0][3][0]
-            self.player_1_chain_bottom = args[0][3][1]
-            self.player_2_chain_top = args[0][3][2]
-            self.player_2_chain_bottom = args[0][3][3]
+            self.top_right_chain = args[0][3][0]
+            self.bottom_left_chain = args[0][3][1]
+            self.top_left_chain = args[0][3][2]
+            self.bottom_right_chain = args[0][3][3]
             self.winner = args[0][4]
 
 
@@ -64,16 +64,16 @@ class HexManager:
         :return: name of winning player (1 or 2) if any, else 0
         """
         if player == 1:
-            chain_top = self.player_1_chain_top
-            chain_bottom = self.player_1_chain_bottom
+            chain_top = self.top_right_chain
+            chain_bottom = self.bottom_left_chain
         else:
-            chain_top = self.player_2_chain_top
-            chain_bottom = self.player_2_chain_bottom
+            chain_top = self.top_left_chain
+            chain_bottom = self.bottom_right_chain
 
         top, bottom = False, False
         neighbours = self.get_neighbours(row, col, player)  # neighbour = (row, col)
 
-        if (player == 1 and row == 0) or (player == 2 and col == len(self.board) - 1):
+        if (player == 2 and row == 0) or (player == 1 and col == len(self.board) - 1):
             chain_top.append((row, col))
             for neighbour in neighbours:
                 if neighbour in chain_bottom:
@@ -81,7 +81,7 @@ class HexManager:
                 if neighbour not in chain_top:
                     self.handleChains(neighbour[0], neighbour[1], player)
 
-        elif (player == 1 and row == len(self.board) - 1) or (player == 2 and col == 0):
+        elif (player == 2 and row == len(self.board) - 1) or (player == 1 and col == 0):
             chain_bottom.append((row, col))
             for neighbour in neighbours:
                 if neighbour in chain_top:
@@ -164,10 +164,10 @@ class HexManager:
     # state = [input, board, possible_moves, chains, winner] --> input = flat list of player + grid
     def get_state(self):
         chains = [
-            self.player_1_chain_top,
-            self.player_1_chain_bottom,
-            self.player_2_chain_top,
-            self.player_2_chain_bottom
+            self.top_right_chain,
+            self.bottom_left_chain,
+            self.top_left_chain,
+            self.bottom_right_chain
         ]
         return deepcopy([np.concatenate((self.player, self.grid)),
                          self.board,
@@ -189,7 +189,7 @@ class HexManager:
 
 
     def printChains(self):
-        print("Black top: ", self.player_1_chain_top)
-        print("Black bot: ", self.player_1_chain_bottom)
-        print("Red top:   ", self.player_2_chain_top)
-        print("Red bot:   ", self.player_2_chain_bottom)
+        print("Black top: ", self.top_right_chain)
+        print("Black bot: ", self.bottom_left_chain)
+        print("Red top:   ", self.top_left_chain)
+        print("Red bot:   ", self.bottom_right_chain)

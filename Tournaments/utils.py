@@ -73,12 +73,12 @@ def plot_stats(wins, episodes_list):
 
 def generate_chains(board):
     # player 1
-    player_1_chain_top = []     # top left
-    player_1_chain_bottom = []  # bottom right
+    player_1_chain_top = []     # top right
+    player_1_chain_bottom = []  # bottom left
 
     # player 2
-    player_2_chain_top = []     # top right
-    player_2_chain_bottom = []  # bottom left
+    player_2_chain_top = []     # top left
+    player_2_chain_bottom = []  # bottom right
 
     # For hver chain:
     #     Legge alle brikker som befinner seg på kanten til den chainen som hører til den kanten
@@ -86,18 +86,20 @@ def generate_chains(board):
     #     For hver brikke i køen:
     #         Legg alle naboer av samma farge til chainen og til køen, og fjern brikken fra køen
     #     Når køen er tom er chainen ferdig (?)
+
     for row in range(len(board)):
         for col in range(len(board)):
-            if row == 0 and board[row][col] == 1:
+            if col == 5 and board[row][col] == 1:        # top right
                 player_1_chain_top.append((row, col))
-            if row == 5 and board[row][col] == 1:
+            if col == 0 and board[row][col] == 1:        # bottom left
                 player_1_chain_bottom.append((row, col))
-            if col == 0 and board[row][col] == 2:
-                player_2_chain_bottom.append((row, col))
-            if row == 0 and board[row][col] == 2:
+            if row == 0 and board[row][col] == 2:        # top left
                 player_2_chain_top.append((row, col))
+            if row == 5 and board[row][col] == 2:        # bottom right
+                player_2_chain_bottom.append((row, col))
 
     chains = [player_1_chain_top, player_1_chain_bottom, player_2_chain_top, player_2_chain_bottom]
+
     for i in range(len(chains)):
         chain = chains[i]
         player = 1 if i < 2 else 2
@@ -111,9 +113,8 @@ def generate_chains(board):
             processed.append(cell_in_focus)
             neighbours = get_neighbours(board, cell_in_focus[0], cell_in_focus[1], player)
             for n in neighbours:
-                if n not in queue and n not in processed:
+                if n not in queue and n not in processed and n not in chain:
                     queue.append(n)
-                if n not in chain:
                     chain.append(n)
 
     return [
@@ -154,4 +155,21 @@ def get_neighbours(board, row, col, player):
         neighbours.append((row - 1, col - 1))
 
     return neighbours
+
+
+def print_states(state, new_state):
+    board = new_state[1]
+    possible_moves = new_state[2]
+    chains = new_state[3]
+    winner = new_state[4]
+    print("Printing states:")
+    print("OHT-state:", state)
+    print("Our new state:", board)
+    print("Possible moves:", possible_moves)
+    print("Chains:")
+    print("    PLayer1_chain_top (top right):", chains[0])
+    print("    PLayer1_chain_bottom: (bottom left):", chains[1])
+    print("    PLayer1_chain_top (top left):", chains[2])
+    print("    PLayer1_chain_top (bottom right):", chains[3])
+    print("Winner:", winner)
 

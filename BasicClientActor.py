@@ -1,5 +1,5 @@
 from BasicClientActorAbs import BasicClientActorAbs
-from Tournaments.utils import convert_state, convert_action
+from Tournaments.utils import convert_state, convert_action, print_states
 from math import sqrt
 from Tournaments.OHT.oht_actor import OhtActor
 from SimWorld.hexManager import HexManager
@@ -31,6 +31,8 @@ class BasicClientActor(BasicClientActorAbs):
         # size = int(sqrt(len(state) - 1))
 
         new_state = convert_state(state, 6)
+
+        # print_states(state, new_state)
 
         # print("New state:", new_state)
 

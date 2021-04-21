@@ -15,4 +15,7 @@ class OhtActor:
 
 
     def find_best_action(self, state):
-        return state[2][randint(0, len(state[2]) - 1)]
+        if len(state[2]) == 0:
+            print("INGEN MOVES")
+        else:
+            return state[2][randint(0, len(state[2]) - 1)]
