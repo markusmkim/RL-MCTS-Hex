@@ -39,7 +39,7 @@ class Actor:
         self.model.fit(np.array(x_train), np.array(y_train),
                        batch_size=batch_size,
                        epochs=epochs,
-                       verbose=0)  # verbose = 0 to run silent
+                       verbose=1)  # verbose = 0 to run silent
 
 
     def save_model(self, name, count=-1):

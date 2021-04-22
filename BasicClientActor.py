@@ -2,6 +2,7 @@ from BasicClientActorAbs import BasicClientActorAbs
 from Tournaments.utils import convert_state, convert_action
 from math import sqrt
 from Tournaments.OHT.oht_actor import OhtActor
+from Agent.actor import Actor
 from SimWorld.hexManager import HexManager
 from time import time
 
@@ -12,7 +13,7 @@ class BasicClientActor(BasicClientActorAbs):
         self.series_id = -1
         BasicClientActorAbs.__init__(self, IP_address, verbose=verbose)
 
-        self.actor = OhtActor()
+        self.actor = Actor(0, 0, name="nanna")  # OhtActor()
 
 
     def handle_get_action(self, state):
@@ -36,7 +37,7 @@ class BasicClientActor(BasicClientActorAbs):
 
         # actor = Actor(0, 0, name="nora_v2")
 
-        action = self.actor.find_best_action_by_mcts(new_state)
+        action = self.actor.find_best_action(new_state)
         # print("Our action", action)
 
         oht_action = convert_action(action, 6)

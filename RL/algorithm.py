@@ -90,7 +90,8 @@ def run_rl_algorithm(actor, critic, config, tournaments):
                        buffer_targets,
                        game_manager.get_winner(),
                        total_number_of_moves,
-                       config)
+                       config,
+                       i)
 
         buffer_inputs = []
         buffer_targets = []

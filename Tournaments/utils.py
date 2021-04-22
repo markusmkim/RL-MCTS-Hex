@@ -55,7 +55,9 @@ def convert_state(oht_state, size):
 
     chains = generate_chains(board)
 
-    return [np.array(input_list), board, possible_moves, chains, None]
+    # return [np.array(input_list), board, possible_moves, chains, None]
+
+    return [np.array(input_list), None, possible_moves, None, None]
 
 
 def convert_action(action, size):

@@ -11,7 +11,7 @@ def generate_training_target(visits_dict, total_visits, size):
     return training_target
 
 
-def train_networks(actor, critic, buffer, buffer_counts, buffer_inputs, buffer_targets, winner, n_moves, config):
+def train_networks(actor, critic, buffer, buffer_counts, buffer_inputs, buffer_targets, winner, n_moves, config, i):
     batch_inputs = buffer_inputs
     batch_targets = buffer_targets
     critic_target = [1, 0] if winner == 1 else [0, 1]
@@ -29,23 +29,24 @@ def train_networks(actor, critic, buffer, buffer_counts, buffer_inputs, buffer_t
 
     keys = list(buffer.keys())
 
-    if len(keys) < config["train_size"]:
-        for key in keys:
-            batch_inputs.append(buffer[key][0])
-            batch_targets.append(buffer[key][1])
-            critic_targets.append(buffer[key][2])
+    if i % 500 == 0:
+        if len(keys) < config["train_size"]:
+            for key in keys:
+                batch_inputs.append(buffer[key][0])
+                batch_targets.append(buffer[key][1])
+                critic_targets.append(buffer[key][2])
 
-    else:
-        while len(batch_inputs) < config["train_size"]:
-            key = keys[randrange(0, len(keys))]
-            batch_inputs.append(buffer[key][0])
-            batch_targets.append(buffer[key][1])
-            critic_targets.append(buffer[key][2])
+        else:
+            while len(batch_inputs) < config["train_size"]:
+                key = keys[randrange(0, len(keys))]
+                batch_inputs.append(buffer[key][0])
+                batch_targets.append(buffer[key][1])
+                critic_targets.append(buffer[key][2])
 
-    print("Training networks | Train size:", len(batch_inputs))
-    actor.train_model(batch_inputs, batch_targets, config["batch_size"], config["epochs"])
-    if critic and config["train_critic"]:
-        critic.train_model(batch_inputs, critic_targets, config["batch_size"], config["epochs"])
+        print("Training networks | Train size:", len(batch_inputs))
+        actor.train_model(batch_inputs, batch_targets, config["batch_size"], config["epochs"])
+        if critic and config["train_critic"]:
+            critic.train_model(batch_inputs, critic_targets, config["batch_size"], config["epochs"])
 
 
 def prune_buffer(buffer, total_number_moves, buffer_size):

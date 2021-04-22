@@ -9,18 +9,18 @@ config = {
     "visualize_game_on_every_save": False,
     "run_interaction_game": False,
 
-    "epsilon": 1.2,
-    "epsilon_decay_rate": 0.999,
+    "epsilon": 1,
+    "epsilon_decay_rate": 1,
     "rollout_prob": 1,
     "min_rollout_prob": 1,
     "rollout_prob_decay_rate": 0.995,
 
-    "actor_hidden_layers": [80, 80],
+    "actor_hidden_layers": [512, 512],
     "actor_optimizer": 'adam',
     "actor_activation": 'relu',
-    "actor_learning_rate": 0.00001,
-    "actor_loss": "mse",
-    "actor_l2_reg": 0.0001,
+    "actor_learning_rate": 0.001,
+    "actor_loss": "mae",
+    "actor_l2_reg": 0.000001,
 
     "rollout_actor":  False,
     "rollout_actor_episodes": 0,
@@ -34,17 +34,17 @@ config = {
     "critic_loss": "binary_crossentropy",
     "critic_l2_reg": 0.0001,
 
-    "buffer_size": 2048,
-    "train_size": 512,                                # train_size / batch_size burde være et heltall
+    "buffer_size": 5000000,
+    "train_size": 1000000,                                # train_size / batch_size burde være et heltall
     "batch_size": 64,
-    "epochs": 1,
+    "epochs": 20,
 
-    "episodes": 200,
-    "save_frequency": 20,
+    "episodes": 500,
+    "save_frequency": 500,
 
-    "mcts_starting_simulations": 600,
+    "mcts_starting_simulations": 300,
     "mcts_move_increase": 5,
-    "mcts_increase_constant": 20,
+    "mcts_increase_constant": 40,
     "mcts_move_decrease": 25,
     "mcts_decrease_constant": 10,
 
