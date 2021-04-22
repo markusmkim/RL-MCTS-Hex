@@ -60,7 +60,7 @@ def run_rl_algorithm(actor, critic, config, tournaments):
 
         while not game_manager.is_game_over():
             visits_dict, total_visits, action = tree.mcts(
-                simulations,
+                1,
                 get_next_state,
                 config["c"],
                 total_rollout_prob)

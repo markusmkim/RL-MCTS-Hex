@@ -16,7 +16,7 @@ class HexManager:
         if len(args) > 1:
             self.player = args[0]
             self.grid = np.zeros(2 * (args[1] ** 2))
-            self.board = np.zeros((args[1], args[1]))  # empty = 0, first/black player = 1, second/red player = 2
+            self.board = np.zeros((args[1], args[1]))  # empty = 0, red/player1 = 1, black/player2 = 2
             self.possible_actions = np.arange(args[1] ** 2)
 
             """
@@ -189,7 +189,7 @@ class HexManager:
 
 
     def printChains(self):
-        print("Black top: ", self.top_right_chain)
-        print("Black bot: ", self.bottom_left_chain)
-        print("Red top:   ", self.top_left_chain)
-        print("Red bot:   ", self.bottom_right_chain)
+        print("Red top: ", self.top_right_chain)
+        print("Red bot: ", self.bottom_left_chain)
+        print("Black top:   ", self.top_left_chain)
+        print("Black bot:   ", self.bottom_right_chain)

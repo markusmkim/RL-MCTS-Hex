@@ -49,11 +49,11 @@ def print_winner(board):
 def visualize_board(board):
     G = nx.Graph()
 
-    # player 0
-    black_nodes = []
-
     # player 1
     red_nodes = []
+
+    # player 2
+    black_nodes = []
 
     # empty cell
     empty_nodes = []
@@ -69,9 +69,9 @@ def visualize_board(board):
 
             # Split filled/unfilled nodes into different lists to apply different colors
             if board[i][j] == 1:
-                black_nodes.append((i, j))
-            elif board[i][j] == 2:
                 red_nodes.append((i, j))
+            elif board[i][j] == 2:
+                black_nodes.append((i, j))
             else:
                 empty_nodes.append((i, j))
 

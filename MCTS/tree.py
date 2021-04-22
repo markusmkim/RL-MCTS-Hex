@@ -1,4 +1,5 @@
 from MCTS.node import Node
+from time import time
 
 
 class Tree:
@@ -8,11 +9,12 @@ class Tree:
         self.critic = critic
 
 
-    def mcts(self, number_of_simulations, get_next_state, c, rollout_prob):
+    def mcts(self, time_limit, get_next_state, c, rollout_prob):
         if self.root.children is None:
             self.root.expand(get_next_state)
         node = self.root
-        for i in range(number_of_simulations):
+        start_time = time()
+        while time() - start_time < time_limit:
             while node.children and len(node.children) > 0:
                 node = node.best_child(c)
             if node.number_of_visits == 1:

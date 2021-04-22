@@ -11,6 +11,8 @@ oht_actor = OhtActor()
 
 t = Tournaments(config)
 
-t.run_duel(nora_v2, oht_actor, 6, actor2_runs_mcts=True, oht_actor_as_actor2=True)
+t.run_one_vs_all(nora_v2)
+
+# t.run_duel(nora_v2, oht_actor, 6, actor2_runs_mcts=True, oht_actor_as_actor2=True)
 # t.run_interaction_game(a, actor_starts=True)
 
