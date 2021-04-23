@@ -1,5 +1,5 @@
 config = {
-    "name": "nanna",
+    "name": "test",
     "size": 6,
     "train_from_actor": False,
     "train_from_critic": False,
@@ -34,13 +34,13 @@ config = {
     "critic_loss": "binary_crossentropy",
     "critic_l2_reg": 0.0001,
 
-    "buffer_size": 5000000,
-    "train_size": 1000000,                                # train_size / batch_size burde være et heltall
+    "buffer_size": 50000000,
+    "train_size": 10000000,                                # train_size / batch_size burde være et heltall
     "batch_size": 64,
     "epochs": 20,
 
-    "episodes": 500,
-    "save_frequency": 500,
+    "episodes": 1202,
+    "save_frequency": 1200,
 
     "mcts_starting_simulations": 300,
     "mcts_move_increase": 5,
@@ -48,7 +48,7 @@ config = {
     "mcts_move_decrease": 25,
     "mcts_decrease_constant": 10,
 
-    "tournament_games": 16,                    # bør kunne deles på 8 for mest presise resultater
+    "tournament_games": 8,                    # bør kunne deles på 8 for mest presise resultater
     "c": 2,
 }
 

@@ -13,7 +13,7 @@ class Tree:
             self.root.expand(get_next_state)
         node = self.root
         sim_count = 0
-        while time() - start_time < 0.4:
+        while time() - start_time < 1.2:
             while node.children and len(node.children) > 0:
                 node = node.best_child(c)
             if node.number_of_visits == 1:

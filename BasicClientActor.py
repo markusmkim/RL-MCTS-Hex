@@ -13,7 +13,7 @@ class BasicClientActor(BasicClientActorAbs):
         self.series_id = -1
         BasicClientActorAbs.__init__(self, IP_address, verbose=verbose)
 
-        self.actor = Actor(0, 0, name="nanna")  # OhtActor()
+        self.actor = Actor(0, 0, name="groverud")  # OhtActor()
 
 
     def handle_get_action(self, state):

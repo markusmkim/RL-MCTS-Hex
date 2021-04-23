@@ -5,7 +5,7 @@ from Tournaments.OHT.oht_actor import OhtActor
 
 a = Actor(0, 0, randomized=True)
 
-nora_v2 = Actor(0, 0, name="nanna")
+nora_v2 = Actor(0, 0, name="groverud")
 
 oht_actor = OhtActor()
 

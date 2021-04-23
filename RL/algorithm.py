@@ -6,7 +6,7 @@ from RL.utils import train_networks, generate_training_target, prune_buffer
 from Main.utils import initialize_actor, display_buffer_counts_stats, display_episode_stats, display_time_stats, evaluate_progression
 
 
-def run_rl_algorithm(actor, critic, config, tournaments):
+def run_rl_algorithm(actor, critic, config, tournaments, actors=None):
     print("Training models...")
 
     buffer_inputs = []
@@ -60,7 +60,7 @@ def run_rl_algorithm(actor, critic, config, tournaments):
 
         while not game_manager.is_game_over():
             visits_dict, total_visits, action = tree.mcts(
-                simulations,
+                time(),
                 get_next_state,
                 config["c"],
                 total_rollout_prob)
@@ -91,7 +91,8 @@ def run_rl_algorithm(actor, critic, config, tournaments):
                        game_manager.get_winner(),
                        total_number_of_moves,
                        config,
-                       i)
+                       i,
+                       actors=actors)
 
         buffer_inputs = []
         buffer_targets = []
