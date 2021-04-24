@@ -3,6 +3,7 @@ import random
 from Agent.utils import load_model, build_model
 from MCTS.tree import Tree
 from SimWorld.hexManager import get_next_state
+from time import time
 
 
 class Actor:
@@ -73,8 +74,7 @@ class Actor:
     def find_best_action_by_mcts(self, state):
         tree = Tree(state, self, None)
         tree.root.number_of_visits = 1
-        v, _, action = tree.mcts(1200, get_next_state, 3, 1)
-        # print(v)
+        v, _, action = tree.mcts(time(), get_next_state, 3, 1)
         return action
 
 

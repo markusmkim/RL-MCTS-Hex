@@ -11,7 +11,7 @@ def generate_training_target(visits_dict, total_visits, size):
     return training_target
 
 
-def train_networks(actor, critic, buffer, buffer_counts, buffer_inputs, buffer_targets, winner, n_moves, config, i, actors=None):
+def train_networks(actor, critic, buffer, buffer_counts, buffer_inputs, buffer_targets, winner, n_moves, config, i):
     batch_inputs = buffer_inputs
     batch_targets = buffer_targets
     critic_target = [1, 0] if winner == 1 else [0, 1]
@@ -45,9 +45,7 @@ def train_networks(actor, critic, buffer, buffer_counts, buffer_inputs, buffer_t
 
         print("Training networks | Train size:", len(batch_inputs))
         actor.train_model(batch_inputs, batch_targets, config["batch_size"], config["epochs"])
-        if actors is not None:
-            for a in actors:
-                a.train_model(batch_inputs, batch_targets, config["batch_size"], config["epochs"])
+
         if critic and config["train_critic"]:
             critic.train_model(batch_inputs, critic_targets, config["batch_size"], config["epochs"])
 
